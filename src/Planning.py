@@ -36,70 +36,40 @@ import sk
 # PLANNING PHASE: 1. Decision Trees, 2. Contrast Sets
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+def leaves(node):
+  L = []
+  if node.kids:
+   for l in node.kids:
+     L.extend(leaves(node.kids))
+     return L
+  else:
+    return L.extend(node)
+    return L
+
+def score(node):
+  pass
 
 def treatments(train = None, test = None, verbose = True, smoteit = False):
-
-  def remember(node):
-   key = node.f.name
-   Val = node.val
-   contrastSet.update({key: Val})
-   # print contrastSet
-
-  def forget(key):
-   del contrastSet[key]
-
-  def objectiveScores(lst):
-   obj = ([k.cells[-2] for k in lst.rows])
-   return np.mean([k for k in obj]), [k for k in obj]
-
-  def compare(node, test):
-    leaves = [n for n in test.kids] if len(test.kids) else [test]
-#     set_trace()
-    for k in leaves:
-      return objectiveScores(k) < objectiveScores(node), [objectiveScores(k),
-                                                         objectiveScores(node)]
-  def getKey():
-    keys = {}
-    for i in xrange(len(test_DF.headers)):
-      keys.update({test_DF.headers[i].name[1:]:i})
-    return keys
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # New Methods - 02/03/2015
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  def leaves(node):
-    L = []
-    if node.kids:
-     for l in node.kids:
-       L.extend(leaves(node.kids))
-       return L
-    else:
-      return L.extend(node)
-      return L
-
-  def score(node):
-    pass
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Main
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
   # Training data
   train_DF = createTbl(train)
-  # if smoteit: train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
+  
+  if smoteit: 
+    train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
+  
   # Testing data
   test_DF = createTbl(test)
-#   set_trace()
-  # Decision Tree
 
+  # Decision Tree
   t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
   myTree = tdiv(t)
   if verbose: showTdiv(myTree)
 
   # Testing data
   testCase = test_DF._rows
-
-  keys = getKey();
   newTab = []
   for tC in testCase:
     newRow = tC;
