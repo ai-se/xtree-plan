@@ -8,7 +8,7 @@ import sys
 # Update PYTHONPATH
 HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystats/'  # PySTAT
+pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
@@ -40,6 +40,7 @@ class deltas():
     self.row = row;
     self.contrastSet = None
   def patchUp(self):
+
     pass
 
 class treatments():
@@ -91,12 +92,13 @@ class treatments():
 
     # Training data
     train_DF = createTbl(self.train)
-
+    print('Obtaining training data..')
     if self.smoteit:
-      train_DF = SMOTE(data = train_DF, atleast = 1000, atmost = 1001)
+      train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
 
     # Testing data
     test_DF = createTbl(self.test)
+    print('Obtaining testing data..')
 
     # Decision Tree
     t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
@@ -122,16 +124,14 @@ class treatments():
 
 def planningTest():
   # Test contrast sets
-  n = 2
+  n = 0
   dir = '../Data'
+
   one, two = explore(dir)
   # Training data
-  train_DF = createTbl(one[n])
-  # Test data
-  test_df = createTbl(two[n])
   newTab = treatments(train = one[n],
                       test = two[n],
-                      verbose = True,
+                      verbose = False,
                       smoteit = False).main()
 
 
