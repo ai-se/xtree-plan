@@ -45,17 +45,27 @@ class treatments():
 
   def leaves(self, node):
     L = []
-    if node.kids:
-     for l in node.kids:
-       L.extend(self.leaves(node.kids))
-       return L
-    else:
-      return L.extend(node)
+    if len(node.kids):
+      for l in node.kids:
+        L.extend(self.leaves(node.kids))
       return L
+    else:
+      return node
 
+  def isBetter(self, me, others):
+    some1 = False
+    for notme in others:
+     if self.score(notme) == 0:
+      return True, notme.branches
+  
   def score(self, node):
-    pass
+    return mean([r.cells[-2] f in node.rows])
 
+class deltas():
+  def __init__(self, row):
+    self.row  =row;
+    self.contrastSet = None
+  
   def main(self):
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Main
@@ -65,7 +75,7 @@ class treatments():
     train_DF = createTbl(self.train)
 
     if self.smoteit:
-      train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
+      train_DF = SMOTE(data = train_DF, atleast = 1000, atmost = 1001)
 
     # Testing data
     test_DF = createTbl(self.test)
@@ -81,28 +91,31 @@ class treatments():
     for tC in testCase:
       newRow = tC;
       loc = drop(tC, myTree)
-      newNode = loc;
-      if newNode.lvl > 0:
+      node = deltas(loc)
+      if self.score(node)==0
+        node.contrastSet = []
+        continue
+      elif node.lvl > 0:
       # Go up one Level
-        _up = newNode.up
+        _up = node.up
       # look at the kids
-        _kids = _up.kids
-        _leaves = [self.leaves(_k) for _k in _kids]
+        _kids = [self.leaves(_k) for _k in _up.kids]
+        
         set_trace()
 
 def planningTest():
   # Test contrast sets
-  n = 4
+  n = 2
   dir = '../Data'
   one, two = explore(dir)
   # Training data
   train_DF = createTbl(one[n])
   # Test data
   test_df = createTbl(two[n])
-  newTab = treatments(train = [one[n][0]],
-                      test = [one[n][1]],
-                      verbose = False,
-                      smoteit = False)
+  newTab = treatments(train = one[n],
+                      test = two[n],
+                      verbose = True,
+                      smoteit = True).main()
 
 
 if __name__ == '__main__':
