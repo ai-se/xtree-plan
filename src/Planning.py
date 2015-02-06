@@ -53,13 +53,13 @@ def treatments(train = None, test = None, verbose = True, smoteit = False):
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Main
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
+
   # Training data
   train_DF = createTbl(train)
-  
-  if smoteit: 
+
+  if smoteit:
     train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
-  
+
   # Testing data
   test_DF = createTbl(test)
 
