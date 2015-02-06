@@ -36,88 +36,63 @@ import sk
 # PLANNING PHASE: 1. Decision Trees, 2. Contrast Sets
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def leaves(node):
-  L = []
-  if node.kids:
-   for l in node.kids:
-     L.extend(leaves(node.kids))
-     return L
-  else:
-    return L.extend(node)
-    return L
+class treatments():
+  "Treatments"
+  def __init__(self, train = None, test = None,
+               verbose = True, smoteit = False):
+    self.train, self.test = train, test
+    self.verbose, self.smoteit = verbose, smoteit
 
-def score(node):
-  pass
+  def leaves(self, node):
+    L = []
+    if node.kids:
+     for l in node.kids:
+       L.extend(self.leaves(node.kids))
+       return L
+    else:
+      return L.extend(node)
+      return L
 
-def treatments(train = None, test = None, verbose = True, smoteit = False):
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # Main
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  def score(self, node):
+    pass
 
-  # Training data
-  train_DF = createTbl(train)
+  def main(self):
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Main
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  if smoteit:
-    train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
+    # Training data
+    train_DF = createTbl(self.train)
 
-  # Testing data
-  test_DF = createTbl(test)
+    if self.smoteit:
+      train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
 
-  # Decision Tree
-  t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
-  myTree = tdiv(t)
-  if verbose: showTdiv(myTree)
+    # Testing data
+    test_DF = createTbl(self.test)
 
-  # Testing data
-  testCase = test_DF._rows
-  newTab = []
-  for tC in testCase:
-    newRow = tC;
-    loc = drop(tC, myTree)
-    newNode = loc;
-    set_trace()
-    if newNode.lvl > 0:
-    # Go up one Level
-      _up = newNode.up
-    # look at the kids
-      _kids = _up.kids
-      _leaves = [leaves(_k) for _k in _kids]
-      set_trace()
-    branches = [];
-    while newNode.lvl > 0:
-      newNode = newNode.up;
-      branches.append(newNode);
-    # A dict of contrast sets
-    contrastSet = {};
-    # print loc.f.name, loc.lvl+1, loc.val
-    for nn in branches:
-      toScan = nn.kids
-    #    set_trace()
-      for testing in toScan:
-        isBetter, obj = compare(loc, testing)
-        if isBetter:
-          remember(testing)
-          continue  # As soon as the first better node is found, exit..
+    # Decision Tree
+    t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
+    myTree = tdiv(t)
+    if self.verbose: showTdiv(myTree)
 
-    # Pick a random value in the range suggested by the contrast set and
-    # assign it to the row.
-    for k in contrastSet:
-      min, max = contrastSet[k]
-      if isinstance(min, int) and isinstance(max, int):
-        val = randint(min, max)
-      else: val = uniform(min, max)
-      newRow.cells[keys[k]] = val
-
-    newTab.append(newRow.cells)
-
-  updatedTab = clone(test_DF, rows = newTab, discrete = True)
-  return updatedTab
-#  saveImg(bugs(test_df), num_bins = 50, fname = 'bugsBefore', ext = '.jpg')
-#  set_trace()
+    # Testing data
+    testCase = test_DF._rows
+    newTab = []
+    for tC in testCase:
+      newRow = tC;
+      loc = drop(tC, myTree)
+      newNode = loc;
+      if newNode.lvl > 0:
+      # Go up one Level
+        _up = newNode.up
+      # look at the kids
+        _kids = _up.kids
+        _leaves = [self.leaves(_k) for _k in _kids]
+        set_trace()
 
 def planningTest():
   # Test contrast sets
-  n = 1
+  n = 4
   dir = '../Data'
   one, two = explore(dir)
   # Training data
