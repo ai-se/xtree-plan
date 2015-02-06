@@ -35,6 +35,12 @@ import sk
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # PLANNING PHASE: 1. Decision Trees, 2. Contrast Sets
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class deltas():
+  def __init__(self, row):
+    self.row = row;
+    self.contrastSet = None
+  def patchUp(self):
+    pass
 
 class treatments():
   "Treatments"
@@ -55,17 +61,29 @@ class treatments():
   def isBetter(self, me, others):
     some1 = False
     for notme in others:
-     if self.score(notme) == 0:
-      return True, notme.branches
-  
-  def score(self, node):
-    return mean([r.cells[-2] f in node.rows])
+      if self.score(notme) < self.score(me):
+        return False, notme.branch  # False here is for the 'notFound' variable
+      else:
+        return True, []
 
-class deltas():
-  def __init__(self, row):
-    self.row  =row;
-    self.contrastSet = None
-  
+  def score(self, node):
+    return mean([r.cells[-2] for r in node.rows])
+
+
+  def finder(self, node):
+    notFound = True; oldNode = []
+    if notFound == True and node.lvl > -1:
+      # Go up one Level
+        _up = node.up
+      # look at the kids
+        kids = [k for k in _up.kids if not k in oldNode]
+        _kids = [self.leaves(_k) for _k in kids]
+        print('Searching in - ', [(k[0].name, k[1]) for k in _up.branch])
+        notFound, branch = self.isBetter(node, _kids)
+        oldNode.append(node)
+    return branch
+
+
   def main(self):
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Main
@@ -91,17 +109,16 @@ class deltas():
     for tC in testCase:
       newRow = tC;
       loc = drop(tC, myTree)
-      node = deltas(loc)
-      if self.score(node)==0
+      node = deltas(loc)  # A delta instance for the rows
+      if self.score(node.row) == 0:
+        print('No Contrast Set.')
         node.contrastSet = []
         continue
-      elif node.lvl > 0:
-      # Go up one Level
-        _up = node.up
-      # look at the kids
-        _kids = [self.leaves(_k) for _k in _up.kids]
-        
-        set_trace()
+      else:
+        print('Obtaining contrast set. .. ...')
+        node.contrastSet = self.finder(node.row)
+      print(node.__dict__)
+      set_trace()
 
 def planningTest():
   # Test contrast sets
@@ -115,7 +132,7 @@ def planningTest():
   newTab = treatments(train = one[n],
                       test = two[n],
                       verbose = True,
-                      smoteit = True).main()
+                      smoteit = False).main()
 
 
 if __name__ == '__main__':
