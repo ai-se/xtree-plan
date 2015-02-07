@@ -66,8 +66,7 @@ class treatments():
   def leaves(self, node):
     L = []
     if len(node.kids) > 1:
-      for l in node.kids:
-        L.extend(self.leaves(l))
+      L.extend([self.leaves(l) for l in node.kids])
       return L
     elif len(node.kids) == 1:
       return node.kids
@@ -81,18 +80,19 @@ class treatments():
     some1 = False
     for notme in others:
       if self.scorer(notme) < self.scorer(me):
-        return False, notme.branch  # False here is for the 'notFound' variable
+        return True, notme.branch  # False here is for the 'notFound' variable
       else:
-        return True, []
+        return False, []
 
   def finder(self, node):
-    notFound = True; oldNode = []
-    if notFound == True and node.lvl > -1:
+    Found = False; oldNode = []; branch = []
+    while not Found and node.lvl > -1:
       # Go up one Level
         _up = node.up
       # look at the kids
         kids = [k for k in _up.kids if not k in oldNode]
         _kids = [self.leaves(_k) for _k in kids]
+
         print('Searching in - ', [(k[0].name, k[1]) for k in _up.branch])
         notFound, branch = self.isBetter(node, _kids)
         oldNode.append(node)
