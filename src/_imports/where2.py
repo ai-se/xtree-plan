@@ -40,9 +40,9 @@ def pairs(lst):
       yield last, i
 
 def somepairs(m, data):
-  reps = 1; cmax = -10e32;
-  for one in data:
-    # one = any(data);
+  reps = 10; cmax = -10e32;
+  for _ in xrange(reps):
+    one = any(data);
     two = furthest(m, one, data)
     three = furthest(m, two, data)
     c = dist(m, two, three) + 1e-5

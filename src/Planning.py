@@ -32,14 +32,17 @@ import pandas as pd
 import sk
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# PLANNING PHASE: 1. Decision Trees, 2. Contrast Sets
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# PLANNING PHASE
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 class deltas():
+
   def __init__(self, row):
     self.row = row;
     self.contrastSet = None
-  def patchUp(self):
+
+  def patchUp(self, keys):
 
     pass
 
@@ -50,28 +53,14 @@ class treatments():
     self.train, self.test = train, test
     self.verbose, self.smoteit = verbose, smoteit
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# Traceback (most recent call last):
-#   File "/Users/rkrsn/git/Defect-Prediction/src/Planning.py", line 139, in <module>
-#     planningTest()
-#   File "/Users/rkrsn/git/Defect-Prediction/src/Planning.py", line 135, in planningTest
-#     smoteit = False).main()
-#   File "/Users/rkrsn/git/Defect-Prediction/src/Planning.py", line 121, in main
-#     node.contrastSet = self.finder(node.row)
-#   File "/Users/rkrsn/git/Defect-Prediction/src/Planning.py", line 81, in finder
-#     _kids = [self.leaves(_k) for _k in kids]
-#   File "/Users/rkrsn/git/Defect-Prediction/src/Planning.py", line 57, in leaves
-#     L.extend(self.leaves(node.kids))
-#   File "/Users/rkrsn/git/Defect-Prediction/src/Planning.py", line 55, in leaves
-#     if len(node.kids):
-# AttributeError: 'list' object has no attribute 'kids'
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   def leaves(self, node):
     L = []
-    if len(node.kids):
+    if len(node.kids) > 1:
       for l in node.kids:
-        L.extend(self.leaves(node.kids))
+        L.extend(self.leaves(l))
       return L
+    elif len(node.kids) == 1:
+      return node.kids
     else:
       return node
 
@@ -102,19 +91,17 @@ class treatments():
 
 
   def main(self):
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # Training data
     train_DF = createTbl(self.train)
-    print('Obtaining training data..')
     if self.smoteit:
       train_DF = SMOTE(data = train_DF, atleast = 50, atmost = 100)
 
     # Testing data
     test_DF = createTbl(self.test)
-    print('Obtaining testing data..')
 
     # Decision Tree
     t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
@@ -142,7 +129,6 @@ def planningTest():
   # Test contrast sets
   n = 0
   dir = '../Data'
-
   one, two = explore(dir)
   # Training data
   newTab = treatments(train = one[n],
