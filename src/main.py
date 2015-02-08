@@ -52,7 +52,7 @@ def main():
   numData = len(dataName)  # Number of data
   Prd = [CART]  # , rforest]  # , adaboost, logit, knn]
   _smoteit = [True]  # , False]
-  _tuneit = [False]  # , False]
+  _tuneit = [True]  # , False]
   cd = []
   abcd = []
   res = {}
@@ -68,7 +68,9 @@ def main():
       test = [dat[1] for dat in withinClass(data[n])]
       reps = 1
       abcd = [[], []];
+      out11 = []; out1 = [];
       for t in _tuneit:
+        tunedParams = None if not _tuneit else tuner(p, data[0])
 #         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
 #           print('### SMOTE-ing') if _smote else print('### No SMOTE-ing')
@@ -78,12 +80,12 @@ def main():
           _n = -1
           # Training data
           for _ in xrange(reps):
+            out1 = [];
             train_DF = createTbl(train[_n])
 #            set_trace()
             # Testing data
             test_df = createTbl(test[_n])
             # Tune?
-            tunedParams = None
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
             newTab = treatments(train = train[_n],
@@ -111,20 +113,22 @@ def main():
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
 #             cd.append(showoff(dataName[n], actual1, after1))
-            print(showoff(dataName[n], actual1, after1))
+#             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual1, after = before1)
-            print('Win Ratio : %0.2f' % (sum(before1) / sum(after1)))
-#             %print('Prediction accuracy (g)  %.2d' % out[-1])
-#             print (out[-1])
-            if _smote:
-              out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
-              else out.insert(0, p.__doc__ + '(s, Naive)  ')
-              abcd[0].append(out)
-            else:
-              out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
-              else out.insert(0, p.__doc__ + '(raw, Naive)')
-              abcd[1].append(out)
+            print('Win Ratio : %0.2f' % (sum(actual1) / sum(after1)))
+            out1.extend('%0.2f' % (sum(actual1) / sum(after1)))
+# #             %print('Prediction accuracy (g)  %.2d' % out[-1])
+# #             print (out[-1])
+#             if _smote:
+#               out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
+#               else out.insert(0, p.__doc__ + '(s, Naive)  ')
+#               abcd[0].append(out)
+#             else:
+#               out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
+#               else out.insert(0, p.__doc__ + '(raw, Naive)')
+#               abcd[1].append(out)
+          out11.append(out1.insert(0, dataName[n]))
       print()
 #       cd.update({p.__doc__:sorted(cd)})
 #       res.update({p.__doc__:(abcd[0][0:reps],
@@ -132,10 +136,11 @@ def main():
 #                            abcd[1][0:reps],
 #                            abcd[1][reps:] ,
 #                            )})
-    print('```')
+  print('```')
+  rdivDemo(out11)
 #     print(cd)
 #     printsk(res)
-    print('```')
+  print('```')
 
           # sk.rdivDemo(stat)
           # Save the histogram after applying contrast sets.

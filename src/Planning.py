@@ -44,8 +44,8 @@ class deltas():
     self.contrastSet = None
     self.newRow = row;
     self.score = self.scorer(self.loc)
-    self.train = treatments().train_DF
-    self.test = treatments().test_DF
+#     self.train = treatments().train_DF
+#     self.test = treatments().test_DF
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
   def createNew(self, lo, hi, N = 1):
@@ -93,25 +93,35 @@ class treatments():
 
   def isBetter(self, me, others):
     for notme in others:
-      if self.scorer(notme) < self.scorer(me):
+      if '%.2f' % self.scorer(notme) == 0:
         return True, notme.branch  # False here is for the 'notFound' variable
       else:
         return False, []
 
   def finder(self, node):
     Found = False; oldNode = []; branch = []; _kids = []
-    while not Found and node.lvl > -1:
-      # Go up one Level
-        _up = node.up
-      # look at the kids
-        kids = [k for k in _up.kids if not k in oldNode]
-        _kids.extend([self.leaves(_k) for _k in kids])
-        _kids = self.flatten(_kids)
-        Found, branch = self.isBetter(node, _kids)
-#         print('Found - ', Found, 'In -',
-#               [(k[0].name, k[1]) for k in branch])
-        oldNode.append(node)
-        node = _up
+    while not Found:
+#         print('Echo....')
+        if node.lvl > 0:
+        # Go up one Level
+  #         set_trace()
+          _up = node.up
+          print('Current- ', node.branch, 'Level - ', node.lvl)
+        # look at the kids
+          kids = [k for k in _up.kids if not k in oldNode]
+          _kids.extend([self.leaves(_k) for _k in kids])
+          _kids = self.flatten(_kids)
+          print('Kids', _kids)
+          Found, branch = self.isBetter(node, _kids)
+          print('Looking in -- ', (node.branch))
+          print('Found - ', Found, 'In -',
+                [(k[0].name, k[1]) for k in branch])
+          oldNode.append(node)
+          node = _up
+        else:
+
+          _kids = [k for k in kids if not k in oldNode]
+          Found, branch = self.isBetter(node, _kids)
     return branch
 
   def getKey(self):
@@ -142,11 +152,11 @@ class treatments():
       print(tC._id)
       node = deltas(newRow, myTree)  # A delta instance for the rows
       if node.score == 0:
-#         print('No Contrast Set.')
+        print('No Contrast Set.')
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
-#         print('Obtaining contrast set. .. ...')
+        print('Obtaining contrast set. .. ...')
         node.contrastSet = self.finder(node.loc)
         self.mod.append(node.applyPatch(self.keys))
 #       print(node.__dict__)
@@ -155,7 +165,7 @@ class treatments():
 
 def planningTest():
   # Test contrast sets
-  n = 0
+  n = 2
   dir = '../Data'
   one, two = explore(dir)
   # Training data
