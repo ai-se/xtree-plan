@@ -98,30 +98,33 @@ class treatments():
       else:
         return False, []
 
-  def finder(self, node):
-    Found = False; oldNode = []; branch = []; _kids = []
-    while not Found:
+  def finder(self, node, oldNode = [], branch = [], Found = False):
+    if not Found:
 #         print('Echo....')
-        if node.lvl > 0:
-        # Go up one Level
-  #         set_trace()
-          _up = node.up
-          print('Current- ', node.branch, 'Level - ', node.lvl)
-        # look at the kids
-          kids = [k for k in _up.kids if not k in oldNode]
-          _kids.extend([self.leaves(_k) for _k in kids])
-          _kids = self.flatten(_kids)
-          print('Kids', _kids)
-          Found, branch = self.isBetter(node, _kids)
-          print('Looking in -- ', (node.branch))
-          print('Found - ', Found, 'In -',
-                [(k[0].name, k[1]) for k in branch])
-          oldNode.append(node)
-          node = _up
-        else:
-
-          _kids = [k for k in kids if not k in oldNode]
-          Found, branch = self.isBetter(node, _kids)
+      if node.lvl > 0:
+        _kids = []
+      # Go up one Level
+#         set_trace()
+        _up = node.up
+        print('Current- ', node.branch, 'Level - ', node.lvl)
+      # look at the kids
+        kids = [k for k in _up.kids if not k in oldNode]
+        _kids.extend([self.leaves(_k) for _k in kids])
+        _kids = self.flatten(_kids)
+        oldNode.extend([node, _kids])
+        print('Kids', _kids)
+        Found, branch = self.isBetter(node, _kids)
+        print('Looking in -- ', (node.branch))
+        print('Found - ', Found, 'In -',
+              [(k[0].name, k[1]) for k in branch])
+        self.finder(_up.up, oldNode = oldNode, branch = branch, Found = Found)
+      else:
+        _kids = []
+#           set_trace()
+        kids = [k for k in node.kids if not k in oldNode]
+        for k in kids:
+          for kk in k.kids: self.finder(kk, oldNode = oldNode,
+                                        branch = branch, Found = Found)
     return branch
 
   def getKey(self):
