@@ -99,6 +99,9 @@ class treatments():
         return False, []
 
   def finder(self, node, oldNode = [], branch = [], Found = False):
+    """
+    RuntimeError: maximum recursion depth exceeded while calling a Python object
+    """
     if not Found:
 #         print('Echo....')
       if node.lvl > 0:
