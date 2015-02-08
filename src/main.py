@@ -87,9 +87,12 @@ def main():
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
             newTab = treatments(train = train[_n],
-                                test = test[_n], verbose = False, smoteit = True)
+                                test = test[_n],
+                                verbose = False,
+                                smoteit = False).main()
 
 
+            set_trace()
             # Actual bugs
             actual = Bugs(test_df)
             actual1 = [0 if a == 0 else 1 for a in actual]

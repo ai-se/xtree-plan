@@ -40,7 +40,7 @@ def pairs(lst):
       yield last, i
 
 def somepairs(m, data):
-  reps = 10; cmax = -10e32;
+  reps = 1; cmax = -10e32;
   for _ in xrange(reps):
     one = any(data);
     two = furthest(m, one, data)

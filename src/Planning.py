@@ -45,14 +45,15 @@ class deltas():
     self.score = self.scorer(self.loc)
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
-  def createNew(self, low, hi, N = 1):
+  def createNew(self, lo, hi, N = 1):
     for _ in xrange(N):
       new = max(lo, min(hi, lo + rand() * abs(hi - lo)))
   def applyPatch(self, keys):
     for stuff in self.contrastSet:
+
       lo, hi = stuff[1]
       pos = keys[stuff[0].name]
-      self.newRow.cells[pos] = createNew(lo, hi)
+      self.newRow.cells[pos] = self.createNew(lo, hi)
     return self.newRow
 
 class treatments():
@@ -63,18 +64,29 @@ class treatments():
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
 
+  def flatten(self, x):
+    result = []
+    for el in x:
+        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+            result.extend(self.flatten(el))
+        else:
+            result.append(el)
+    return result
+
   def leaves(self, node):
     L = []
     if len(node.kids) > 1:
-      L.extend([self.leaves(l) for l in node.kids])
+      for l in node.kids:
+        L.extend(self.leaves(l))
       return L
     elif len(node.kids) == 1:
-      return node.kids
+      return [node.kids]
     else:
-      return node
+      return [node]
 
   def scorer(self, node):
-    return mean([r.cells[-2] for r in node.rows])
+     return mean([r.cells[-2] for r in node.rows])
+
 
   def isBetter(self, me, others):
     for notme in others:
@@ -84,17 +96,19 @@ class treatments():
         return False, []
 
   def finder(self, node):
-    Found = False; oldNode = []; branch = []
+    Found = False; oldNode = []; branch = []; _kids = []
     while not Found and node.lvl > -1:
       # Go up one Level
         _up = node.up
       # look at the kids
         kids = [k for k in _up.kids if not k in oldNode]
-        _kids = [self.leaves(_k) for _k in kids]
-
-        print('Searching in - ', [(k[0].name, k[1]) for k in _up.branch])
-        notFound, branch = self.isBetter(node, _kids)
+        _kids.extend([self.leaves(_k) for _k in kids])
+        _kids = self.flatten(_kids)
+        Found, branch = self.isBetter(node, _kids)
+#         print('Found - ', Found, 'In -',
+#               [(k[0].name, k[1]) for k in branch])
         oldNode.append(node)
+        node = _up
     return branch
 
   def getKey(self):
@@ -104,9 +118,9 @@ class treatments():
     return keys
 
   def main(self):
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # Training data
     if self.smoteit:
@@ -124,16 +138,16 @@ class treatments():
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
       if node.score == 0:
-        print('No Contrast Set.')
+#         print('No Contrast Set.')
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
-        print('Obtaining contrast set. .. ...')
+#         print('Obtaining contrast set. .. ...')
         node.contrastSet = self.finder(node.loc)
         self.mod.append(node.applyPatch(self.keys))
-      print(node.__dict__)
+#       print(node.__dict__)
 
-    return clone(self.test_DF, rows = self.mod, discrete = True)
+    return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
 
 def planningTest():
   # Test contrast sets
@@ -146,6 +160,7 @@ def planningTest():
                       verbose = False,
                       smoteit = False).main()
 
-
+  # <<<<<<<Debug>>>>>>>>>>>>>>>
+  set_trace()
 if __name__ == '__main__':
   planningTest()
