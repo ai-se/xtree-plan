@@ -51,7 +51,7 @@ def main():
   dataName = [Name for _, Name, __ in walk(dir)][0]
   numData = len(dataName)  # Number of data
   Prd = [CART]  # , rforest]  # , adaboost, logit, knn]
-  _smoteit = [False]  # , False]
+  _smoteit = [True]  # , False]
   _tuneit = [False]  # , False]
   cd = []
   abcd = []
@@ -89,10 +89,10 @@ def main():
             newTab = treatments(train = train[_n],
                                 test = test[_n],
                                 verbose = False,
-                                smoteit = False).main()
+                                smoteit = True).main()
 
 
-            set_trace()
+#             set_trace()
             # Actual bugs
             actual = Bugs(test_df)
             actual1 = [0 if a == 0 else 1 for a in actual]
@@ -111,10 +111,10 @@ def main():
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
 #             cd.append(showoff(dataName[n], actual1, after1))
-#             print(showoff(dataName[n], actual1, after1))
+            print(showoff(dataName[n], actual1, after1))
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual1, after = before1)
-            print('Win Ratio : %0.2d' % (sum(after1) / sum(actual1)))
+            print('Win Ratio : %0.2f' % (sum(before1) / sum(after1)))
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 #             print (out[-1])
             if _smote:

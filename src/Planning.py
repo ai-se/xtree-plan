@@ -39,21 +39,24 @@ import sk
 class deltas():
 
   def __init__(self, row, myTree):
+    self.row = row
     self.loc = drop(row, myTree)
     self.contrastSet = None
     self.newRow = row;
     self.score = self.scorer(self.loc)
+    self.train = treatments().train_DF
+    self.test = treatments().test_DF
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
   def createNew(self, lo, hi, N = 1):
-    for _ in xrange(N):
-      new = max(lo, min(hi, lo + rand() * abs(hi - lo)))
+    return max(lo, min(hi, lo + rand() * abs(hi - lo)))
   def applyPatch(self, keys):
     for stuff in self.contrastSet:
-
       lo, hi = stuff[1]
       pos = keys[stuff[0].name]
+#       while self.newRow.cells[-2]<self.newRow.cells[-2]
       self.newRow.cells[pos] = self.createNew(lo, hi)
+
     return self.newRow
 
 class treatments():
@@ -136,6 +139,7 @@ class treatments():
     newTab = []
     for tC in testCase:
       newRow = tC;
+      print(tC._id)
       node = deltas(newRow, myTree)  # A delta instance for the rows
       if node.score == 0:
 #         print('No Contrast Set.')
@@ -157,7 +161,7 @@ def planningTest():
   # Training data
   newTab = treatments(train = one[n],
                       test = two[n],
-                      verbose = False,
+                      verbose = True,
                       smoteit = False).main()
 
   # <<<<<<<Debug>>>>>>>>>>>>>>>

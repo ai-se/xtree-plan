@@ -123,8 +123,8 @@ def CART(train, test, tunings = None, smoteit = True):
   features = train_DF.columns[:-2]
   klass = train_DF[train_DF.columns[-2]];
   # set_trace()
-  clf.fit(train_DF[features], klass)
-  preds = clf.predict(test_DF[test_DF.columns[:-2]]).tolist()
+  clf.fit(train_DF[features].astype('float32'), klass)
+  preds = clf.predict(test_DF[test_DF.columns[:-2]].astype('float32')).tolist()
   return preds
 
 def _CART():
