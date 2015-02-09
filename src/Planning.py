@@ -31,11 +31,6 @@ import numpy as np
 import pandas as pd
 import sk
 
-
-
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# PLANNING PHASE
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 class deltas():
 
   def __init__(self, row, myTree):
@@ -44,19 +39,15 @@ class deltas():
     self.contrastSet = None
     self.newRow = row;
     self.score = self.scorer(self.loc)
-#     self.train = treatments().train_DF
-#     self.test = treatments().test_DF
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
   def createNew(self, lo, hi, N = 1):
-    return max(lo, min(hi, lo + rand() * abs(hi - lo)))
+    return '%0.3f' % (max(lo, min(hi, lo + rand() * abs(hi - lo))))
   def applyPatch(self, keys):
     for stuff in self.contrastSet:
       lo, hi = stuff[1]
       pos = keys[stuff[0].name]
-#       while self.newRow.cells[-2]<self.newRow.cells[-2]
       self.newRow.cells[pos] = self.createNew(lo, hi)
-
     return self.newRow
 
 class treatments():
@@ -95,7 +86,7 @@ class treatments():
     for notme in others:
 #       if '%.2f' % self.scorer(notme) == 0:
       if self.scorer(notme) < self.scorer(me):
-        return True, notme.branch  # False here is for the 'notFound' variable
+        return True, notme.branch
       else:
         return False, []
 
@@ -152,17 +143,13 @@ class treatments():
     newTab = []
     for tC in testCase:
       newRow = tC;
-#       print(tC._id)
       node = deltas(newRow, myTree)  # A delta instance for the rows
       if node.score == 0:
-#         print('No Contrast Set.')
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
-#         print('Obtaining contrast set. .. ...')
         node.contrastSet = self.finder(node.loc)
         self.mod.append(node.applyPatch(self.keys))
-#       print(node.__dict__)
 
     return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
 
@@ -177,7 +164,8 @@ def planningTest():
                       verbose = True,
                       smoteit = False).main()
 
-  # <<<<<<<Debug>>>>>>>>>>>>>>>
+  # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
   set_trace()
+
 if __name__ == '__main__':
   planningTest()

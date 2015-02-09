@@ -66,7 +66,7 @@ def main():
 #       print(params)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 1
+      reps = 10
       abcd = [[], []];
       out11 = []; out1 = [];
       for t in _tuneit:
@@ -77,7 +77,7 @@ def main():
     #       print('```')
 #          for _n in xrange(0):
 #          set_trace()
-          _n = 0
+          _n = -1
           # Training data
           for _ in xrange(reps):
             out1 = [];
@@ -97,18 +97,18 @@ def main():
 #             set_trace()
             # Actual bugs
             actual = Bugs(test_df)
-            actual1 = [0 if a == 0 else 1 for a in actual]
+            actual1 = [0 if a < 2 else a for a in actual]
             # Use the classifier to predict the number of bugs in the raw data.
             before = p(train_DF, test_df,
                        tunings = tunedParams,
                        smoteit = _smote)
-            before1 = [0 if b == 0 else 1 for b in before]
+            before1 = [0 if b < 2 else b for b in before]
             # Use the classifier to predict the number of bugs in the new data.
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = _smote)
-            after1 = [0 if a == 0 else 1 for a in after]
-#           %  set_trace()
+            after1 = [0 if a < 2 else b for a in after]
+            set_trace()
 
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
