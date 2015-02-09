@@ -93,7 +93,8 @@ class treatments():
 
   def isBetter(self, me, others):
     for notme in others:
-      if '%.2f' % self.scorer(notme) == 0:
+#       if '%.2f' % self.scorer(notme) == 0:
+      if self.scorer(notme) < self.scorer(me):
         return True, notme.branch  # False here is for the 'notFound' variable
       else:
         return False, []
@@ -102,33 +103,29 @@ class treatments():
     """
     RuntimeError: maximum recursion depth exceeded while calling a Python object
     """
+    out = branch
     if not Found:
-#         print('Echo....')
-      if node.lvl > 0:
+      if node.lvl > -1:
         _kids = []
-      # Go up one Level
-#         set_trace()
+        oldNode.append(node)
         _up = node.up
-        print('Current- ', node.branch, 'Level - ', node.lvl)
-      # look at the kids
-        kids = [k for k in _up.kids if not k in oldNode]
+#         print('Current- ', node.branch, 'Level - ', node.lvl)
+        kids = [k for k in _up.kids]
         _kids.extend([self.leaves(_k) for _k in kids])
         _kids = self.flatten(_kids)
-        oldNode.extend([node, _kids])
-        print('Kids', _kids)
+#         print('Kids', _kids)
         Found, branch = self.isBetter(node, _kids)
-        print('Looking in -- ', (node.branch))
-        print('Found - ', Found, 'In -',
-              [(k[0].name, k[1]) for k in branch])
-        self.finder(_up.up, oldNode = oldNode, branch = branch, Found = Found)
+        out = self.finder(_up, oldNode = oldNode, branch = branch, Found = Found)
+
       else:
         _kids = []
-#           set_trace()
         kids = [k for k in node.kids if not k in oldNode]
         for k in kids:
-          for kk in k.kids: self.finder(kk, oldNode = oldNode,
+          for kk in k.kids: out = self.finder(kk, oldNode = oldNode,
                                         branch = branch, Found = Found)
-    return branch
+
+#     print(out)
+    return out
 
   def getKey(self):
     keys = {}
@@ -155,14 +152,14 @@ class treatments():
     newTab = []
     for tC in testCase:
       newRow = tC;
-      print(tC._id)
+#       print(tC._id)
       node = deltas(newRow, myTree)  # A delta instance for the rows
       if node.score == 0:
-        print('No Contrast Set.')
+#         print('No Contrast Set.')
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
-        print('Obtaining contrast set. .. ...')
+#         print('Obtaining contrast set. .. ...')
         node.contrastSet = self.finder(node.loc)
         self.mod.append(node.applyPatch(self.keys))
 #       print(node.__dict__)

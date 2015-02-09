@@ -52,7 +52,7 @@ def main():
   numData = len(dataName)  # Number of data
   Prd = [CART]  # , rforest]  # , adaboost, logit, knn]
   _smoteit = [True]  # , False]
-  _tuneit = [True]  # , False]
+  _tuneit = [False]  # , False]
   cd = []
   abcd = []
   res = {}
@@ -77,7 +77,7 @@ def main():
     #       print('```')
 #          for _n in xrange(0):
 #          set_trace()
-          _n = -1
+          _n = 0
           # Training data
           for _ in xrange(reps):
             out1 = [];
@@ -91,7 +91,7 @@ def main():
             newTab = treatments(train = train[_n],
                                 test = test[_n],
                                 verbose = False,
-                                smoteit = True).main()
+                                smoteit = False).main()
 
 
 #             set_trace()
