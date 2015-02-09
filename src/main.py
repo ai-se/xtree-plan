@@ -108,7 +108,6 @@ def main():
                       tunings = tunedParams,
                       smoteit = _smote)
             after1 = [0 if a < 2 else b for a in after]
-            set_trace()
 
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
@@ -116,7 +115,7 @@ def main():
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual1, after = before1)
-            print('Win Ratio : %0.2f' % (sum(actual1) / sum(after1)))
+            print('Win % : %0.2f %' % (sum(actual1) - sum(after1)) / sum(actual1) * 100)
             out1.extend('%0.2f' % (sum(actual1) / sum(after1)))
 # #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 # #             print (out[-1])
