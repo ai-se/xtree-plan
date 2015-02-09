@@ -111,7 +111,7 @@ def CART(train, test, tunings = None, smoteit = True):
   "  CART"
   # Apply random forest classifier to predict the number of bugs.
   if smoteit: train = SMOTE(train)
-  if not tunings: clf = DecisionTreeClassifier(max_features = None)
+  if not tunings: clf = DecisionTreeClassifier()
   else:
     clf = DecisionTreeClassifier(max_depth = int(tunings[0]),
                                  min_samples_split = int(tunings[1]),
@@ -123,7 +123,7 @@ def CART(train, test, tunings = None, smoteit = True):
   features = train_DF.columns[:-2]
   klass = train_DF[train_DF.columns[-2]];
   # set_trace()
-  clf.fit(train_DF[features].astype('float32'), klass)
+  clf.fit(train_DF[features].astype('float32'), klass.astype('float32'))
   preds = clf.predict(test_DF[test_DF.columns[:-2]].astype('float32')).tolist()
   return preds
 
