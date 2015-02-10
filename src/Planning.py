@@ -50,11 +50,21 @@ class deltas():
       self.newRow.cells[pos] = self.createNew(lo, hi)
     return self.newRow
 
+class store():
+  def __init__(self, node):
+    self.node = node
+    self.near = 0
+    self.score = self.scorer(node)
+  def scorer(self, node):
+    return mean([r.cells[-2] for r in node.rows])
+
+
 class treatments():
   "Treatments"
   def __init__(self, train = None, test = None,
                verbose = True, smoteit = False):
-    self.train_DF, self.test_DF = createTbl(train), createTbl(test)
+    self.train_DF = createTbl(train, _smote = smoteit)
+    self.test_DF = createTbl(test)
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
 
@@ -118,6 +128,25 @@ class treatments():
 #     print(out)
     return out
 
+  def finder2(self, node, alpha = 2):
+    """
+    Entire Tree Search
+    """
+    vals = []
+    current = store(node)
+    while node.lvl > -1:
+      node = node.up
+
+    leaves = self.flatten([self.leaves(_k) for _k in node.kids])
+
+    for leaf in leaves:
+      l = store(leaf)
+      for b in leaf.branch:
+        if b[0].name in [bb[0].name for bb in current.node.branch]: l.near += 1
+      vals.append(l)
+
+    bests = sorted(vals, key = lambda F: F.score, reverse = False)
+
   def getKey(self):
     keys = {}
     for i in xrange(len(self.test_DF.headers)):
@@ -144,18 +173,23 @@ class treatments():
     for tC in testCase:
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
-      if node.score == 0:
-        node.contrastSet = []
-        self.mod.append(node.newRow)
-      else:
-        node.contrastSet = self.finder(node.loc)
-        self.mod.append(node.applyPatch(self.keys))
+      print(self.finder2(node.loc)[0])
 
-    return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
+      # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
+      set_trace()
+
+#       if node.score == 0:
+#         node.contrastSet = []
+#         self.mod.append(node.newRow)
+#       else:
+#         node.contrastSet = self.finder(node.loc)
+#         self.mod.append(node.applyPatch(self.keys))
+#
+#     return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
 
 def planningTest():
   # Test contrast sets
-  n = 2
+  n = 0
   dir = '../Data'
   one, two = explore(dir)
   # Training data

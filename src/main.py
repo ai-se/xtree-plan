@@ -70,7 +70,7 @@ def main():
       abcd = [[], []];
       out11 = []; out1 = [];
       for t in _tuneit:
-        tunedParams = None if not _tuneit else tuner(p, data[0])
+        tunedParams = None
 #         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
 #           print('### SMOTE-ing') if _smote else print('### No SMOTE-ing')
@@ -107,7 +107,9 @@ def main():
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = _smote)
-            after1 = [0 if a < 2 else b for a in after]
+            after1 = [0 if a < 2 else a for a in after]
+
+#             set_trace()
 
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
@@ -115,8 +117,9 @@ def main():
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual1, after = before1)
-            print('Win % : %0.2f %' % (sum(actual1) - sum(after1)) / sum(actual1) * 100)
-            out1.extend('%0.2f' % (sum(actual1) / sum(after1)))
+            print('Gain =  %0.2f' % float((sum(actual1) - sum(after1)) / sum(actual1) * 100))
+            out1.append((sum(actual1) / sum(after1)))
+            out1.insert(0, dataName[n])
 # #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 # #             print (out[-1])
 #             if _smote:
@@ -127,7 +130,7 @@ def main():
 #               out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
 #               else out.insert(0, p.__doc__ + '(raw, Naive)')
 #               abcd[1].append(out)
-          out11.append(out1.insert(0, dataName[n]))
+          out11.append(out1)
       print()
 #       cd.update({p.__doc__:sorted(cd)})
 #       res.update({p.__doc__:(abcd[0][0:reps],
