@@ -128,9 +128,19 @@ class treatments():
 #     print(out)
     return out
 
+  def attributes(self, nodes):
+  	xx =[]; attr = []
+  	def seen(x):
+  		xx.append(x)
+  	for node in nodes:
+  		for b in node.node.branch:
+				attr.append(b)
+				seen(b)
+  	return attr
+
   def finder2(self, node, alpha = 2):
     """
-    Entire Tree Search
+    finder2 returns Entire Tree Search
     """
     vals = []
     current = store(node)
@@ -145,7 +155,10 @@ class treatments():
         if b[0].name in [bb[0].name for bb in current.node.branch]: l.near += 1
       vals.append(l)
 
-    bests = sorted(vals, key = lambda F: F.score, reverse = False)
+    vals = sorted(vals, key = lambda F: F.score, reverse = False)
+    bests = [v for v in vals if not v.score == 0]
+    return self.attributes(vals)
+		
 
   def getKey(self):
     keys = {}
@@ -176,7 +189,7 @@ class treatments():
       print(self.finder2(node.loc)[0])
 
       # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-      set_trace()
+      # set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []
@@ -185,7 +198,7 @@ class treatments():
 #         node.contrastSet = self.finder(node.loc)
 #         self.mod.append(node.applyPatch(self.keys))
 #
-#     return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
+# return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
 
 def planningTest():
   # Test contrast sets
@@ -195,11 +208,11 @@ def planningTest():
   # Training data
   newTab = treatments(train = one[n],
                       test = two[n],
-                      verbose = True,
+                      verbose = False,
                       smoteit = False).main()
 
   # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-  set_trace()
+  # set_trace()
 
 if __name__ == '__main__':
   planningTest()
