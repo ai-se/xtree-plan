@@ -153,11 +153,11 @@ class treatments():
     for leaf in leaves:
       l = store(leaf)
       for b in leaf.branch:
-        if b[0].name in [bb[0].name for bb in current.node.branch]: l.near += 1
+        if b[0] in [bb[0] for bb in current.node.branch]: l.near += 1
       vals.append(l)
 
     vals = sorted(vals, key = lambda F: F.score, reverse = False)
-    bests = [v for v in vals if not v.score == 0]
+    bests = [v for v in vals if v.score == 0]
     return bests, self.attributes(bests)
 		
 
