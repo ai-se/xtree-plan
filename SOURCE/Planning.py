@@ -1,3 +1,4 @@
+#! /Users/rkrsn/anaconda/bin/python
 from __future__ import print_function
 
 from os import environ, getcwd
@@ -53,7 +54,7 @@ class deltas():
 class store():
   def __init__(self, node):
     self.node = node
-    self.near = 0
+    self.dist = 0
     self.score = self.scorer(node)
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
@@ -133,10 +134,9 @@ class treatments():
   	def seen(x):
   		xx.append(x)
   	for node in nodes:
-  		for b in node.node.branch:
-  			if not b in xx:
-  				attr.append(b)
-  				seen(b)
+  			if not node.node.branch in xx:
+  				attr.append(node.node.branch)
+  				seen(node.node.branch)
   	return attr
 
   def finder2(self, node, alpha = 2):
@@ -153,7 +153,7 @@ class treatments():
     for leaf in leaves:
       l = store(leaf)
       for b in leaf.branch:
-        if b[0] in [bb[0] for bb in current.node.branch]: l.near += 1
+        if b[0] in [bb[0] for bb in current.node.branch]: l.dist += 1
       vals.append(l)
 
     vals = sorted(vals, key = lambda F: F.score, reverse = False)
