@@ -187,9 +187,17 @@ class treatments():
     for tC in testCase:
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
-      bests, attr = self.finder2(node.loc)
-      # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-      set_trace()
+      
+      if node.score == 0:
+        node.contrastSet = []
+        self.mod.append(node.newRow)
+      else:
+        bests, attr = self.finder2(node.loc)
+        node.contrastSet = random.choice(attr)
+        self.mod.append(node.applyPatch(self.keys))
+#
+    # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
+    # set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []
@@ -198,7 +206,7 @@ class treatments():
 #         node.contrastSet = self.finder(node.loc)
 #         self.mod.append(node.applyPatch(self.keys))
 #
-# return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
+return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
 
 def planningTest():
   # Test contrast sets
