@@ -134,8 +134,9 @@ class treatments():
   		xx.append(x)
   	for node in nodes:
   		for b in node.node.branch:
-				attr.append(b)
-				seen(b)
+  			if not b in xx:
+  				attr.append(b)
+  				seen(b)
   	return attr
 
   def finder2(self, node, alpha = 2):
@@ -157,7 +158,7 @@ class treatments():
 
     vals = sorted(vals, key = lambda F: F.score, reverse = False)
     bests = [v for v in vals if not v.score == 0]
-    return self.attributes(vals)
+    return bests, self.attributes(bests)
 		
 
   def getKey(self):
@@ -186,10 +187,9 @@ class treatments():
     for tC in testCase:
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
-      print(self.finder2(node.loc)[0])
-
+      bests, attr = self.finder2(node.loc)
       # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-      # set_trace()
+      set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []
