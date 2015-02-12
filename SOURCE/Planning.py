@@ -230,7 +230,7 @@ class treatments():
 
 def planningTest():
   # Test contrast sets
-  n = 7
+  n = 1
   dir = '../Data'
   one, two = explore(dir)
   # Training data

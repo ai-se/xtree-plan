@@ -1,17 +1,3 @@
-# Contrast Set Learning
-
-## This week's progress..
-- Fixed CART, CART was a Classifier, now is a regressor. No difference..
-- Rewrote [Planning.py](https://github.com/ai-se/Defect-Prediction/blob/master/SOURCE/Planning.py) to encorporte ideas from our discussion this week.
-
-### Modifications to Contrast Set Learning..
-1 . [Issue \#1](https://github.com/ai-se/Defect-Prediction/issues/1): Use 'alpha to find better nodes'
-2. [Issue \#2](https://github.com/ai-se/Defect-Prediction/issues/2): Too many Potential Contrast Sets.
-3. [Issue \#3](https://github.com/ai-se/Defect-Prediction/issues/3): Thresholds in CART for better defect prediction.
-More ideas in [Issues](https://github.com/ai-se/Defect-Prediction/issues?q=)
-
-### Results
-```
 ## ant
 Gain =  31.71 %
 Gain =  27.12 %
@@ -155,8 +141,36 @@ Gain =  -12.93 %
 Gain =  -2.46 %
 Gain =  -12.73 %
 Gain =  -9.45 %
-```
-### And the Quartiles 
+\documentclass{article}
+    \usepackage{colortbl} % not sure if needed
+    \usepackage[table]{xcolor} % not sure if needed
+    %%%% needed %%%
+    \usepackage{picture}
+    \newcommand{\quart}[4]{\begin{picture}(100,6)%1
+    {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+    \begin{document}
+    
+
+{\scriptsize \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
+\arrayrulecolor{darkgray}
+\rowcolor[gray]{.9}  rank & treatment & median & IQR & \\
+  1 &       lucene &    -2434.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  1 &        log4j &    -2069.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  1 &          poi &    -1196.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  1 &        camel &    -969.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  1 &       xerces &    -944.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  1 &        jedit &    -718.00  &  0.00 & \quart{0}{0}{0}{0} \\
+\hline  2 &      forrest &    0.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  2 &     velocity &    556.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  2 &          ivy &    632.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  2 &      synapse &    857.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  2 &       pbeans &    1000.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  2 &        xalan &    1310.00  &  0.00 & \quart{0}{0}{0}{0} \\
+  2 &          ant &    2500.00  &  0.00 & \quart{0}{0}{0}{0} \\
+\end{tabular}}
+
+    \end{document}
+    
 ```
 
 rank ,         name ,    med   ,  iqr 
