@@ -46,7 +46,7 @@ def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, bugIndx = 2):
 
   def populate(data):
     newData = []
-    reps = len(data) - atleast
+    reps = (len(data) - atleast)
     for _ in xrange(reps):
       for one in data:
         neigh = knn(one, data)[1:k + 1];
@@ -68,7 +68,8 @@ def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, bugIndx = 2):
     elif n > atmost:
       newCells.extend(depopulate([r for r in rows if r.cells[-2] == u]))
     elif n == 1:
-      newCells.extend([[r for r in rows if r.cells[-2] == u] for _ in xrange(atleast)])
+      for _ in xrange(1):
+        newCells.extend([r for r in rows if r.cells[-2] == u])
     else:
       newCells.extend([r for r in rows if r.cells[-2] == u])
 

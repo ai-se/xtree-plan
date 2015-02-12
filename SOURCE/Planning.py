@@ -176,7 +176,7 @@ class treatments():
       vals.append(l)
 
     vals = sorted(vals, key = lambda F: F.score, reverse = False)
-    bests = [v for v in vals if v.score == 0]
+    bests = [v for v in vals if v.score < 0.5 * current.score]
     if not len(bests): bests = [v for v in vals]
     return bests, self.attributes(bests)
 		
@@ -193,8 +193,8 @@ class treatments():
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # Training data
-    if self.smoteit:
-      self.train_DF = SMOTE(data = self.train_DF, atleast = 50000, atmost = 50001)
+    # if self.smoteit:
+    #   self.train_DF = SMOTE(data = self.train_DF, atleast = 50, atmost = 100)
 
     # Decision Tree
     t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))

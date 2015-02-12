@@ -119,7 +119,7 @@ def main():
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual1, after = before1)
             print('Gain =  %0.2f' % float((sum(before1) - sum(after1)) / sum(before1)*100),r'%')
-            out1.append('%0.2f'%float((sum(before1) - sum(after1)) / sum(before1)*100))
+            out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
             out1.insert(0, dataName[n])
 # #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 # #             print (out[-1])
@@ -132,18 +132,17 @@ def main():
 #               else out.insert(0, p.__doc__ + '(raw, Naive)')
 #               abcd[1].append(out)
           out11.append(out1)
-      print()
+      # print()
 #       cd.update({p.__doc__:sorted(cd)})
 #       res.update({p.__doc__:(abcd[0][0:reps],
 #                            abcd[0][reps:] ,
 #                            abcd[1][0:reps],
 #                            abcd[1][reps:] ,
-#                            )})
-  print('```')
   rdivDemo(out11, isLatex = True)
+  print('```')
   rdivDemo(out11, isLatex = False)
-#     print(cd)
-#     printsk(res)
+# #     print(cd)
+# #     printsk(res)
   print('```')
 
           # sk.rdivDemo(stat)
