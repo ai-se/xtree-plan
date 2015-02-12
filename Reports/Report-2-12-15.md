@@ -5,10 +5,13 @@
 - Rewrote [Planning.py](https://github.com/ai-se/Defect-Prediction/blob/master/SOURCE/Planning.py) to encorporte ideas from our discussion this week.
 
 ### Modifications to Contrast Set Learning..
-1 . [Issue \#1](https://github.com/ai-se/Defect-Prediction/issues/1): Use 'alpha to find better nodes'
+1. [Issue \#1](https://github.com/ai-se/Defect-Prediction/issues/1): Use 'alpha to find better nodes'
+
 2. [Issue \#2](https://github.com/ai-se/Defect-Prediction/issues/2): Too many Potential Contrast Sets.
+
 3. [Issue \#3](https://github.com/ai-se/Defect-Prediction/issues/3): Thresholds in CART for better defect prediction.
-More ideas in [Issues](https://github.com/ai-se/Defect-Prediction/issues?q=)
+
+4. More ideas in [Issues](https://github.com/ai-se/Defect-Prediction/issues?q=)
 
 ### The Quartiles 
 ```
