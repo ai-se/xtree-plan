@@ -59,6 +59,7 @@ def main():
   res = {}
   out11 = [];
   for n in xrange(numData):
+    out1 = [];
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
     print('##', dataName[n])
@@ -81,7 +82,7 @@ def main():
           _n = -1
           # Training data
           for _ in xrange(reps):
-            out1 = [];
+            
             train_DF = createTbl(train[_n])
 #            set_trace()
             # Testing data
@@ -120,7 +121,7 @@ def main():
             out = _Abcd(before = actual1, after = before1)
             print('Gain =  %0.2f' % float((sum(before1) - sum(after1)) / sum(before1)*100),r'%')
             out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
-            out1.insert(0, dataName[n])
+          out1.insert(0, dataName[n])
 # #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 # #             print (out[-1])
 #             if _smote:
@@ -131,7 +132,8 @@ def main():
 #               out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
 #               else out.insert(0, p.__doc__ + '(raw, Naive)')
 #               abcd[1].append(out)
-          out11.append(out1)
+    print(out1)
+    out11.append(out1)
       # print()
 #       cd.update({p.__doc__:sorted(cd)})
 #       res.update({p.__doc__:(abcd[0][0:reps],
