@@ -13,10 +13,10 @@ import pandas as pd
 from dectree import *
 
 
-def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, type2 = False):
+def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, bugIndx = 2):
 
   def Bugs(tbl):
-    cells = [i.cells[-2] for i in tbl._rows]
+    cells = [i.cells[-bugIndx] for i in tbl._rows]
     return cells
 
   def minority(data):
@@ -67,6 +67,8 @@ def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, type2 = False):
       newCells.extend(populate([r for r in rows if r.cells[-2] == u]))
     elif n > atmost:
       newCells.extend(depopulate([r for r in rows if r.cells[-2] == u]))
+    elif n == 1:
+      newCells.extend([[r for r in rows if r.cells[-2] == u] for _ in xrange(atleast)])
     else:
       newCells.extend([r for r in rows if r.cells[-2] == u])
 

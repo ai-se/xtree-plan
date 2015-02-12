@@ -70,6 +70,10 @@ class treatments():
     self.mod, self.keys = [], self.getKey()
 
   def flatten(self, x):
+    """
+    Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
+    and returns a single list [a,b,c,d,e,f]
+    """
     result = []
     for el in x:
         if hasattr(el, "__iter__") and not isinstance(el, basestring):
@@ -79,6 +83,9 @@ class treatments():
     return result
 
   def leaves(self, node):
+    """
+    Returns all terminal nodes.
+    """
     L = []
     if len(node.kids) > 1:
       for l in node.kids:
@@ -90,10 +97,16 @@ class treatments():
       return [node]
 
   def scorer(self, node):
-     return mean([r.cells[-2] for r in node.rows])
+    """
+    Score an leaf node
+    """
+    return mean([r.cells[-2] for r in node.rows])
 
 
   def isBetter(self, me, others):
+    """
+    Compare [me] with a buch of [others,...], return the best person
+    """
     for notme in others:
 #       if '%.2f' % self.scorer(notme) == 0:
       if self.scorer(notme) < self.scorer(me):
@@ -103,7 +116,8 @@ class treatments():
 
   def finder(self, node, oldNode = [], branch = [], Found = False):
     """
-    RuntimeError: maximum recursion depth exceeded while calling a Python object
+    A recursive searcher that looks for the nearest neighbor whose better than
+    a given node.
     """
     out = branch
     if not Found:
@@ -130,18 +144,23 @@ class treatments():
     return out
 
   def attributes(self, nodes):
-  	xx =[]; attr = []
-  	def seen(x):
+    """
+    A method to handle unique branch variables that charaterizes 
+    a bunch of nodes.
+    """
+    xx =[]; attr = []
+    def seen(x):
   		xx.append(x)
-  	for node in nodes:
-  			if not node.node.branch in xx:
-  				attr.append(node.node.branch)
-  				seen(node.node.branch)
-  	return attr
+    for node in nodes:
+      if not node.node.branch in xx:
+        attr.append(node.node.branch)
+        seen(node.node.branch)
+    return attr
 
   def finder2(self, node, alpha = 2):
     """
-    finder2 returns Entire Tree Search
+    finder2 is a more elegant version of finder that performs a search on
+    the entire tree to find leaves which are better than a given 'node'
     """
     vals = []
     current = store(node)
@@ -158,6 +177,7 @@ class treatments():
 
     vals = sorted(vals, key = lambda F: F.score, reverse = False)
     bests = [v for v in vals if v.score == 0]
+    if not len(bests): bests = [v for v in vals]
     return bests, self.attributes(bests)
 		
 
@@ -174,7 +194,7 @@ class treatments():
 
     # Training data
     if self.smoteit:
-      self.train_DF = SMOTE(data = self.train_DF, atleast = 50, atmost = 100)
+      self.train_DF = SMOTE(data = self.train_DF, atleast = 50000, atmost = 50001)
 
     # Decision Tree
     t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))
@@ -197,7 +217,7 @@ class treatments():
         self.mod.append(node.applyPatch(self.keys))
 #
     # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-    # set_trace()
+      # set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []
@@ -206,11 +226,11 @@ class treatments():
 #         node.contrastSet = self.finder(node.loc)
 #         self.mod.append(node.applyPatch(self.keys))
 #
-return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
+    return clone(self.test_DF, rows = [k.cells for k in self.mod], discrete = True)
 
 def planningTest():
   # Test contrast sets
-  n = 0
+  n = 7
   dir = '../Data'
   one, two = explore(dir)
   # Training data

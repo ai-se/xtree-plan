@@ -26,13 +26,13 @@ def createTbl(data, _smote = False):
  makeaModel = makeAModel()
  _r = []
  for t in data:
-  t = smote.SMOTE(t) if _smote else t
   m = makeaModel.csv2py(t)
   _r += m._rows
  m._rows = _r
  prepare(m, settings = None)  # Initialize all parameters for where2 to run
  tree = where2(m, m._rows)  # Decision tree using where2
  tbl = table(t)
+ if _smote: tbl = smote.SMOTE(tbl, atleast = 50000, atmost = 50001, bugIndx = 1)
  headerLabel = '=klass'
  Rows = []
  for k, _ in leaves(tree):  # for k, _ in leaves(tree):

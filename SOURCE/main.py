@@ -57,6 +57,7 @@ def main():
   cd = []
   abcd = []
   res = {}
+  out11 = [];
   for n in xrange(numData):
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
@@ -69,7 +70,6 @@ def main():
       test = [dat[1] for dat in withinClass(data[n])]
       reps = 10
       abcd = [[], []];
-      out11 = []; out1 = [];
       for t in _tuneit:
         tunedParams = None
 #         print('### Tuning') if t else print('### No Tuning')
@@ -92,25 +92,25 @@ def main():
             newTab = treatments(train = train[_n],
                                 test = test[_n],
                                 verbose = False,
-                                smoteit = False).main()
+                                smoteit = True).main()
 
 
 #             set_trace()
             # Actual bugs
             actual = Bugs(test_df)
-            actual1 = [0 if a < 2 else a for a in actual]
+            actual1 = [0 if a < 2 else 1 for a in actual]
             # Use the classifier to predict the number of bugs in the raw data.
             before = p(train_DF, test_df,
                        tunings = tunedParams,
                        smoteit = _smote)
-            before1 = [0 if b < 2 else b for b in before]
+            before1 = [0 if b < 2 else 1 for b in before]
             # Use the classifier to predict the number of bugs in the new data.
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = _smote)
-            after1 = [0 if a < 2 else a for a in after]
+            after1 = [0 if a < 2 else 1 for a in after]
 
-#             set_trace()
+            # set_trace()
 
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
@@ -118,8 +118,8 @@ def main():
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual1, after = before1)
-            print('Gain =  %0.2f' % float((sum(actual1) - sum(after1)) / sum(actual1) * 100))
-            out1.append((sum(actual1) / sum(after1)))
+            print('Gain =  %0.2f' % float((sum(before1) - sum(after1)) / sum(before1)*100),r'%')
+            out1.append('%0.2f'%float((sum(before1) - sum(after1)) / sum(before1)*100))
             out1.insert(0, dataName[n])
 # #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 # #             print (out[-1])
@@ -140,7 +140,8 @@ def main():
 #                            abcd[1][reps:] ,
 #                            )})
   print('```')
-  rdivDemo(out11)
+  rdivDemo(out11, isLatex = True)
+  rdivDemo(out11, isLatex = False)
 #     print(cd)
 #     printsk(res)
   print('```')
