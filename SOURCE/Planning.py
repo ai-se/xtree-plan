@@ -157,7 +157,7 @@ class treatments():
         seen(node.node.branch)
     return attr
 
-  def finder2(self, node, alpha = 2):
+  def finder2(self, node, alpha = 0.5):
     """
     finder2 is a more elegant version of finder that performs a search on
     the entire tree to find leaves which are better than a given 'node'
@@ -176,7 +176,7 @@ class treatments():
       vals.append(l)
 
     vals = sorted(vals, key = lambda F: F.score, reverse = False)
-    bests = [v for v in vals if v.score < 0.5 * current.score]
+    bests = [v for v in vals if v.score < alpha * current.score]
     if not len(bests): bests = [v for v in vals]
     return bests, self.attributes(bests)
 		
