@@ -1,6 +1,7 @@
 # Contrast Set Learning
 
 ## This week's progress..
+- [Defect-Prediction](https://github.com/ai-se/Defect-Prediction) is now a new Repo in ai-se github page.
 - Fixed CART, CART was a Classifier, now is a regressor. No difference..
 - Rewrote [Planning.py](https://github.com/ai-se/Defect-Prediction/blob/master/SOURCE/Planning.py) to encorporte ideas from our discussion this week.
 
