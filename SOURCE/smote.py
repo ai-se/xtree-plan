@@ -1,3 +1,4 @@
+#! /Users/rkrsn/anaconda/bin/python
 from pdb import set_trace
 from os import environ, getcwd
 import sys
@@ -13,7 +14,7 @@ import pandas as pd
 from dectree import *
 
 
-def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, bugIndx = 2):
+def SMOTE(data = None, k = 5, atleast = 500, atmost = 1001, bugIndx = 2):
 
   def Bugs(tbl):
     cells = [i.cells[-bugIndx] for i in tbl._rows]
@@ -46,7 +47,7 @@ def SMOTE(data = None, k = 5, atleast = 50, atmost = 100, bugIndx = 2):
 
   def populate(data):
     newData = []
-    reps = (len(data) - atleast)
+    reps = abs(len(data) - atleast)
     for _ in xrange(reps):
       for one in data:
         neigh = knn(one, data)[1:k + 1];
@@ -79,8 +80,9 @@ def test_smote():
   dir = '../Data/camel/camel-1.6.csv'
   Tbl = createTbl([dir])
   newTbl = SMOTE(data = Tbl)
-  for r in newTbl._rows:
-    print r.cells
+  print(len(Tbl._rows), len(newTbl._rows))
+  # for r in newTbl._rows:
+  #   print r.cells
 
 if __name__ == '__main__':
   test_smote()
