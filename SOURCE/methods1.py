@@ -37,7 +37,8 @@ def createTbl(data, _smote = False):
  Rows = []
  for k, _ in leaves(tree):  # for k, _ in leaves(tree):
   for j in k.val:
-   tmp = (j.cells)
+   tmp = j.cells
+   tmp[-1] = 0 if tmp[-1] == 0 else 1
    tmp.append('_' + str(id(k) % 1000))
    j.__dict__.update({'cells': tmp})
    Rows.append(j.cells)
