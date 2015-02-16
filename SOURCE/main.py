@@ -118,8 +118,8 @@ def main():
 #             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
-            out = _Abcd(before = actual1, after = before1)
-            print('Gain =  %0.2f' % float((sum(before1) - sum(after1)) / sum(before1)*100),r'%')
+            out = _Abcd(before = actual, after = before)
+            print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
             out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
           out1.insert(0, dataName[n])
 # #             %print('Prediction accuracy (g)  %.2d' % out[-1])
