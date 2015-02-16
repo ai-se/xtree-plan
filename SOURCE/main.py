@@ -54,7 +54,7 @@ def main():
   Prd = [CART]  # , rforest]  # , adaboost, logit, knn]
   _smoteit = [True]  # , False]
   _tuneit = [False]  # , False]
-  cd = []
+  cd = {}
   abcd = []
   res = {}
   out11 = [];
@@ -111,7 +111,7 @@ def main():
                       smoteit = _smote)
             after1 = [0 if a < 2 else 1 for a in after]
 
-            set_trace()
+            # set_trace()
 
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
@@ -119,33 +119,33 @@ def main():
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             out = _Abcd(before = actual, after = before)
-            print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
-            out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
-          out1.insert(0, dataName[n])
-# #             %print('Prediction accuracy (g)  %.2d' % out[-1])
-# #             print (out[-1])
-#             if _smote:
-#               out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
-#               else out.insert(0, p.__doc__ + '(s, Naive)  ')
-#               abcd[0].append(out)
-#             else:
-#               out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
-#               else out.insert(0, p.__doc__ + '(raw, Naive)')
-#               abcd[1].append(out)
-    print(out1)
-    out11.append(out1)
+            # print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
+            # out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
+          # out1.insert(0, dataName[n])
+#             %print('Prediction accuracy (g)  %.2d' % out[-1])
+#             print (out[-1])
+            if _smote:
+              out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
+              else out.insert(0, p.__doc__ + '(s, Naive)  ')
+              abcd[0].append(out)
+            else:
+              out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
+              else out.insert(0, p.__doc__ + '(raw, Naive)')
+              abcd[1].append(out)
+    # print(out1)
+    # out11.append(out1)
       # print()
-#       cd.update({p.__doc__:sorted(cd)})
-#       res.update({p.__doc__:(abcd[0][0:reps],
-#                            abcd[0][reps:] ,
-#                            abcd[1][0:reps],
-#                            abcd[1][reps:] ,
-  rdivDemo(out11, isLatex = True)
-  print('```')
-  rdivDemo(out11, isLatex = False)
+      cd.update({p.__doc__:sorted(cd)})
+      res.update({p.__doc__:(abcd[0][0:reps],
+                           abcd[0][reps:] ,
+                           abcd[1][0:reps],
+                           abcd[1][reps:])})
+  # rdivDemo(out11, isLatex = True)
+    print('```')
+  # rdivDemo(out11, isLatex = False)
 # #     print(cd)
-# #     printsk(res)
-  print('```')
+    printsk(res)
+    print('```')
 
           # sk.rdivDemo(stat)
           # Save the histogram after applying contrast sets.
