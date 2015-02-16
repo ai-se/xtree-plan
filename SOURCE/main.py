@@ -111,7 +111,7 @@ def main():
                       smoteit = _smote)
             after1 = [0 if a < 2 else 1 for a in after]
 
-            # set_trace()
+            set_trace()
 
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
