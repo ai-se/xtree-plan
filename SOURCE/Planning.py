@@ -194,7 +194,7 @@ class treatments():
 
     # Training data
     if self.smoteit:
-      print('Smoting')
+      # print('Smoting')
       self.train_DF = SMOTE(data = self.train_DF, atleast = 50, atmost = 100)
 
     # Decision Tree
