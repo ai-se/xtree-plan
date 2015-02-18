@@ -14,7 +14,7 @@ import pandas as pd
 from dectree import *
 
 
-def SMOTE(data = None, k = 5, atleast = 500, atmost = 1001, bugIndx = 2):
+def SMOTE(data = None, k = 5, atleast = 1, atmost = 101, bugIndx = 2):
 
   def Bugs(tbl):
     cells = [i.cells[-bugIndx] for i in tbl._rows]
@@ -40,9 +40,14 @@ def SMOTE(data = None, k = 5, atleast = 500, atmost = 1001, bugIndx = 2):
   def extrapolate(one, two):
     new = one;
 #    set_trace()
-    new.cells[3:-1] = [min(a, b) + rand() * (abs(a - b)) for
-           a, b in zip(one.cells[3:-1], two.cells[3:-1])]
-    new.cells[-2] = int(new.cells[-2])
+    if bugIndx == 2:
+      new.cells[3:-1] = [max(min(a, b), min(min(a,b) + rand() * (abs(a - b)), max(a,b))) for
+             a, b in zip(one.cells[3:-1], two.cells[3:-1])]
+      new.cells[-2] = int(new.cells[-2])
+    else:
+      new.cells[3:] = [max(min(a, b), min(min(a,b) + rand() * (abs(a - b)), max(a,b))) for
+             a, b in zip(one.cells[3:], two.cells[3:])]
+      new.cells[-1] = int(new.cells[-1])
     return new
 
   def populate(data):
@@ -50,8 +55,12 @@ def SMOTE(data = None, k = 5, atleast = 500, atmost = 1001, bugIndx = 2):
     reps = abs(len(data) - atleast)
     for _ in xrange(reps):
       for one in data:
-        neigh = knn(one, data)[1:k + 1];
-        two = choice(neigh)
+        neigh = knn(one, data)[1:k + 1]; 
+        # I know the following try/catch statement is bad coding etiquette, my apologies. 
+        try:
+          two = choice(neigh)
+        except IndexError:
+          two = one
         newData.append(extrapolate(one, two))
     data.extend(newData)
     return data
@@ -64,13 +73,13 @@ def SMOTE(data = None, k = 5, atleast = 500, atmost = 1001, bugIndx = 2):
   unique, counts = minority(data)
   rows = data._rows
   for u, n in zip(unique, counts):
-    if  1 < n < atleast:
+    if  n < atleast:
       newCells.extend(populate([r for r in rows if r.cells[-2] == u]))
     elif n > atmost:
       newCells.extend(depopulate([r for r in rows if r.cells[-2] == u]))
-    elif n == 1:
-      for _ in xrange(1):
-        newCells.extend([r for r in rows if r.cells[-2] == u])
+    # elif n == 1:
+    #   for _ in xrange(atleast):
+    #     newCells.extend([r for r in rows if r.cells[-2] == u])
     else:
       newCells.extend([r for r in rows if r.cells[-2] == u])
 
@@ -78,8 +87,8 @@ def SMOTE(data = None, k = 5, atleast = 500, atmost = 1001, bugIndx = 2):
 
 def test_smote():
   dir = '../Data/camel/camel-1.6.csv'
-  Tbl = createTbl([dir])
-  newTbl = SMOTE(data = Tbl)
+  Tbl = createTbl([dir], _smote = False)
+  newTbl = createTbl([dir], _smote = True)
   print(len(Tbl._rows), len(newTbl._rows))
   # for r in newTbl._rows:
   #   print r.cells

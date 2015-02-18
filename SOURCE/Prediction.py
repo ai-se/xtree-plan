@@ -110,7 +110,7 @@ def _RF():
 def CART(train, test, tunings = None, smoteit = True):
   "  CART"
   # Apply random forest Regressor to predict the number of bugs.
-  if smoteit: train = SMOTE(train)
+  if smoteit: train = SMOTE(train, atleast = 500, atmost = 1001)
   if not tunings: clf = DecisionTreeRegressor()
   else:
     clf = DecisionTreeRegressor(max_depth = int(tunings[0]),

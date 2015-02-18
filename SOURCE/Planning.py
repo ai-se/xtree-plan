@@ -193,9 +193,9 @@ class treatments():
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # Training data
-    if self.smoteit:
-      # print('Smoting')
-      self.train_DF = SMOTE(data = self.train_DF, atleast = 50, atmost = 100)
+    # if self.smoteit:
+    #   # print('Smoting')
+    #   self.train_DF = SMOTE(data = self.train_DF, atleast = 50, atmost = 100)
 
     # Decision Tree
     t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))

@@ -1,5 +1,4 @@
-from dtree import *
-from table import *
+#! /Users/rkrsn/anaconda/bin/python
 from os import environ, getcwd
 import sys
 # Update PYTHONPATH
@@ -8,8 +7,10 @@ axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
+from dtree import *
+from table import *
 from _imports.where2 import *
-from makeAmodel import makeAModel
+import makeAmodel
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import smote
@@ -22,62 +23,81 @@ def newTable(tbl, headerLabel, Rows):
  tbl2.headers = tbl.headers + [newHead]
  return clone(tbl2, rows = Rows)
 
-def createTbl(data, _smote = False):
- makeaModel = makeAModel()
- _r = []
- for t in data:
-  m = makeaModel.csv2py(t)
-  _r += m._rows
- m._rows = _r
- prepare(m, settings = None)  # Initialize all parameters for where2 to run
- tree = where2(m, m._rows)  # Decision tree using where2
- tbl = table(t)
- # if _smote: tbl = smote.SMOTE(tbl, atleast = 50, atmost = 100, bugIndx = 1)
- headerLabel = '=klass'
- Rows = []
- for k, _ in leaves(tree):  # for k, _ in leaves(tree):
-  for j in k.val:
-   tmp = j.cells
-   tmp[-1] = 0 if tmp[-1] == 0 else 1
-   tmp.append('_' + str(id(k) % 1000))
-   j.__dict__.update({'cells': tmp})
-   Rows.append(j.cells)
- return newTable(tbl, headerLabel, Rows)
+def createTbl(data, _smote = False, isBin = False, bugThres = 1):
+  """
+  kwargs:
+  _smote = True/False : SMOTE input data (or not)
+  _isBin = True/False : Reduce bugs to defects/no defects
+  _bugThres = int : Threshold for marking stuff as defective, 
+                    default = 1. Not defective => Bugs < 1
+  """
+  makeaModel = makeAmodel.makeAModel()
+  _r = []
+  for t in data:
+    m = makeaModel.csv2py(t, _smote = _smote)
+    _r += m._rows
+  m._rows = _r
+  prepare(m, settings = None)  # Initialize all parameters for where2 to run
+  tree = where2(m, m._rows)  # Decision tree using where2
+  tbl = table(t)
+ 
+  headerLabel = '=klass'
+  Rows = []
+  for k, _ in leaves(tree):  # for k, _ in leaves(tree):
+    for j in k.val:
+      tmp = j.cells
+      if isBin:
+        tmp[-1] = 0 if tmp[-1] < bugThres else 1
+      tmp.append('_' + str(id(k) % 1000))
+      j.__dict__.update({'cells': tmp})
+      Rows.append(j.cells)
+  
+  return newTable(tbl, headerLabel, Rows)
+
+def test_createTbl():
+  dir = '../Data/camel/camel-1.6.csv'
+  newTbl = createTbl([dir], _smote = False)
+  newTblSMOTE = createTbl([dir], _smote = True)
+  print(len(newTbl._rows), len(newTblSMOTE._rows))
+
 
 def drop(test, tree):
  loc = apex(test, tree)
  return loc
 
-def saveImg(x, num_bins = 10, fname = None, ext = None):
-  pass
-#  fname = 'Untitled' if not fname else fname
-#  ext = '.jpg' if not ext else ext
-#  n, bins, patches = plt.hist(x, num_bins, normed = False,
-#                              facecolor = 'blue', alpha = 0.5)
-#  # add a 'best fit' line
-#  plt.xlabel('Bugs')
-#  plt.ylabel('Frequency')
-#  plt.title(r'Histogram (Median Bugs in each class)')
-#
-#  # Tweak spacing to prevent clipping of ylabel
-#  plt.subplots_adjust(left = 0.15)
-#  plt.savefig(fname + ext)
-#  plt.close()
 
-def plotCurve(x, num_bins = 10, fname = None, ext = None):
+# def saveImg(x, num_bins = 10, fname = None, ext = None):
+#   pass
+# #  fname = 'Untitled' if not fname else fname
+# #  ext = '.jpg' if not ext else ext
+# #  n, bins, patches = plt.hist(x, num_bins, normed = False,
+# #                              facecolor = 'blue', alpha = 0.5)
+# #  # add a 'best fit' line
+# #  plt.xlabel('Bugs')
+# #  plt.ylabel('Frequency')
+# #  plt.title(r'Histogram (Median Bugs in each class)')
+# #
+# #  # Tweak spacing to prevent clipping of ylabel
+# #  plt.subplots_adjust(left = 0.15)
+# #  plt.savefig(fname + ext)
+# #  plt.close()
 
-  fname = 'Untitled' if not fname else fname
-  ext = '.jpg' if not ext else ext
-  xlim = np.linspace(1, len(x[0]), len(x[0]))
-  plt.plot(xlim, x[0], 'r', xlim, x[1], 'b');
-  # add a 'best fit' line
-  plt.xlabel('Rows')
-  plt.ylabel('Bugs')
-  # plt.title(r'Histogram (Median Bugs in each class)')
+# def plotCurve(x, num_bins = 10, fname = None, ext = None):
 
-  # Tweak spacing to prevent clipping of ylabel
-  plt.subplots_adjust(left = 0.15)
-  plt.savefig('./_fig/' + fname + ext)
-  plt.close()
+#   fname = 'Untitled' if not fname else fname
+#   ext = '.jpg' if not ext else ext
+#   xlim = np.linspace(1, len(x[0]), len(x[0]))
+#   plt.plot(xlim, x[0], 'r', xlim, x[1], 'b');
+#   # add a 'best fit' line
+#   plt.xlabel('Rows')
+#   plt.ylabel('Bugs')
+#   # plt.title(r'Histogram (Median Bugs in each class)')
 
+#   # Tweak spacing to prevent clipping of ylabel
+#   plt.subplots_adjust(left = 0.15)
+#   plt.savefig('./_fig/' + fname + ext)
+#   plt.close()
+
+if __name__ == '__main__':
+  test_createTbl()
 

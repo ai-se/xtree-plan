@@ -14,7 +14,7 @@ from settings import *
 from methods1 import *
 from contrastset import *
 import random, numpy as np
-from makeAmodel import makeAModel
+import makeAmodel
 randi = random.randint
 rseed = random.seed
 # from _imports import *
@@ -35,7 +35,7 @@ def explore(dir):
 
 def tdivPrec(where = None , dtree = None, train = None, test = None):
  rseed(1)
- makeaModel = makeAModel()
+ makeaModel = makeAmodel.makeAModel()
 
  # pdb.set_trace()
 

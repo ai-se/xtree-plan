@@ -1,5 +1,6 @@
 import sys
 from table import *
+import smote
 
 def say(text):
   sys.stdout.write(str(text)), sys.stdout.write(' ')
@@ -51,9 +52,11 @@ class makeAModel(object):
                                  else self.translate.update({k:k})
           P += 1
 
- def csv2py(self, filename):
+ def csv2py(self, filename, _smote = False):
   "Convert a csv file to a model file"
   tbl = table(filename)
+  if _smote: 
+   tbl = smote.SMOTE(tbl, atleast = 100, atmost = 101, bugIndx = 1)
   self.str2num(tbl)
   tonum = lambda x: self.translate[x] if isinstance(x, str) else x
 

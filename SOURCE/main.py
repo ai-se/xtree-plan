@@ -60,6 +60,7 @@ def main():
   out11 = [];
   for n in xrange(numData):
     out1 = [];
+    outa = []
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
     print('##', dataName[n])
@@ -83,33 +84,33 @@ def main():
           # Training data
           for _ in xrange(reps):
             
-            train_DF = createTbl(train[_n])
+            train_DF = createTbl(train[_n], _smote = _smote, isBin = True)
 #            set_trace()
             # Testing data
             test_df = createTbl(test[_n])
             # Tune?
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
-            newTab = treatments(train = train[_n],
-                                test = test[_n],
-                                verbose = False,
-                                smoteit = True).main()
+            # newTab = treatments(train = train[_n],
+            #                     test = test[_n],
+            #                     verbose = False,
+            #                     smoteit = True).main()
 
 
 #             set_trace()
             # Actual bugs
             actual = Bugs(test_df)
-            actual1 = [0 if a < 2 else 1 for a in actual]
+            actual1 = [0 if a < 1 else 1 for a in actual]
             # Use the classifier to predict the number of bugs in the raw data.
             before = p(train_DF, test_df,
                        tunings = tunedParams,
-                       smoteit = _smote)
+                       smoteit = False)
             before1 = [0 if b < 2 else 1 for b in before]
             # Use the classifier to predict the number of bugs in the new data.
-            after = p(train_DF, newTab,
-                      tunings = tunedParams,
-                      smoteit = _smote)
-            after1 = [0 if a < 2 else 1 for a in after]
+            # after = p(train_DF, newTab,
+            #           tunings = tunedParams,
+            #           smoteit = _smote)
+            # after1 = [0 if a < 2 else 1 for a in after]
 
             # set_trace()
 
@@ -118,33 +119,36 @@ def main():
 #             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
-            out = _Abcd(before = actual, after = before)
+            outa.append(_Abcd(before = actual1, after = before))
+            print(outa)
             # print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
             # out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
           # out1.insert(0, dataName[n])
+          outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 #             print (out[-1])
-            if _smote:
-              out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
-              else out.insert(0, p.__doc__ + '(s, Naive)  ')
-              abcd[0].append(out)
-            else:
-              out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
-              else out.insert(0, p.__doc__ + '(raw, Naive)')
-              abcd[1].append(out)
+    #         if _smote:
+    #           out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
+    #           else out.insert(0, p.__doc__ + '(s, Naive)  ')
+    #           abcd[0].append(out)
+    #         else:
+    #           out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
+    #           else out.insert(0, p.__doc__ + '(raw, Naive)')
+    #           abcd[1].append(out)
     # print(out1)
     # out11.append(out1)
+    out1.append(outa)
       # print()
-      cd.update({p.__doc__:sorted(cd)})
-      res.update({p.__doc__:(abcd[0][0:reps],
-                           abcd[0][reps:] ,
-                           abcd[1][0:reps],
-                           abcd[1][reps:])})
+      # cd.update({p.__doc__:sorted(cd)})
+      # res.update({p.__doc__:(abcd[0][0:reps],
+      #                      abcd[0][reps:] ,
+      #                      abcd[1][0:reps],
+      #                      abcd[1][reps:])})
   # rdivDemo(out11, isLatex = True)
     print('```')
-  # rdivDemo(out11, isLatex = False)
+    rdivDemo(out1, isLatex = False)
 # #     print(cd)
-    printsk(res)
+    # printsk(res)
     print('```')
 
           # sk.rdivDemo(stat)
