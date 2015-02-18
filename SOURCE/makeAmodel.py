@@ -56,7 +56,7 @@ class makeAModel(object):
   "Convert a csv file to a model file"
   tbl = table(filename)
   if _smote: 
-   tbl = smote.SMOTE(tbl, atleast = 100, atmost = 101, bugIndx = 1)
+   tbl = smote.SMOTE(tbl, atleast = 50, atmost = 101, bugIndx = 1)
   self.str2num(tbl)
   tonum = lambda x: self.translate[x] if isinstance(x, str) else x
 

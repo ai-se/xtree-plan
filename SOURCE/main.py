@@ -84,17 +84,17 @@ def main():
           # Training data
           for _ in xrange(reps):
             
-            train_DF = createTbl(train[_n], _smote = _smote, isBin = True)
+            train_DF = createTbl(train[_n], isBin = True)
 #            set_trace()
             # Testing data
             test_df = createTbl(test[_n])
             # Tune?
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
-            # newTab = treatments(train = train[_n],
-            #                     test = test[_n],
-            #                     verbose = False,
-            #                     smoteit = True).main()
+            newTab = treatments(train = train[_n],
+                                test = test[_n],
+                                verbose = False,
+                                smoteit = True).main()
 
 
 #             set_trace()
@@ -104,12 +104,12 @@ def main():
             # Use the classifier to predict the number of bugs in the raw data.
             before = p(train_DF, test_df,
                        tunings = tunedParams,
-                       smoteit = False)
-            before1 = [0 if b < 2 else 1 for b in before]
+                       smoteit = True)
+            # before1 = [0 if b < 1 else 1 for b in before]
             # Use the classifier to predict the number of bugs in the new data.
-            # after = p(train_DF, newTab,
-            #           tunings = tunedParams,
-            #           smoteit = _smote)
+            after = p(train_DF, newTab,
+                      tunings = tunedParams,
+                      smoteit = _smote)
             # after1 = [0 if a < 2 else 1 for a in after]
 
             # set_trace()
@@ -119,9 +119,9 @@ def main():
 #             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
-            outa.append(_Abcd(before = actual1, after = before))
+            outa.append(_Abcd(before = actual1, after = before)[-1])
             print(outa)
-            # print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
+            print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
             # out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
           # out1.insert(0, dataName[n])
           outa.insert(0, dataName[n])
