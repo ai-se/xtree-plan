@@ -58,6 +58,7 @@ def main():
   abcd = []
   res = {}
   out11 = [];
+  outA1 = [];
   for n in xrange(numData):
     out1 = [];
     outa = []
@@ -87,7 +88,7 @@ def main():
             train_DF = createTbl(train[_n], isBin = True)
 #            set_trace()
             # Testing data
-            test_df = createTbl(test[_n])
+            test_df = createTbl(test[_n], isBin = True)
             # Tune?
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
@@ -95,12 +96,12 @@ def main():
                                 test = test[_n],
                                 verbose = False,
                                 smoteit = True).main()
+# 
 
-
-#             set_trace()
+            # set_trace()
             # Actual bugs
             actual = Bugs(test_df)
-            actual1 = [0 if a < 1 else 1 for a in actual]
+            # actual1 = [0 if a < 2 else 1 for a in actual]
             # Use the classifier to predict the number of bugs in the raw data.
             before = p(train_DF, test_df,
                        tunings = tunedParams,
@@ -119,11 +120,16 @@ def main():
 #             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
-            outa.append(_Abcd(before = actual1, after = before)[-1])
+            outa.append(_Abcd(before = actual, after = before)[-1])
             print(outa)
-            print('Gain =  %0.2f' % float((sum(actual) - sum(after)) / sum(actual)*100),r'%')
-            # out1.append(float((sum(before1) - sum(after1)) / sum(before1)*100))
-          # out1.insert(0, dataName[n])
+            print('Gain =  %0.2f' % float(\
+            	(sum(before) - sum(after)) / sum(before)*100),r'%')
+            
+            out1.append(\
+            	float((sum(before) - sum(after)) / sum(before)*100))
+          
+          out1.insert(0, dataName[n])
+          
           outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 #             print (out[-1])
@@ -136,8 +142,8 @@ def main():
     #           else out.insert(0, p.__doc__ + '(raw, Naive)')
     #           abcd[1].append(out)
     # print(out1)
-    # out11.append(out1)
-    out1.append(outa)
+    out11.append(out1)
+    outA1.append(outa)
       # print()
       # cd.update({p.__doc__:sorted(cd)})
       # res.update({p.__doc__:(abcd[0][0:reps],
@@ -146,7 +152,11 @@ def main():
       #                      abcd[1][reps:])})
   # rdivDemo(out11, isLatex = True)
     print('```')
-    rdivDemo(out1, isLatex = False)
+    rdivDemo(outA1, isLatex = False)
+    print('```')
+    
+    print('```')
+    rdivDemo(out11, isLatex = False)
 # #     print(cd)
     # printsk(res)
     print('```')

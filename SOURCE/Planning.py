@@ -65,7 +65,7 @@ class treatments():
   def __init__(self, train = None, test = None,
                verbose = True, smoteit = False):
     self.train_DF = createTbl(train, _smote = smoteit, isBin = True)
-    self.test_DF = createTbl(test)
+    self.test_DF = createTbl(test, isBin = True)
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
 
