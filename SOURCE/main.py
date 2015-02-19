@@ -59,13 +59,14 @@ def main():
   res = {}
   out11 = [];
   outA1 = [];
-  for n in xrange(numData):
+  for n in xrange(numData): 
     out1 = [];
     outa = []
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
     print('##', dataName[n])
-    for p in Prd:
+    if not n == 3:
+      p = Prd[0]
 #       print(p.__doc__)
       # params = tuner(p, data[0])
 #       print(params)
