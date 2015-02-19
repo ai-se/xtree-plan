@@ -218,7 +218,7 @@ class treatments():
         self.mod.append(node.applyPatch(self.keys))
 #
     # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-      # set_trace()
+      set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []
