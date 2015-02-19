@@ -1,6 +1,6 @@
 # Contrast Set Learning
 
-- [Milestones for Feb, 19th 2015](https://github.com/ai-se/Transfer-Learning/issues?q=is%3Aall+milestone%3A%22Milestone+for+Feb%2C+19th+2015%22+)
+- [From last week's dicussion](https://github.com/ai-se/Transfer-Learning/issues?q=is%3Aall+milestone%3A%22Milestones+for+Feb%2C+19th+2015%22+)
 
 
 ### Gain %
