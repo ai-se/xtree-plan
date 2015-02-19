@@ -77,9 +77,6 @@ def SMOTE(data = None, k = 5, atleast = 10, atmost = 101, bugIndx = 2):
       newCells.extend(populate([r for r in rows if r.cells[-2] == u]))
     if n > atmost:
       newCells.extend(depopulate([r for r in rows if r.cells[-2] == u]))
-    # elif n == 1:
-    #   for _ in xrange(atleast):
-    #     newCells.extend([r for r in rows if r.cells[-2] == u])
     else:
       newCells.extend([r for r in rows if r.cells[-2] == u])
 

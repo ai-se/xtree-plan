@@ -72,7 +72,7 @@ def main():
 #       print(params)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 10
+      reps = 4
       abcd = [[], []];
       for t in _tuneit:
         tunedParams = None
@@ -122,14 +122,15 @@ def main():
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             outa.append(_Abcd(before = actual, after = before)[-1])
-            print(outa)
-            print('Gain =  %0.2f' % float(\
-            	(sum(before) - sum(after)) / sum(before)*100),r'%')
+          #   print(outa)
+          #   print('Gain =  %0.2f' % float(\
+          #   	(sum(before) - sum(after)) / sum(before)*100),r'%')
             
-            out1.append(\
-            	float((sum(before) - sum(after)) / sum(before)*100))
+          #   out1.append(\
+          #   	float((sum(before) - sum(after)) / sum(before)*100))
           
-          out1.insert(0, dataName[n])
+          # out1 = [o for o in out1 if np.isfinite(o)]
+          # out1.insert(0, dataName[n])
           
           outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
@@ -144,7 +145,7 @@ def main():
     #           abcd[1].append(out)
     # print(out1)
     out11.append(out1)
-    outA1.append(outa)
+    # outA1.append(outa)
       # print()
       # cd.update({p.__doc__:sorted(cd)})
       # res.update({p.__doc__:(abcd[0][0:reps],
@@ -152,9 +153,9 @@ def main():
       #                      abcd[1][0:reps],
       #                      abcd[1][reps:])})
   # rdivDemo(out11, isLatex = True)
-    print('```')
-    rdivDemo(outA1, isLatex = False)
-    print('```')
+    # print('```')
+    # rdivDemo(outA1, isLatex = False)
+    # print('```')
     
     print('```')
     rdivDemo(out11, isLatex = False)
