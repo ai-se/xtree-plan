@@ -65,7 +65,6 @@ def main():
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
     print('##', dataName[n])
-    if not n == 3:
       p = Prd[0]
 #       print(p.__doc__)
       # params = tuner(p, data[0])
@@ -144,8 +143,8 @@ def main():
     #           else out.insert(0, p.__doc__ + '(raw, Naive)')
     #           abcd[1].append(out)
     # print(out1)
-    out11.append(out1)
-    # outA1.append(outa)
+    # out11.append(out1)
+    outA1.append(outa)
       # print()
       # cd.update({p.__doc__:sorted(cd)})
       # res.update({p.__doc__:(abcd[0][0:reps],
@@ -158,7 +157,7 @@ def main():
     # print('```')
     
     print('```')
-    rdivDemo(out11, isLatex = False)
+    rdivDemo(outA1, isLatex = False)
 # #     print(cd)
     # printsk(res)
     print('```')
