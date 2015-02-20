@@ -160,7 +160,7 @@ class treatments():
   def finder2(self, node, alpha = 0.5):
     """
     finder2 is a more elegant version of finder that performs a search on
-    the entire tree to find leaves which are better than a given 'node'
+    the entire tree to find leaves which are better than a certain 'node'
     """
     vals = []
     current = store(node)
