@@ -208,6 +208,7 @@ class treatments():
     #   self.train_DF = SMOTE(data = self.train_DF, atleast = 50, atmost = 100)
 
     # Decision Tree
+    tmpRow = []
     t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))
     myTree = tdiv(t)
     if self.verbose: showTdiv(myTree)
@@ -225,9 +226,18 @@ class treatments():
       else:
         bests, attr = self.finder2(node.loc)
         patch = node.patches(self.keys, N_Patches = 100)
-#
-    # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-      set_trace()
+        tmpTbl = clone(self.test_DF,
+                       rows = [k.cells for k in patch],
+                       discrete = True)
+        mass = CART(self.train_DF
+                     , newTab
+                     , tunings = None
+                     , smoteit = _smote
+                     , duplicate = True)
+
+
+      # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
+        set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []

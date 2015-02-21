@@ -14,7 +14,8 @@ import pandas as pd
 from dectree import *
 
 
-def SMOTE(data = None, k = 5, atleast = 10, atmost = 101, bugIndx = 2):
+def SMOTE(data = None, k = 5, atleast = 10
+          , atmost = 101, bugIndx = 2, resample = False):
 
   def Bugs(tbl):
     cells = [i.cells[-bugIndx] for i in tbl._rows]
@@ -41,7 +42,7 @@ def SMOTE(data = None, k = 5, atleast = 10, atmost = 101, bugIndx = 2):
     new = one;
 #    set_trace()
     if bugIndx == 2:
-      new.cells[3:-1] = [max(min(a, b), min(min(a,b) + rand() * (abs(a - b)), max(a,b))) for
+      new.cells[3:-1] = [max(min(a, b), min(min(a, b) + rand() * (abs(a - b)), max(a, b))) for
              a, b in zip(one.cells[3:-1], two.cells[3:-1])]
       new.cells[-2] = int(new.cells[-2])
     else:
@@ -55,8 +56,8 @@ def SMOTE(data = None, k = 5, atleast = 10, atmost = 101, bugIndx = 2):
     # reps = (len(data) - atleast)
     for _ in xrange(atleast):
       for one in data:
-        neigh = knn(one, data)[1:k + 1]; 
-        # I know the following try/catch statement is bad coding etiquette, my apologies. 
+        neigh = knn(one, data)[1:k + 1];
+        # I know the following try/catch statement is bad coding etiquette, my apologies.
         try:
           two = choice(neigh)
         except IndexError:
@@ -66,7 +67,14 @@ def SMOTE(data = None, k = 5, atleast = 10, atmost = 101, bugIndx = 2):
     return newData
 
   def depopulate(data):
-    return [choice(data)  for _ in xrange(atmost)]
+    if resample:
+      newer = []
+      for _ in xrange(atmost):
+        orig = choice(data)
+        newer.append(extrapolate(orig, knn(orig, data)[1]))
+        return newer
+    else:
+      return [choice(data)  for _ in xrange(atmost)]
 
   newCells = []
   seed(1)

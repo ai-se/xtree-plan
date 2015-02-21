@@ -107,10 +107,14 @@ def _RF():
             smoteit = False)
   print _Abcd(before = actual, after = preds, show = False)[-1]
 
-def CART(train, test, tunings = None, smoteit = True):
+def CART(train, test, tunings = None, smoteit = True, duplicate = False):
   "  CART"
   # Apply random forest Regressor to predict the number of bugs.
-  if smoteit: train = SMOTE(train, atleast = 50, atmost = 101)
+  if smoteit: train = SMOTE(train
+                            , atleast = 50
+                            , atmost = 101
+                            , resample = duplicate)
+
   if not tunings: clf = DecisionTreeRegressor()
   else:
     clf = DecisionTreeRegressor(max_depth = int(tunings[0]),
