@@ -23,7 +23,7 @@ from _imports import *
 from abcd import _Abcd
 from cliffsDelta import *
 from contrastset import *
-from dectree import *
+# from dectree import *
 from hist import *
 from smote import *
 import makeAmodel as mam
@@ -222,7 +222,7 @@ class treatments():
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
 
-      if node.score == 0:
+      if newRow.cells[-2] == 0:
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
@@ -239,9 +239,8 @@ class treatments():
                      , tunings = None
                      , smoteit = True
                      , duplicate = True)
-          weights.append((tmpTbl
-                          , np.mean(Bugs(self.test_DF))
-                          , np.mean(mass)))
+          print(tC.cells[-2], np.mean(mass))
+          weights.append((tmpTbl, np.mean(mass)))
 
 
       # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
