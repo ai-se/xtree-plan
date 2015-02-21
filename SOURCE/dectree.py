@@ -119,7 +119,7 @@ def tdivPrec(where = None , dtree = None, train = None, test = None):
   testDefective.append(isdefective(tC))
   defectivClust.append(isdefective(loc, test = True))
  #
- saveImg(temp, 10)
+ # saveImg(temp, 10)
 
 #   contrastSet = getContrastSet(loc, myTree)
 #   print 'Contrast Set:', contrastSet
@@ -211,7 +211,7 @@ def tdivPrec1(where = None , dtree = None, train = None, test = None):
   testDefective.append(isdefective(tC))
   defectivClust.append(isdefective(loc, test = True))
  #
- saveImg(temp, 10)
+ # saveImg(temp, 10)
 
 #   contrastSet = getContrastSet(loc, myTree)
 #   print 'Contrast Set:', contrastSet

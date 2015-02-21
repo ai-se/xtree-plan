@@ -48,7 +48,7 @@ class deltas():
     for _ in xrange(N):
       for s in stuff:
         lo, hi = s[1]
-        pos = keys[stuff[0].name]
+        pos = keys[s[0].name]
         tmpRow.cells[pos] = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
       newElem.append(tmpRow)
     return newElem
@@ -224,7 +224,7 @@ class treatments():
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
-        bests, attr = self.finder2(node.loc)
+        bests, node.contrastSet = self.finder2(node.loc)
         patch = node.patches(self.keys, N_Patches = 100)
         tmpTbl = clone(self.test_DF,
                        rows = [k.cells for k in patch],
@@ -232,7 +232,7 @@ class treatments():
         mass = CART(self.train_DF
                      , tmpTbl
                      , tunings = None
-                     , smoteit = _smote
+                     , smoteit = True
                      , duplicate = True)
 
 
