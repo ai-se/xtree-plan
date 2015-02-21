@@ -53,7 +53,7 @@ class deltas():
       newElem.append(tmpRow)
     return newElem
   def patches(self, keys, N_Patches = 10):
-    # Search for the best possible contrast set and apply it:
+    # Search for the best possible contrast set and apply it
     isles = []
     newRow = self.row
     for stuff in self.contrastSet:
@@ -74,6 +74,7 @@ class treatments():
   "Treatments"
   def __init__(self, train = None, test = None,
                verbose = True, smoteit = False):
+    self.train, self.test = train, test
     self.train_DF = createTbl(train, _smote = smoteit, isBin = True)
     self.test_DF = createTbl(test, isBin = True)
     self.verbose, self.smoteit = verbose, smoteit
@@ -216,6 +217,7 @@ class treatments():
     # Testing data
     testCase = self.test_DF._rows
     newTab = []
+    weights = []
     for tC in testCase:
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
@@ -225,15 +227,21 @@ class treatments():
         self.mod.append(node.newRow)
       else:
         bests, node.contrastSet = self.finder2(node.loc)
+#         set_trace()
         patch = node.patches(self.keys, N_Patches = 100)
-        tmpTbl = clone(self.test_DF,
-                       rows = [k.cells for k in patch],
-                       discrete = True)
-        mass = CART(self.train_DF
+#         set_trace()
+        for p in patch:
+          tmpTbl = clone(self.test_DF,
+                         rows = [k.cells for k in p],
+                         discrete = True)
+          mass = CART(createTbl(self.train, _smote = True, isBin = True)
                      , tmpTbl
                      , tunings = None
                      , smoteit = True
                      , duplicate = True)
+          weights.append((tmpTbl
+                          , np.mean(Bugs(self.test_DF))
+                          , np.mean(mass)))
 
 
       # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>

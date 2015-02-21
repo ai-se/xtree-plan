@@ -59,7 +59,7 @@ def main():
   res = {}
   out11 = [];
   outA1 = [];
-  for n in xrange(numData): 
+  for n in xrange(numData):
     out1 = [];
     outa = []
     one, two = explore(dir)
@@ -84,7 +84,7 @@ def main():
           _n = -1
           # Training data
           for _ in xrange(reps):
-            
+
             train_DF = createTbl(train[_n], isBin = True)
 #            set_trace()
             # Testing data
@@ -92,11 +92,12 @@ def main():
             # Tune?
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
+            set_trace()
             newTab = treatments(train = train[_n],
                                 test = test[_n],
                                 verbose = False,
                                 smoteit = True).main()
-# 
+#
 
             # set_trace()
             # Actual bugs
@@ -124,13 +125,13 @@ def main():
           #   print(outa)
           #   print('Gain =  %0.2f' % float(\
           #   	(sum(before) - sum(after)) / sum(before)*100),r'%')
-            
+
           #   out1.append(\
           #   	float((sum(before) - sum(after)) / sum(before)*100))
-          
+
           # out1 = [o for o in out1 if np.isfinite(o)]
           # out1.insert(0, dataName[n])
-          
+
           outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 #             print (out[-1])
@@ -155,7 +156,7 @@ def main():
     # print('```')
     # rdivDemo(outA1, isLatex = False)
     # print('```')
-    
+
     print('```')
     rdivDemo(outA1, isLatex = False)
 # #     print(cd)
