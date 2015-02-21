@@ -65,7 +65,7 @@ def main():
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
     print('##', dataName[n])
-      p = Prd[0]
+    for p in Prd:
 #       print(p.__doc__)
       # params = tuner(p, data[0])
 #       print(params)
@@ -75,7 +75,7 @@ def main():
       abcd = [[], []];
       for t in _tuneit:
         tunedParams = None
-#         print('### Tuning') if t else print('### No Tuning')
+        print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
 #           print('### SMOTE-ing') if _smote else print('### No SMOTE-ing')
     #       print('```')
@@ -169,7 +169,6 @@ def main():
           # <<DEGUG: Halt Code>>
      # cd.update({p.__doc__:sorted(cd)})
       # set_trace()
-
 
 if __name__ == '__main__':
 #  dir = '../Data'

@@ -42,14 +42,24 @@ class deltas():
     self.score = self.scorer(self.loc)
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
-  def createNew(self, lo, hi, N = 1):
-    return '%0.3f' % (max(lo, min(hi, lo + rand() * abs(hi - lo))))
-  def applyPatch(self, keys):
+  def createNew(self, stuff, keys, N = 1):
+    newElem = [];
+    tmpRow = self.row
+    for _ in xrange(N):
+      for s in stuff:
+        lo, hi = s[1]
+        pos = keys[stuff[0].name]
+        tmpRow.cells[pos] = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
+      newElem.append(tmpRow)
+    return newElem
+  def patches(self, keys, N_Patches = 10):
+    # Search for the best possible contrast set and apply it:
+    isles = []
+    newRow = self.row
     for stuff in self.contrastSet:
-      lo, hi = stuff[1]
-      pos = keys[stuff[0].name]
-      self.newRow.cells[pos] = self.createNew(lo, hi)
-    return self.newRow
+      isles.append(self.createNew(stuff, keys, N = N_Patches))
+    return isles
+
 
 class store():
   def __init__(self, node):
@@ -145,10 +155,10 @@ class treatments():
 
   def attributes(self, nodes):
     """
-    A method to handle unique branch variables that charaterizes 
+    A method to handle unique branch variables that charaterizes
     a bunch of nodes.
     """
-    xx =[]; attr = []
+    xx = []; attr = []
     def seen(x):
   		xx.append(x)
     for node in nodes:
@@ -179,7 +189,7 @@ class treatments():
     bests = [v for v in vals if v.score < alpha * current.score]
     if not len(bests): bests = [v for v in vals]
     return bests, self.attributes(bests)
-		
+
 
   def getKey(self):
     keys = {}
@@ -208,14 +218,13 @@ class treatments():
     for tC in testCase:
       newRow = tC;
       node = deltas(newRow, myTree)  # A delta instance for the rows
-      
+
       if node.score == 0:
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
         bests, attr = self.finder2(node.loc)
-        node.contrastSet = random.choice(attr)
-        self.mod.append(node.applyPatch(self.keys))
+        patch = node.patches(self.keys, N_Patches = 100)
 #
     # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
       set_trace()
