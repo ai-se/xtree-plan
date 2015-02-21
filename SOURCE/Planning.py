@@ -230,7 +230,7 @@ class treatments():
                        rows = [k.cells for k in patch],
                        discrete = True)
         mass = CART(self.train_DF
-                     , newTab
+                     , tmpTbl
                      , tunings = None
                      , smoteit = _smote
                      , duplicate = True)

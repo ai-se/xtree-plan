@@ -42,8 +42,10 @@ def SMOTE(data = None, k = 5, atleast = 10
     new = one;
 #    set_trace()
     if bugIndx == 2:
-      new.cells[3:-1] = [max(min(a, b), min(min(a, b) + rand() * (abs(a - b)), max(a, b))) for
-             a, b in zip(one.cells[3:-1], two.cells[3:-1])]
+      new.cells[3:-1] = [max(min(a, b),
+                             min(min(a, b) + rand() * (abs(a - b)),
+                                 max(a, b))) for a, b in zip(one.cells[3:-1],
+                                                             two.cells[3:-1])]
       new.cells[-2] = int(new.cells[-2])
     else:
       new.cells[3:] = [min(a, b) + rand() * (abs(a - b)) for
@@ -57,7 +59,7 @@ def SMOTE(data = None, k = 5, atleast = 10
     for _ in xrange(atleast):
       for one in data:
         neigh = knn(one, data)[1:k + 1];
-        # I know the following try/catch statement is bad coding etiquette, my apologies.
+        # If you're thinking the following try/catch statement is bad coding etiquette, my apologies.
         try:
           two = choice(neigh)
         except IndexError:
@@ -72,7 +74,7 @@ def SMOTE(data = None, k = 5, atleast = 10
       for _ in xrange(atmost):
         orig = choice(data)
         newer.append(extrapolate(orig, knn(orig, data)[1]))
-        return newer
+      return newer
     else:
       return [choice(data)  for _ in xrange(atmost)]
 
