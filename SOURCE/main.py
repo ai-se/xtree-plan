@@ -92,7 +92,6 @@ def main():
             # Tune?
 #             tunedParams = None if not t else params
             # Find and apply contrast sets
-            set_trace()
             newTab = treatments(train = train[_n],
                                 test = test[_n],
                                 verbose = False,

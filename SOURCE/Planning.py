@@ -229,22 +229,24 @@ class treatments():
         bests, node.contrastSet = self.finder2(node.loc)
 #         set_trace()
         patch = node.patches(self.keys, N_Patches = 100)
-#         set_trace()
-        for p in patch:
+        # set_trace()
+        found = False
+        while not found:
+          p  = choice(patch)
           tmpTbl = clone(self.test_DF,
-                         rows = [k.cells for k in p],
-                         discrete = True)
-          mass = CART(createTbl(self.train, _smote = True, isBin = True)
-                     , tmpTbl
-                     , tunings = None
-                     , smoteit = True
-                     , duplicate = True)
-          print(tC.cells[-2], np.mean(mass))
-          weights.append((tmpTbl, np.mean(mass)))
+                        rows = [k.cells for k in p],
+                        discrete = True)
+          mass = CART(createTbl(self.train, _smote = False, isBin = True)
+                    , tmpTbl
+                    , tunings = None
+                    , smoteit = True
+                    , duplicate = True)
+          found = tC.cells[-2] >  np.mean(mass)
+        self.mod.append(choice(tmpTbl._rows))
 
 
       # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-        set_trace()
+        # set_trace()
 
 #       if node.score == 0:
 #         node.contrastSet = []
