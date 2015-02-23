@@ -1,6 +1,6 @@
 #! /Users/rkrsn/anaconda/bin/python
 from __future__ import print_function
-
+from __future__ import division
 from os import environ, getcwd
 from pdb import set_trace
 from random import uniform, randint
@@ -91,8 +91,8 @@ class treatments():
   def __init__(self, train = None, test = None,
                verbose = True, smoteit = False):
     self.train, self.test = train, test
-    self.train_DF = createTbl(train, _smote = smoteit, isBin = True)
-    self.test_DF = createTbl(test, isBin = True)
+    self.train_DF = createTbl(train, _smote = smoteit, isBin = False) 
+    self.test_DF = createTbl(test, isBin = False)
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
 
@@ -141,35 +141,35 @@ class treatments():
       else:
         return False, []
 
-  def finder(self, node, oldNode = [], branch = [], Found = False):
-    """
-    A recursive searcher that looks for the nearest neighbor whose better than
-    a given node.
-    """
-    out = branch
-    if not Found:
-      if node.lvl > -1:
-        _kids = []
-        oldNode.append(node)
-        _up = node.up
-#         print('Current- ', node.branch, 'Level - ', node.lvl)
-        kids = [k for k in _up.kids]
-        _kids.extend([self.leaves(_k) for _k in kids])
-        _kids = self.flatten(_kids)
-#         print('Kids', _kids)
-        Found, branch = self.isBetter(node, _kids)
-        out = self.finder(_up, oldNode = oldNode, branch = branch, Found = Found)
-
-      else:
-        _kids = []
-        kids = [k for k in node.kids if not k in oldNode]
-        for k in kids:
-          for kk in k.kids: out = self.finder(kk, oldNode = oldNode,
-                                        branch = branch, Found = Found)
-
-#     print(out)
-    return out
-
+#  def finder(self, node, oldNode = [], branch = [], Found = False):
+#    """
+#    A recursive searcher that looks for the nearest neighbor whose better than
+#    a given node.
+#    """
+#    out = branch
+#    if not Found:
+#      if node.lvl > -1:
+#        _kids = []
+#        oldNode.append(node)
+#        _up = node.up
+##         print('Current- ', node.branch, 'Level - ', node.lvl)
+#        kids = [k for k in _up.kids]
+#        _kids.extend([self.leaves(_k) for _k in kids])
+#        _kids = self.flatten(_kids)
+##         print('Kids', _kids)
+#        Found, branch = self.isBetter(node, _kids)
+#        out = self.finder(_up, oldNode = oldNode, branch = branch, Found = Found)
+#
+#      else:
+#        _kids = []
+#        kids = [k for k in node.kids if not k in oldNode]
+#        for k in kids:
+#          for kk in k.kids: out = self.finder(kk, oldNode = oldNode,
+#                                        branch = branch, Found = Found)
+#
+##     print(out)
+#    return out
+#
   def attributes(self, nodes):
     """
     A method to handle unique branch variables that charaterizes
@@ -189,6 +189,9 @@ class treatments():
     finder2 is a more elegant version of finder that performs a search on
     the entire tree to find leaves which are better than a certain 'node'
     """
+
+    def range(a_tuple):
+      return ((a_tuple[0])+(a_tuple[1]))/2
     vals = []
     current = store(node)
     while node.lvl > -1:
@@ -199,14 +202,26 @@ class treatments():
     for leaf in leaves:
       l = store(leaf)
       for b in leaf.branch:
-        if b[0] in [bb[0] for bb in current.node.branch]: l.DoC += 1
+        dist = []
+        if b[0] in [bb[0] for bb in current.node.branch]: 
+          l.DoC += 1
+          dist.extend([(range(b[1])-range(bb[1]))**2 for bb in current.node.branch if b[0]==bb[0]])
+      l.dist = np.sqrt(np.sum(dist))
       vals.append(l)
 
     vals = sorted(vals, key = lambda F: F.DoC, reverse = False)
-    set_trace()
-    bests = [v for v in vals if v.score < alpha * current.score]
-    if not len(bests): bests = [v for v in vals]
-    return bests, self.attributes(bests)
+    best = [v for v in vals if v.score < alpha * current.score]
+    if not best: bests = vals
+
+    # Get a list of DoCs (DoC -> (D)epth (o)f (C)orrespondence, btw..)
+    # set_trace()
+    attr = {}
+    bests = {}
+    for dd in list(set([v.DoC for v in best])): 
+      bests.update({dd:sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist)})
+      attr.update({dd:self.attributes(sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist))})   
+      # set_trace()
+    return bests, attr[1][0], attr[1][-1], attr[2][0], attr[2][-1]
 
 
   def getKey(self):
@@ -243,22 +258,24 @@ class treatments():
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
-        bests, node.contrastSet = self.finder2(node.loc)
+        bests, far, farthest, near, nearest = self.finder2(node.loc)
 #         set_trace()
+        node.contrastSet = [far, farthest, near, nearest]
         patch = node.patches(self.keys, N_Patches = 100)
-        # set_trace()
+        #set_trace()
         found = False
         while not found:
           p = choice(patch)
           tmpTbl = clone(self.test_DF,
                         rows = [k.cells for k in p],
                         discrete = True)
-          mass = CART(createTbl(self.train, _smote = False, isBin = True)
+          mass = CART(createTbl(self.train, _smote = False)
                     , tmpTbl
                     , tunings = None
                     , smoteit = True
                     , duplicate = True)
           found = tC.cells[-2] > np.mean(mass)
+          # set_trace()
         self.mod.append(choice(tmpTbl._rows))
 
 
@@ -276,7 +293,7 @@ class treatments():
 
 def planningTest():
   # Test contrast sets
-  n = 1
+  n = 0
   dir = '../Data'
   one, two = explore(dir)
   # Training data

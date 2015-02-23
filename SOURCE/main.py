@@ -24,20 +24,6 @@ from sk import rdivDemo
 from pdb import set_trace
 from deTuner import tuner
 
-def lookup():
-  LUT = {}
-  LUT.update({'ant': (0.16, 0.33, 8, 1, 3, 8, False, True)})
-  LUT.update({'camel': (0.87, 0.49, 1, 0.67, 4, 14, True, True)})
-  LUT.update({'ivy': (0.89, 1, 1, 0.99, 1, 16, False, True)})
-  LUT.update({'jedit': (0.68, 0.12, 8, 0.63, 2, 1, False, True)})
-  LUT.update({'log4j': (0.58, 0.12, 8, 0.63, 2, 1, False, False)})
-  LUT.update({'lucene': (0.62, 0.54, 1, 1, 1, 16, True, False)})
-  LUT.update({'poi': (0.06, 0.38, 5, 0.95, 1, 13, True, True)})
-  LUT.update({'synapse': (0.09, 0.01, 9, 0.59, 5, 5, False, False)})
-  LUT.update({'velocity': (1, 1, 1, 1, 1, 9, True, False)})
-  LUT.update({'xalan': (0.64, 0.36, 5, 0.88, 1, 18, False, False)})
-  LUT.update({'xerces': (0.02, 0.25, 5, 0.64, 3, 20, True, False})
-  return LUT
 def Bugs(tbl):
   cells = [i.cells[-2] for i in tbl._rows]
   return cells
@@ -110,8 +96,6 @@ def main():
                                 test = test[_n],
                                 verbose = False,
                                 smoteit = True).main()
-#
-
             # set_trace()
             # Actual bugs
             actual = Bugs(test_df)
@@ -135,10 +119,10 @@ def main():
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
             outa.append(_Abcd(before = actual, after = before)[-1])
-          #   print(outa)
-          #   print('Gain =  %0.2f' % float(\
-          #   	(sum(before) - sum(after)) / sum(before)*100),r'%')
-
+            print(outa)
+            print('Gain =  %1.2f' % float(\
+            	   (sum(before) - sum(after)) / sum(before)*100),r'%')
+# 
           #   out1.append(\
           #   	float((sum(before) - sum(after)) / sum(before)*100))
 
