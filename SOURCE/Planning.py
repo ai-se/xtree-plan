@@ -217,11 +217,12 @@ class treatments():
     # set_trace()
     attr = {}
     bests = {}
-    for dd in list(set([v.DoC for v in best])): 
+    unq = list(set([v.DoC for v in best]))
+    for dd in unq: 
       bests.update({dd:sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist)})
       attr.update({dd:self.attributes(sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist))})   
       # set_trace()
-    return bests, attr[1][0], attr[1][-1], attr[2][0], attr[2][-1]
+    return bests, attr[unq[0]][0], attr[unq[0]][-1], attr[unq[-1]][0], attr[unq[-1]][-1]
 
 
   def getKey(self):
