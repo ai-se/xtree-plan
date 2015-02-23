@@ -44,7 +44,7 @@ def lookup():
   LUT.update({'synapse': (0.09, 0.01, 9, 0.59, 5, 5, False, False)})
   LUT.update({'velocity': (1, 1, 1, 1, 1, 9, True, False)})
   LUT.update({'xalan': (0.64, 0.36, 5, 0.88, 1, 18, False, False)})
-  LUT.update({'xerces': (0.02, 0.25, 5, 0.64, 3, 20, True, False})
+  LUT.update({'xerces': (0.02, 0.25, 5, 0.64, 3, 20, True, False)})
   return LUT
 
 class deltas():
@@ -80,6 +80,7 @@ class store():
   def __init__(self, node):
     self.node = node
     self.dist = 0
+    self.DoC = 0
     self.score = self.scorer(node)
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
@@ -198,10 +199,11 @@ class treatments():
     for leaf in leaves:
       l = store(leaf)
       for b in leaf.branch:
-        if b[0] in [bb[0] for bb in current.node.branch]: l.dist += 1
+        if b[0] in [bb[0] for bb in current.node.branch]: l.DoC += 1
       vals.append(l)
 
-    vals = sorted(vals, key = lambda F: F.score, reverse = False)
+    vals = sorted(vals, key = lambda F: F.DoC, reverse = False)
+    set_trace()
     bests = [v for v in vals if v.score < alpha * current.score]
     if not len(bests): bests = [v for v in vals]
     return bests, self.attributes(bests)
@@ -247,7 +249,7 @@ class treatments():
         # set_trace()
         found = False
         while not found:
-          p  = choice(patch)
+          p = choice(patch)
           tmpTbl = clone(self.test_DF,
                         rows = [k.cells for k in p],
                         discrete = True)
@@ -256,7 +258,7 @@ class treatments():
                     , tunings = None
                     , smoteit = True
                     , duplicate = True)
-          found = tC.cells[-2] >  np.mean(mass)
+          found = tC.cells[-2] > np.mean(mass)
         self.mod.append(choice(tmpTbl._rows))
 
 
