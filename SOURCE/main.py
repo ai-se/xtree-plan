@@ -71,7 +71,7 @@ def main():
 #       print(params)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 4
+      reps = 1
       abcd = [[], []];
       for t in _tuneit:
         tunedParams = None

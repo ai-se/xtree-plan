@@ -217,7 +217,7 @@ class treatments():
     # set_trace()
     attr = {}
     bests = {}
-    unq = list(set([v.DoC for v in best]))
+    unq = list(set([v.DoC for v in best])) # A list of all DoCs..
     for dd in unq: 
       bests.update({dd:sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist)})
       attr.update({dd:self.attributes(sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist))})   
