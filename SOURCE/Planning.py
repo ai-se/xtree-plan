@@ -259,7 +259,7 @@ class treatments():
       node = deltas(newRow, myTree)  # A delta instance for the rows
 
       if newRow.cells[-2] == 0:
-        node.contrastSet = []:
+        node.contrastSet = []
         self.mod.append(node.newRow)
       else:
         bests, far, farthest, near, nearest = self.finder2(node.loc)
