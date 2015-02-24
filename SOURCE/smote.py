@@ -15,7 +15,7 @@ from dectree import *
 
 
 def SMOTE(data = None, k = 5, atleast = 10
-          , atmost = 101, bugIndx = 2, resample = False):
+          , atmost = 51, bugIndx = 2, resample = False):
 
   def Bugs(tbl):
     cells = [i.cells[-bugIndx] for i in tbl._rows]

@@ -91,8 +91,8 @@ class treatments():
   def __init__(self, train = None, test = None,
                verbose = True, smoteit = False):
     self.train, self.test = train, test
-    self.train_DF = createTbl(train, _smote = smoteit, isBin = False) 
-    self.test_DF = createTbl(test, isBin = False)
+    self.train_DF = createTbl(train, _smote = smoteit, isBin = True) 
+    self.test_DF = createTbl(test, isBin = True)
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
 
@@ -222,7 +222,7 @@ class treatments():
       bests.update({dd:sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist)})
       attr.update({dd:self.attributes(sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist))})   
     # set_trace()
-    print(attr, unq)
+    # print(attr, unq)
     try:
       return bests, attr[unq[0]][0], attr[unq[0]][-1], attr[unq[-1]][0], attr[unq[-1]][-1]
     except IndexError:
@@ -259,18 +259,25 @@ class treatments():
       node = deltas(newRow, myTree)  # A delta instance for the rows
 
       if newRow.cells[-2] == 0:
-        node.contrastSet = []
+        node.contrastSet = []:
         self.mod.append(node.newRow)
       else:
         bests, far, farthest, near, nearest = self.finder2(node.loc)
-#         set_trace()
-        node.contrastSet = [nearest] # [far, farthest, near, nearest]
-        patch = node.patches(self.keys, N_Patches = 100)
-        #set_trace()
+        # set_trace()
+ 
+        # Examine 4 possible contrast set values (nearest best, farthest best,
+        # best branch in the same level, and the nearest branch in the upper 
+        # level.) I call these nearest, farthest, far, and near.
+        node.contrastSet = [far, farthest, near, nearest]
+
+        # Now generate 4 patches (one for each contrast set). Each patch has
+        # 10 potential solutions..
+        patch = node.patches(self.keys, N_Patches = 10)
+        
         found = False
-        life = 10
-        while not found and life>0:
-          p = choice(patch)
+        while not found and patch:
+         # print(len(patch))
+          p = patch.pop();
           tmpTbl = clone(self.test_DF,
                         rows = [k.cells for k in p],
                         discrete = True)
@@ -281,7 +288,8 @@ class treatments():
                     , duplicate = True)
           # print(tC.cells[-2] > np.mean(mass)) 
           found = tC.cells[-2] > np.mean(mass)
-          life -= 1
+          # life -= 1; 
+          # print(len(patch))
           # set_trace()
         self.mod.append(choice(tmpTbl._rows))
 
