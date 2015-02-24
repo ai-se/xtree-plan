@@ -221,7 +221,7 @@ class treatments():
     for dd in unq: 
       bests.update({dd:sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist)})
       attr.update({dd:self.attributes(sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist))})   
-      # set_trace()
+    # set_trace()
     return bests, attr[unq[0]][0], attr[unq[0]][-1], attr[unq[-1]][0], attr[unq[-1]][-1]
 
 

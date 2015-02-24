@@ -95,7 +95,7 @@ def main():
             newTab = treatments(train = train[_n],
                                 test = test[_n],
                                 verbose = False,
-                                smoteit = True).main()
+                                smoteit = False).main()
             # set_trace()
             # Actual bugs
             actual = Bugs(test_df)
