@@ -211,7 +211,7 @@ class treatments():
 
     vals = sorted(vals, key = lambda F: F.DoC, reverse = False)
     best = [v for v in vals if v.score < alpha * current.score]
-    if not best: bests = vals
+    if not len(best)>0: best = vals
 
     # Get a list of DoCs (DoC -> (D)epth (o)f (C)orrespondence, btw..)
     # set_trace()
@@ -222,6 +222,7 @@ class treatments():
       bests.update({dd:sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist)})
       attr.update({dd:self.attributes(sorted([v for v in best if v.DoC == dd], key = lambda F: F.dist))})   
     # set_trace()
+    print(attr, unq)
     try:
       return bests, attr[unq[0]][0], attr[unq[0]][-1], attr[unq[-1]][0], attr[unq[-1]][-1]
     except IndexError:
@@ -263,11 +264,12 @@ class treatments():
       else:
         bests, far, farthest, near, nearest = self.finder2(node.loc)
 #         set_trace()
-        node.contrastSet = [far, farthest, near, nearest]
+        node.contrastSet = [nearest] # [far, farthest, near, nearest]
         patch = node.patches(self.keys, N_Patches = 100)
         #set_trace()
         found = False
-        while not found:
+        life = 10
+        while not found and life>0:
           p = choice(patch)
           tmpTbl = clone(self.test_DF,
                         rows = [k.cells for k in p],
@@ -277,7 +279,9 @@ class treatments():
                     , tunings = None
                     , smoteit = True
                     , duplicate = True)
+          # print(tC.cells[-2] > np.mean(mass)) 
           found = tC.cells[-2] > np.mean(mass)
+          life -= 1
           # set_trace()
         self.mod.append(choice(tmpTbl._rows))
 
