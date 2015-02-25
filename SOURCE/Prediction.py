@@ -38,7 +38,7 @@ def Bugs(tbl):
 # 5. LOGISTIC REGRESSION
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def where2prd(train, test, tunings = None, smoteit = False):
+def where2prd(train, test, tunings = [None, None], smoteit = False, thresh = 1):
   "WHERE2"
 
   def flatten(x):
@@ -68,10 +68,10 @@ def where2prd(train, test, tunings = None, smoteit = False):
     else:
       return [node]
 
-  train_DF = createTbl(train, settings = tunings, _smote = False, isBin = False, bugThres = 2); 
-  test_df = createTbl(test);
+  train_DF = createTbl(train, settings = tunings[0], _smote = False, isBin = False, bugThres = 2); 
+  test_df = createTbl([test]);
   t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
-  myTree = tdiv(t)
+  myTree = tdiv(t, opt = tunings[1])
   testCase = test_df._rows
   rows, preds = [], []
   for tC in testCase:
@@ -81,7 +81,7 @@ def where2prd(train, test, tunings = None, smoteit = False):
     # set_trace()
     rows = [leaf.rows for leaf in leafNodes][0]
     vals = [r.cells[-2] for r in rows]
-    preds.append(0 if mean([k for k in vals]).tolist() == 0 else 1) 
+    preds.append(0 if mean([k for k in vals]).tolist() < 1 else 1) 
     # if median(vals) > 0 else preds.extend([0])
   return preds
 

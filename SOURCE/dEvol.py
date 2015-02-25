@@ -8,10 +8,11 @@ from settings import *
 from settingsWhere  import *
 from pdb import set_trace
 from abcd import _Abcd
-from Prediction import rforest, CART, Bugs
+from Prediction import rforest, CART, Bugs, where2prd
 from methods1 import createTbl
 from random import uniform as rand, randint as randi, choice as any
 tree = treeings()
+
 # set_trace()
 
 def say(l):
@@ -95,6 +96,7 @@ class diffEvol(object):
           better = True
       if better:
         lives += 1
+      print(self.frontier[-1])
     return self.frontier
 
 
@@ -103,7 +105,7 @@ class tuneRF(object):
   def __init__(self, data):
     self.data = data
     self.train = createTbl(data[:-1])
-    self.test = createTbl([data[-1]])
+    self.test = createTbl(data[-1])
 #   set_trace()
   def depen(self, rows):
     mod = rforest(self.train, self.test
@@ -125,28 +127,31 @@ class tuneWhere2(object):
     self.train = data[:-1]
     self.test = data[-1]
     self.tree = treeings()
-  def depen(self, rows):
+    self.where = None
+  def depen(self, row):
     # My where2pred() takes data in string format. Ex: '../Data/ant/ant-1.6.csv'
-    self.where = defaults().update(minSize = row[3]
-                                 , depthMin = row[4]
-                                 , depthMax = row[5]
-                                 , prune = row[6])
-    self.tre  min = 
-    self.tree.min = 
-    self.tree.min = 
-    actual = Bugs(createTbl(self.test, isBin = True))
-    preds = where2prd(self.train, self.test, tunings = rows)
-    return _Abcd(before = actual, after = preds, show = True)[-1]
+    self.where = defaults().update(minSize = row[4]
+                                 , depthMin = row[5]
+                                 , depthMax = row[6]
+                                 , prune = row[7]>0.5)
+    self.tree.infoPrune = row[1]
+    self.tree.m = row[2]
+    self.tree.n = row[3]
+    self.tree.prune = row[8]>0.5
+    actual = Bugs(createTbl([self.test], isBin = True))
+    preds = where2prd(self.train, self.test, tunings = [self.where, self.tree], thresh = row[0])
+    return _Abcd(before = actual, after = preds, show = False)[-1]
 
   def indep(self):
-    return [(0,1)          # Threshold
-          , (0,1)          # InfoGain
-          , (1,10)         # Min Sample Size
-          , (0,1)          # Min Size
-          , (1,6)          # Depth Min
-          , (1,20)         # Depth Max
-          , (True, False)  # Where Prune?
-          , (True, False)] # Tree Prune?
+    return [(0, 1)          # Threshold
+          , (0, 1)          # InfoPrune
+          , (1, 10)         # m          
+          , (1, 10)         # n          
+          , (0, 1)          # Min Size
+          , (1, 6)          # Depth Min
+          , (1, 20)         # Depth Max
+          , (0, 1)  # Where Prune?
+          , (0, 1)] # Tree Prune?
 
 class tuneCART(object):
   # Tune CART
@@ -192,8 +197,9 @@ def tuner(model, data):
 
 if __name__ == '__main__':
   from timeit import time
-  data = explore(dir = '../Data/')[0][-1]  # Only training data to tune.
-  for m in [tuneRF, tuneCART]:
+  data = explore(dir = '../Data/')[0][0]  # Only training data to tune.
+  # set_trace()
+  for m in [tuneWhere2]:
     t = time.time()
     mdl = m(data)
 #   _test(data)
