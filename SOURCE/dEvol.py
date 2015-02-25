@@ -19,7 +19,7 @@ def say(l):
 
 def settings(**d): return o(
   name = "Differention Evolution",
-  what = "DE tuner. Tune the predictor parameters parameters",
+  what = "DE tuner. Tune the planner parameters.",
   author = "Rahul Krishna",
   adaptation = "https://github.com/ai-se/Rahul/blob/master/DEADANT/deadant.py",
   copyleft = "(c) 2014, MIT license, http://goo.gl/3UYBp",
@@ -119,6 +119,27 @@ class tuneRF(object):
           , (2, 10)  # min_samples_split
           ]
 
+class tuneWhere2(object):
+  # Tune where
+  def __init__(self, data):
+    self.data = data
+    self.train = createTbl(data[:-1])
+    self.test = createTbl([data[-1]])
+
+  def depen(self, rows):
+    mod = 
+    pass
+
+  def indep(self):
+    return [(0,1)          # Threshold
+          , (0,1)          # InfoGain
+          , (1,10)         # Min Sample Size
+          , (0,1)          # Min Size
+          , (1,6)          # Depth Min
+          , (1,20)         # Depth Max
+          , (True, False)  # Where Prune?
+          , (True, False)] # Tree Prune?
+
 class tuneCART(object):
   # Tune CART
   def __init__(self, data):
@@ -139,6 +160,7 @@ class tuneCART(object):
           , (1, 20)  # min_samples_leaf
           , (1, 100)  # max features
           , (2, 1e3)]  # max_leaf_nodes
+
 
 def _test(data):
   m = tuneRF(data)

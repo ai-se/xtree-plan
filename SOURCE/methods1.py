@@ -23,7 +23,12 @@ def newTable(tbl, headerLabel, Rows):
  tbl2.headers = tbl.headers + [newHead]
  return clone(tbl2, rows = Rows)
 
-def createTbl(data, _smote = False, isBin = False, bugThres = 2):
+def createTbl(data
+            , settings = None 
+            , _smote = False
+            , isBin = False
+            , bugThres = 2):
+
   """
   kwargs:
   _smote = True/False : SMOTE input data (or not)
