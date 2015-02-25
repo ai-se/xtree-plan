@@ -122,14 +122,18 @@ class tuneRF(object):
 class tuneWhere2(object):
   # Tune where
   def __init__(self, data):
-    self.data = data
-    self.train = createTbl(data[:-1])
-    self.test = createTbl([data[-1]])
+    self.train = data[:-1]
+    self.test = data[-1]
 
   def depen(self, rows):
-    mod = 
-    pass
+    # My where2pred() takes data in string format. Ex: '../Data/ant/ant-1.6.csv'
+    actual = Bugs(createTbl(self.test, isBin = True))
+    preds = where2prd(self.train, self.test, tunings = rows)
+    return _Abcd(before = actual, after = preds, show = True)[-1]
 
+mod = where2pred(self.train, self.test, 
+                     tunings = rows,
+    
   def indep(self):
     return [(0,1)          # Threshold
           , (0,1)          # InfoGain
