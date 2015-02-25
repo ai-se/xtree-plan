@@ -20,8 +20,7 @@ from sklearn.tree import DecisionTreeRegressor
 from smote import *
 import pandas as pd
 from abcd import _Abcd
-from dectree import *
-
+from methods1 import *
 
 def formatData(tbl):
   Rows = [i.cells for i in tbl._rows]
@@ -39,37 +38,67 @@ def Bugs(tbl):
 # 5. LOGISTIC REGRESSION
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def where2prd(train, test, smoteit = True):
+def where2prd(train, test, tunings = None, smoteit = False):
   "WHERE2"
-  t = discreteNums(train, map(lambda x: x.cells, train._rows))
+
+  def flatten(x):
+    """
+    Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
+    and returns a single list [a,b,c,d,e,f]
+    """
+    result = []
+    for el in x:
+        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+            result.extend(flatten(el))
+        else:
+            result.append(el)
+    return result
+
+  def leaves(node):
+    """
+    Returns all terminal nodes.
+    """
+    L = []
+    if len(node.kids) > 1:
+      for l in node.kids:
+        L.extend(leaves(l))
+      return L
+    elif len(node.kids) == 1:
+      return [node.kids]
+    else:
+      return [node]
+
+  train_DF = createTbl(train, settings = tunings, _smote = False, isBin = False, bugThres = 2); 
+  test_df = createTbl(test);
+  t = discreteNums(train_DF, map(lambda x: x.cells, train_DF._rows))
   myTree = tdiv(t)
-  testCase = test._rows
+  testCase = test_df._rows
   rows, preds = [], []
   for tC in testCase:
     newRow = tC;
     loc = drop(tC, myTree)  # Drop a test case in the tree & see where it lands
-    if not loc.kids:
-      rows.extend(loc.rows)
-    else:
-      for k in loc.kids: rows.extend(k.rows)
+    leafNodes = flatten(leaves(loc))
+    # set_trace()
+    rows = [leaf.rows for leaf in leafNodes][0]
     vals = [r.cells[-2] for r in rows]
-    preds.append([mode([k for k in vals])[0].tolist()])  # \
-                 # if median(vals) > 0 else preds.extend([0])
+    preds.append(0 if mean([k for k in vals]).tolist() == 0 else 1) 
+    # if median(vals) > 0 else preds.extend([0])
   return preds
 
 def _where2pred():
   "Test where2"
   dir = '../Data'
   one, two = explore(dir)
+  # set_trace()
   # Training data
-  train_DF = createTbl(one[0])
+  train = one[0][:-1]
   # Test data
-  test_df = createTbl(two[0])
-  actual = Bugs(test_df)
-  preds = where2prd(train_DF, test_df)
-  for a, b in zip(actual, preds): print a, b
-  set_trace()
-  print _Abcd(before = actual, after = preds, show = False)
+  test = [one[0][-1]]
+  actual = Bugs(createTbl(test, isBin = True))
+  preds = where2prd(train, test)
+  # for a, b in zip(actual, preds): print a, b
+  # set_trace()
+  print _Abcd(before = actual, after = preds, show = True)
 
 
 def rforest(train, test, tunings = None, smoteit = True):
@@ -213,4 +242,5 @@ def knn(train, test, smoteit = True):
 
 if __name__ == '__main__':
   random.seed(0)
-  for _ in xrange(10): _CART()
+  for _ in xrange(10): _where2pred()
+
