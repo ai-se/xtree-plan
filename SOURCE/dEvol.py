@@ -125,10 +125,15 @@ class tuneWhere2(object):
     self.train = data[:-1]
     self.test = data[-1]
     self.tree = treeings()
-
   def depen(self, rows):
     # My where2pred() takes data in string format. Ex: '../Data/ant/ant-1.6.csv'
-    
+    self.where = defaults().update(minSize = row[3]
+                                 , depthMin = row[4]
+                                 , depthMax = row[5]
+                                 , prune = row[6])
+    self.tre  min = 
+    self.tree.min = 
+    self.tree.min = 
     actual = Bugs(createTbl(self.test, isBin = True))
     preds = where2prd(self.train, self.test, tunings = rows)
     return _Abcd(before = actual, after = preds, show = True)[-1]
