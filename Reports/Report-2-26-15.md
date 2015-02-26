@@ -21,7 +21,7 @@
 + The DATA is discretized into Defective == {True, False} with a threshold 1. ```Defect = True if bugs > 1 else 0```
 
 ### Prediction Phase
-+ CART is now trained on Binary Data.
++ CART is now trained on Binary Data. This is actually [better than original results](https://github.com/rahlk/Research/wiki/SMOTE-Pt-I), there smoting didn't happen on binary data.
   - A threshold of Bugs > 1 is used to determine if a row is defective (or not).
   - CART is trained on a the other half of the pruned dataset. **NOTE: I do not use the same rows of the training data for planning and prediction.**
 
