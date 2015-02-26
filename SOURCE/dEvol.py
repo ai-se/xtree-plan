@@ -32,9 +32,9 @@ def settings(**d): return o(
        iter = 5,
        epsilon = 1.01,
        N = 5,
-       f = 0.75,
+       f = 0.5,
        cf = 0.4,
-       lives = 6)
+       lives = 20)
   ).update(**d)
 
 The = settings()
@@ -222,7 +222,7 @@ if __name__ == '__main__':
   from timeit import time
   data = explore(dir = '../Data/')[0][0]  # Only training data to tune.
   # set_trace()
-  for m in [tuneWhere2]:
+  for m in [tuneCART]:
     t = time.time()
     mdl = m(data)
 #   _test(data)

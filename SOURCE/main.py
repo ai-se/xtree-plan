@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 from sk import rdivDemo
 from pdb import set_trace
-from deTuner import tuner
+from dEvol import tuner
 
 def Bugs(tbl):
   cells = [i.cells[-2] for i in tbl._rows]
@@ -53,13 +53,14 @@ def main():
   numData = len(dataName)  # Number of data
   Prd = [CART]  # , rforest]  # , adaboost, logit, knn]
   _smoteit = [True]  # , False]
-  _tuneit = [False]  # , False]
+  _tuneit = [True]  # , False]
   cd = {}
   abcd = []
   res = {}
   out11 = [];
   outA1 = [];
-  for n in xrange(2):
+  for kk in xrange(1, 3):
+    n = -kk
     out1 = [];
     outa = []
     one, two = explore(dir)
@@ -67,14 +68,14 @@ def main():
     print('##', dataName[n])
     for p in Prd:
 #       print(p.__doc__)
-      # params = tuner(p, data[0])
+      params = tuner(p, data[0])
 #       print(params)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 1
+      reps = 10
       abcd = [[], []];
       for t in _tuneit:
-        tunedParams = None
+        tunedParams = None if not t else params
         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
 #           print('### SMOTE-ing') if _smote else print('### No SMOTE-ing')
@@ -121,7 +122,7 @@ def main():
             outa.append(_Abcd(before = actual, after = before)[-1])
             print(outa)
             print('Gain =  %1.2f' % float(\
-            	   (sum(before) - sum(after)) / sum(before)*100),r'%')
+            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
             print(showoff(dataName[n], before, after)[1])
             out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
 

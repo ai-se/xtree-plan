@@ -9,7 +9,7 @@ axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
-from random import choice, seed, uniform as rand
+from random import choice, seed as rseed, uniform as rand
 import pandas as pd
 from dectree import *
 
@@ -79,7 +79,7 @@ def SMOTE(data = None, k = 5, atleast = 10
       return [choice(data)  for _ in xrange(atmost)]
 
   newCells = []
-  seed(1)
+  rseed(1)
   unique, counts = minority(data)
   rows = data._rows
   for u, n in zip(unique, counts):
