@@ -5,7 +5,8 @@
 
 ### In the Planning Phase
 
-+ I use DE to tune the data to find the best settings for building the Contrast Set.
++ I use DE to tune the data to find the best settings for building the Contrast Set. As expected, tuning helps improve where2's accuracy. My DE tunes for:
+  +  
 
 + Next I build 4 Islands of 10 potential row values and use CART (trained on the SMOTED, pruned training dataset) to estimate the number of bugs in each island. If the mean of the estimated bugs is less than the original number of bugs then I choose a row from that island.
  - I use a distance/depth policy to create these 4 islands (nearest, near, far, farthest). And pick the best contrast set from that.
@@ -17,26 +18,37 @@
 ### Prediction Phase
 + CART is now trained on Binary Data.
   - A threshold of Bugs > 1 is used to determine if a row is defective (or not).
-  - CART is trained on a the other half of the pruned dataset. **NOTE: _**We do not use the same training data for planning and prediction.**_**
+  - CART is trained on a the other half of the pruned dataset. **NOTE: I do not use the same rows of the training data for planning and prediction.**
 
 
 
-**Prediction Accuracy**
-
+**Prediction Accuracy of SMOTED CART with DEFECTS = {TRUE, FALSE} and with threshold of 1**
 ```
+
+rank ,         name ,    med   ,  iqr 
+----------------------------------------------------
+   1 ,      synapse ,    0.00  ,  0.00   (*              |              ), 0,  0,  0
+   2 ,        log4j ,    9.00  ,  9.00   (---*           |              ), 2,  11,  14
+   2 ,          ivy ,    15.00  ,  15.00 (-----*         |              ), 0,  15,  15
+   3 ,       xerces ,    35.00  ,  5.00  (          --*  |              ), 31,  35,  37
+   4 ,        xalan ,    50.00  ,  5.00  (               |-*            ), 46,  50,  53
+   4 ,       pbeans ,    55.00  ,  31.00 (        -------|---*          ), 25,  56,  62
+   5 ,        camel ,    60.00  ,  2.00  (               |    -*        ), 58,  60,  60
+   5 ,       lucene ,    61.50  ,  2.00  (               |     *        ), 60,  62,  62
+   5 ,          poi ,    61.50  ,  4.00  (               |    -*        ), 59,  62,  64
+   6 ,     velocity ,    66.00  ,  1.00  (               |      -*      ), 65,  66,  66
+   6 ,      forrest ,    69.50  ,  21.00 (               |    -------*  ), 59,  78,  80
+   7 ,          ant ,    73.00  ,  1.00  (               |         *    ), 72,  73,  74
+   8 ,        jedit ,    79.00  ,  2.00  (               |           *  ), 78,  79,  80
+```
+
+**GAIN**
+```
+
 rank ,         name ,    med   ,  iqr
 ----------------------------------------------------
-   1 ,          ivy ,    0.00  ,  0.00 (*              |              ), 0,  0,  0
-   1 ,      synapse ,    0.00  ,  0.00 (*              |              ), 0,  0,  0
-   1 ,        log4j ,    14.00  ,  0.00 (     *         |              ), 14,  14,  14
-   1 ,       pbeans ,    20.00  ,  0.00 (       *       |              ), 20,  20,  20
-   1 ,       xerces ,    36.00  ,  0.00 (             * |              ), 36,  36,  36
-   2 ,        xalan ,    52.00  ,  0.00 (               |   *          ), 52,  52,  52
-   2 ,       lucene ,    58.00  ,  0.00 (               |      *       ), 58,  58,  58
-   2 ,          poi ,    60.00  ,  0.00 (               |      *       ), 60,  60,  60
-   2 ,        camel ,    61.00  ,  0.00 (               |       *      ), 61,  61,  61
-   3 ,     velocity ,    65.00  ,  0.00 (               |        *     ), 65,  65,  65
-   3 ,          ant ,    73.00  ,  0.00 (               |           *  ), 73,  73,  73
-   3 ,      forrest ,    78.00  ,  0.00 (               |             *), 78,  78,  78
-   3 ,        jedit ,    79.00  ,  0.00 (               |             *), 79,  79,  79
-```
+   1 ,          ant ,        6  ,      0 (*              |              ), 6,  6,  6
+   1 ,        camel ,        6  ,      0 (*              |              ), 6,  6,  6
+   1 ,        jedit ,    -1.23  ,   5.32 (        -------|-----*        ), -4,  0,  2
+   1 ,      forrest ,     0.00  ,  42.22 (   -------*    |              ), -20,  0,  30
+   1 ,     velocity ,    -1  ,  0 (*              |              ), -1,  -1,  -1
