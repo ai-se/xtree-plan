@@ -51,6 +51,15 @@ def somepairs(m, data):
       east, west = two, three
   return west, east
 
+def allpairs(m, data):
+  cmax = -10e32
+  for one in data:
+    for two in [d for d in data if not d==1]: 
+      c = dist(m, one, two)+1e-5;
+      if c >= cmax:
+        cmax = c;
+        east, west = one, two
+  return west, east
 
 def fastmap(m, data):
   "Divide data into two using distance to two distant items."

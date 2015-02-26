@@ -31,10 +31,10 @@ def settings(**d): return o(
   de = o(np = 5,
        iter = 5,
        epsilon = 1.01,
-       N = 20,
-       f = 0.3,
+       N = 5,
+       f = 0.75,
        cf = 0.4,
-       lives = 100)
+       lives = 6)
   ).update(**d)
 
 The = settings()
@@ -47,20 +47,24 @@ class diffEvol(object):
   def __init__(self, model, data):
     self.frontier = []
     self.model = model(data)
+    self.xbest = []
 
   def new(self):
     # Creates a new random instance
-    return [randi(d[0], d[1]) for d in self.model.indep()]
+    return [rand(d[0], d[1]) for d in self.model.indep()]
 
   def initFront(self, N):
     # Initialize frontier
     for _ in xrange(N):
       self.frontier.append(self.new())
 
-  def extrapolate(self, l2, l3, l4):
-    return [max(d[0],
-                min(d[1], int(a + The.de.f * (b - c)))) for a,
-                b, c, d in zip(l2, l3, l4, self.model.indep())]
+  def extrapolate(self, xbest, l1, l2, l3, l4):
+    try:
+      return [max(d[0],
+                min(d[1], y + The.de.f * (z + a - b - c))) for y, z, a,
+                b, c, d in zip(xbest, l1, l2, l3, l4, self.model.indep())]
+    except TypeError:
+      set_trace()
 
   def one234(self, one, pop, f = lambda x:id(x)):
     def oneOther():
@@ -70,34 +74,53 @@ class diffEvol(object):
       seen.append(f(x))
       return x
     seen = [ f(one) ]
-    return oneOther(), oneOther(), oneOther()
+    return oneOther(), oneOther(), oneOther(), oneOther()
+
+ # def top234(self, one, pop):
+
 
   def dominates(self, one, two):
 #     set_trace()
     return self.model.depen(one) > self.model.depen(two)
-
+  
+  def sortbyscore(self):
+ #    front = []
+ #    for f in self.frontier:
+ #      sc = self.model.depen(f)
+ #      f.append(sc)
+ #      front.append(f)
+    return sorted(self.frontier, key = lambda F: self.model.depen(F), reverse = True)
   def DE(self):
     self.initFront(The.de.N)
     lives = The.de.lives
     while lives > 0:
       better = False
-      for pos, l1 in enumerate(self.frontier):
+      self.xbest =  self.sortbyscore()[0]
+      for pos, val in enumerate(self.frontier):
         lives -= 1
-        l2, l3, l4 = self.one234(l1, self.frontier)
-        new = self.extrapolate(l2, l3, l4)
-        if  self.dominates(new, l1):
+        l1, l2, l3, l4 = self.one234(val, self.frontier)
+        new = self.extrapolate(self.xbest, l1, l2, l3, l4)
+        if  self.dominates(new, val):
           self.frontier.pop(pos)
           self.frontier.insert(pos, new)
           better = True
-        elif self.dominates(l1, new):
+          lives += 1
+          if self.model.depen(new) > self.model.depen(self.xbest):
+            self.xbest = new
+          # print(self.model.depen(new))
+        elif self.dominates(val, new):
           better = False
+          if self.model.depen(val) > self.model.depen(self.xbest):
+            self.xbest = val
+          # print(self.model.depen(new))
         else:
           self.frontier.append(new)
+          if self.model.depen(new) > self.model.depen(self.xbest):
+            self.xbest = new
           better = True
-      if better:
-        lives += 1
-      print(self.frontier[-1])
-    return self.frontier
+          lives += 1
+      print(self.model.depen(self.xbest))
+    return self.xbest
 
 
 class tuneRF(object):
@@ -131,15 +154,15 @@ class tuneWhere2(object):
   def depen(self, row):
     # My where2pred() takes data in string format. Ex: '../Data/ant/ant-1.6.csv'
     self.where = defaults().update(minSize = row[4]
-                                 , depthMin = row[5]
-                                 , depthMax = row[6]
+                                 , depthMin = int(row[5])
+                                 , depthMax = int(row[6])
                                  , prune = row[7]>0.5)
     self.tree.infoPrune = row[1]
-    self.tree.m = row[2]
-    self.tree.n = row[3]
+    self.tree.m = int(row[2])
+    self.tree.n = int(row[3])
     self.tree.prune = row[8]>0.5
     actual = Bugs(createTbl([self.test], isBin = True))
-    preds = where2prd(self.train, self.test, tunings = [self.where, self.tree], thresh = row[0])
+    preds = where2prd(self.train, [self.test], tunings = [self.where, self.tree], thresh = row[0])
     return _Abcd(before = actual, after = preds, show = False)[-1]
 
   def indep(self):
@@ -185,8 +208,8 @@ def _de(model, data):
   "DE"
   DE = diffEvol(model, data);
 #   set_trace()
-  res = sorted([k for k in DE.DE()],
-               key = lambda F: F[-1])[-1]
+  res = DE.DE()
+  print
   return res
 
 def tuner(model, data):
@@ -197,7 +220,7 @@ def tuner(model, data):
 
 if __name__ == '__main__':
   from timeit import time
-  data = explore(dir = '../Data/')[0][0]  # Only training data to tune.
+  data = explore(dir = '../Data/')[0][1]  # Only training data to tune.
   # set_trace()
   for m in [tuneWhere2]:
     t = time.time()

@@ -33,15 +33,16 @@ def explore(dir):
   testing.append(test)
  return training, testing
 
+"""
 def tdivPrec(where = None , dtree = None, train = None, test = None):
  rseed(1)
  makeaModel = makeAmodel.makeAModel()
 
  # pdb.set_trace()
 
- """
- Training
- """
+"""
+# Training
+"""
  _r = []
  for t in train:
   m = makeaModel.csv2py(t)
@@ -61,9 +62,9 @@ def tdivPrec(where = None , dtree = None, train = None, test = None):
  tbl2 = newTable(tbl, headerLabel, Rows)
 
 
- """
- Testing
- """
+"""
+ #Testing
+"""
  _r = []
  for tt in test:
   mTst = makeaModel.csv2py(tt)
@@ -133,9 +134,9 @@ def tdivPrec1(where = None , dtree = None, train = None, test = None):
 
  # pdb.set_trace()
 
- """
- Training
- """
+"""
+# Training
+"""
  _r = []
  for t in train:
   m = makeaModel.csv2py(t)
@@ -154,9 +155,9 @@ def tdivPrec1(where = None , dtree = None, train = None, test = None):
  tbl2 = newTable(tbl, headerLabel, Rows)
 
 
- """
- Testing
- """
+"""
+# Testing
+"""
  _r = []
  for tt in test:
   mTst = makeaModel.csv2py(tt)
@@ -221,3 +222,5 @@ def tdivPrec1(where = None , dtree = None, train = None, test = None):
 
 if __name__ == '__main__':
  print 'dectree.py'
+
+"""
