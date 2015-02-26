@@ -17,7 +17,7 @@
 ### Prediction Phase
 + CART is now trained on Binary Data.
   - A threshold of Bugs > 1 is used to determine if a row is defective (or not).
-  - CART is trained on a the other half of the pruned dataset. **NOTE: _**We do not use the same training data for planning and prediction.**_**
+  - CART is trained on a the other half of the pruned dataset. **NOTE: We do not use the same training data for planning and prediction.**
 
 
 
