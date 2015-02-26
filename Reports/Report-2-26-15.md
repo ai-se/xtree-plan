@@ -21,7 +21,7 @@
 
 
 
-**Prediction Accuracy**
+**Prediction Accuracy of SMOTED CART with DEFECTS = {TRUE, FALSE} and with threshold of 1**
 
 ```
 rank ,         name ,    med   ,  iqr
