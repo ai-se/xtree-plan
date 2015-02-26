@@ -281,7 +281,7 @@ class treatments():
           tmpTbl = clone(self.test_DF,
                         rows = [k.cells for k in p],
                         discrete = True)
-          mass = CART(createTbl(self.train, _smote = False)
+          mass = CART(createTbl(self.train, _smote = False, isBin = True)
                     , tmpTbl
                     , tunings = None
                     , smoteit = True

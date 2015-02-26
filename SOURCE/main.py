@@ -59,7 +59,7 @@ def main():
   res = {}
   out11 = [];
   outA1 = [];
-  for n in xrange(numData):
+  for n in xrange(2):
     out1 = [];
     outa = []
     one, two = explore(dir)
@@ -122,12 +122,11 @@ def main():
             print(outa)
             print('Gain =  %1.2f' % float(\
             	   (sum(before) - sum(after)) / sum(before)*100),r'%')
-# 
-          #   out1.append(\
-          #   	float((sum(before) - sum(after)) / sum(before)*100))
+            print(showoff(dataName[n], before, after)[1])
+            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
 
-          # out1 = [o for o in out1 if np.isfinite(o)]
-          # out1.insert(0, dataName[n])
+          out1 = [o for o in out1 if np.isfinite(o)]
+          out1.insert(0, dataName[n])
 
           outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
@@ -141,7 +140,7 @@ def main():
     #           else out.insert(0, p.__doc__ + '(raw, Naive)')
     #           abcd[1].append(out)
     # print(out1)
-    # out11.append(out1)
+    out11.append(out1)
     outA1.append(outa)
       # print()
       # cd.update({p.__doc__:sorted(cd)})
@@ -155,6 +154,7 @@ def main():
     # print('```')
 
     print('```')
+    rdivDemo(out11, isLatex = False)
     rdivDemo(outA1, isLatex = False)
 # #     print(cd)
     # printsk(res)

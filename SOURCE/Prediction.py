@@ -21,6 +21,7 @@ from smote import *
 import pandas as pd
 from abcd import _Abcd
 from methods1 import *
+from sk import rdivDemo
 
 def formatData(tbl):
   Rows = [i.cells for i in tbl._rows]
@@ -98,7 +99,7 @@ def _where2pred():
   preds = where2prd(train, test)
   # for a, b in zip(actual, preds): print a, b
   # set_trace()
-  print _Abcd(before = actual, after = preds, show = True)
+  return _Abcd(before = actual, after = preds, show = False)[-1]
 
 
 def rforest(train, test, tunings = None, smoteit = True):
@@ -242,5 +243,8 @@ def knn(train, test, smoteit = True):
 
 if __name__ == '__main__':
   random.seed(0)
-  for _ in xrange(10): _where2pred()
+  Dat = [];
+  for _ in xrange(10):Dat.append(_where2pred())
+  Dat.insert(0, 'Where2 Tuned')
+  rdivDemo(Dat)
 
