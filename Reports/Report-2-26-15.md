@@ -16,7 +16,7 @@
 + Next I build 4 Islands of 10 potential row values and use CART (trained on the SMOTED, pruned training dataset) to estimate the number of bugs in each island. If the mean of the estimated bugs is less than the original number of bugs then I choose a row from that island.
  - I use a distance/depth policy to create these 4 islands (nearest, near, far, farthest). And pick the best contrast set from that.
 
-+ No SMOTING while planning (SMOTING before planning, for some reason, wreaks havoc).
++ No SMOTING while planning (SMOTING whilst planning, for some reason, wreaks havoc).
 
 + The DATA is discretized into Defective == {True, False} with a threshold 1. ```Defect = True if bugs > 1 else 0```
 
