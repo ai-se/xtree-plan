@@ -5,7 +5,7 @@
 
 ### In the Planning Phase
 
-+ I use DE to tune the data to find the best settings for building the Contrast Set.
++ I use DE to tune the data to find the best settings for building the Contrast Set. As expected, tuning helps improve where2's accuracy.
 
 + Next I build 4 Islands of 10 potential row values and use CART (trained on the SMOTED, pruned training dataset) to estimate the number of bugs in each island. If the mean of the estimated bugs is less than the original number of bugs then I choose a row from that island.
  - I use a distance/depth policy to create these 4 islands (nearest, near, far, farthest). And pick the best contrast set from that.
@@ -17,7 +17,7 @@
 ### Prediction Phase
 + CART is now trained on Binary Data.
   - A threshold of Bugs > 1 is used to determine if a row is defective (or not).
-  - CART is trained on a the other half of the pruned dataset. **NOTE: We do not use the same training data for planning and prediction.**
+  - CART is trained on a the other half of the pruned dataset. **NOTE: I do not use the same rows of the training data for planning and prediction.**
 
 
 
