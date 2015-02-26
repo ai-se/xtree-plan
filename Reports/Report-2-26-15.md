@@ -10,10 +10,9 @@
 ![](_img/params.png)
 
 + Instead of standard DE, i used DE/best/2, with:
-```
-Xbest + F * (A + B - Y - Z)
-Here, A,B,Y,Z are candidates selected at random
-```
+  - ```xNew = Xbest + F * (A + B - Y - Z)```
+  - Here, A,B,Y,Z are candidates selected at random
+  
 + Next I build 4 Islands of 10 potential row values and use CART (trained on the SMOTED, pruned training dataset) to estimate the number of bugs in each island. If the mean of the estimated bugs is less than the original number of bugs then I choose a row from that island.
  - I use a distance/depth policy to create these 4 islands (nearest, near, far, farthest). And pick the best contrast set from that.
 
