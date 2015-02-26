@@ -246,5 +246,5 @@ if __name__ == '__main__':
   Dat = [];
   for _ in xrange(10):Dat.append(_where2pred())
   Dat.insert(0, 'Where2 Tuned')
-  rdivDemo(Dat)
+  rdivDemo([Dat])
 
