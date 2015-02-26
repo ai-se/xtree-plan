@@ -57,3 +57,7 @@ rank ,         name ,    med   ,  iqr
    1 ,        jedit ,    -1.23  ,   5.32 (        -------|-----*        ), -4,  0,  2
    1 ,      forrest ,     0.00  ,  42.22 (   -------*    |              ), -20,  0,  30
    1 ,     velocity ,    -1  ,  0 (*              |              ), -1,  -1,  -1
+```
+## So... What next?
+ - Create a New Contrast Set Rig with just CART, see if that helps increasing the gain.
+ - I noticed my Tuning Rig [reported on Jan 29th](https://github.com/rahlk/Research/wiki/SMOTE) was not parsing parameters to my CART with SMOTE as I wanted it to; thus, I am now re-evaluating the effect of SMOTE+tuning just to be sure.. 
