@@ -220,7 +220,7 @@ def tuner(model, data):
 
 if __name__ == '__main__':
   from timeit import time
-  data = explore(dir = '../Data/')[0][1]  # Only training data to tune.
+  data = explore(dir = '../Data/')[0][0]  # Only training data to tune.
   # set_trace()
   for m in [tuneWhere2]:
     t = time.time()
