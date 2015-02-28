@@ -244,7 +244,7 @@ def knn(train, test, smoteit = True):
 if __name__ == '__main__':
   random.seed(0)
   Dat = [];
-  for _ in xrange(10):Dat.append(_where2pred())
-  Dat.insert(0, 'Where2 Tuned')
-  rdivDemo([Dat])
+  for _ in xrange(10):print(_where2pred())
+#  Dat.insert(0, 'Where2 untuned')
+#  rdivDemo([Dat])
 

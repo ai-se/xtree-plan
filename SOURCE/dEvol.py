@@ -119,7 +119,7 @@ class diffEvol(object):
             self.xbest = new
           better = True
           lives += 1
-      print(self.model.depen(self.xbest))
+#      print(self.model.depen(self.xbest))
     return self.xbest
 
 
@@ -173,15 +173,15 @@ class tuneWhere2(object):
           , (0, 1)          # Min Size
           , (1, 6)          # Depth Min
           , (1, 20)         # Depth Max
-          , (0, 1)  # Where Prune?
-          , (0, 1)] # Tree Prune?
+          , (0, 1)          # Where Prune?
+          , (0, 1)]         # Tree Prune?
 
 class tuneCART(object):
   # Tune CART
   def __init__(self, data):
     self.data = data
-    self.train = createTbl(data[:-1])
-    self.test = createTbl([data[-1]])
+    self.train = createTbl(data[:-1], isBin = True)
+    self.test = createTbl([data[-1]], isBin = True)
 
   def depen(self, rows):
     mod = CART(self.train, self.test
@@ -209,7 +209,7 @@ def _de(model, data):
   DE = diffEvol(model, data);
 #   set_trace()
   res = DE.DE()
-  print
+#  print(model.depen(res))
   return res
 
 def tuner(model, data):
@@ -221,7 +221,7 @@ def tuner(model, data):
 if __name__ == '__main__':
   from timeit import time
   data = explore(dir = '../Data/')[0][0]  # Only training data to tune.
-  # set_trace()
+#  set_trace()
   for m in [tuneCART]:
     t = time.time()
     mdl = m(data)

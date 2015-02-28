@@ -53,14 +53,14 @@ def main():
   numData = len(dataName)  # Number of data
   Prd = [CART]  # , rforest]  # , adaboost, logit, knn]
   _smoteit = [True]  # , False]
-  _tuneit = [True]  # , False]
+  _tuneit = [True, False]
   cd = {}
   abcd = []
   res = {}
   out11 = [];
   outA1 = [];
-  for kk in xrange(1, 3):
-    n = -kk
+  for n in xrange(numData):
+
     out1 = [];
     outa = []
     one, two = explore(dir)
@@ -68,14 +68,12 @@ def main():
     print('##', dataName[n])
     for p in Prd:
 #       print(p.__doc__)
-      params = tuner(p, data[0])
-#       print(params)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 10
+      reps = 3
       abcd = [[], []];
       for t in _tuneit:
-        tunedParams = None if not t else params
+#        tunedParams = None if not t else params
         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
 #           print('### SMOTE-ing') if _smote else print('### No SMOTE-ing')
@@ -91,13 +89,13 @@ def main():
             # Testing data
             test_df = createTbl(test[_n], isBin = True)
             # Tune?
-#             tunedParams = None if not t else params
+            tunedParams = None if not t else tuner(p, train[_n])
             # Find and apply contrast sets
-            newTab = treatments(train = train[_n],
-                                test = test[_n],
-                                verbose = False,
-                                smoteit = False).main()
-            # set_trace()
+#            newTab = treatments(train = train[_n],
+#                                test = test[_n],
+#                                verbose = False,
+#                                smoteit = False).main()
+#            set_trace()
             # Actual bugs
             actual = Bugs(test_df)
             # actual1 = [0 if a < 2 else 1 for a in actual]
@@ -107,10 +105,10 @@ def main():
                        smoteit = True)
             # before1 = [0 if b < 1 else 1 for b in before]
             # Use the classifier to predict the number of bugs in the new data.
-            after = p(train_DF, newTab,
-                      tunings = tunedParams,
-                      smoteit = _smote)
-            # after1 = [0 if a < 2 else 1 for a in after]
+#            after = p(train_DF, newTab,
+#                      tunings = tunedParams,
+#                      smoteit = _smote)
+#            # after1 = [0 if a < 2 else 1 for a in after]
 
             # set_trace()
 
@@ -121,13 +119,13 @@ def main():
 #             write('Test: '); [write(l) for l in test[_n]],
             outa.append(_Abcd(before = actual, after = before)[-1])
             print(outa)
-            print('Gain =  %1.2f' % float(\
-            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
-            print(showoff(dataName[n], before, after)[1])
-            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
-
-          out1 = [o for o in out1 if np.isfinite(o)]
-          out1.insert(0, dataName[n])
+#            print('Gain =  %1.2f' % float(\
+#            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
+#            print(showoff(dataName[n], before, after)[1])
+#            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
+#
+#          out1 = [o for o in out1 if np.isfinite(o)]
+#          out1.insert(0, dataName[n])
 
           outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
@@ -141,7 +139,7 @@ def main():
     #           else out.insert(0, p.__doc__ + '(raw, Naive)')
     #           abcd[1].append(out)
     # print(out1)
-    out11.append(out1)
+#    out11.append(out1)
     outA1.append(outa)
       # print()
       # cd.update({p.__doc__:sorted(cd)})
@@ -155,7 +153,7 @@ def main():
     # print('```')
 
     print('```')
-    rdivDemo(out11, isLatex = False)
+#    rdivDemo(out11, isLatex = False)
     rdivDemo(outA1, isLatex = False)
 # #     print(cd)
     # printsk(res)
