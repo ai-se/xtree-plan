@@ -6,17 +6,22 @@
 ### In the Planning Phase
 
 + I use DE to tune the data to find the best settings for building the Contrast Set. As expected, tuning helps improve where2's accuracy. My DE tunes for:
-  +  
+  
+![](_img/params.png)
 
++ Instead of standard DE, i used DE/best/2, with:
+  - ```xNew = Xbest + F * (A + B - Y - Z)```
+  - Here, A,B,Y,Z are candidates selected at random
+  
 + Next I build 4 Islands of 10 potential row values and use CART (trained on the SMOTED, pruned training dataset) to estimate the number of bugs in each island. If the mean of the estimated bugs is less than the original number of bugs then I choose a row from that island.
  - I use a distance/depth policy to create these 4 islands (nearest, near, far, farthest). And pick the best contrast set from that.
 
-+ No SMOTING while planning (SMOTING before planning, for some reason, wreaks havoc).
++ No SMOTING while planning (SMOTING whilst planning, for some reason, wreaks havoc).
 
 + The DATA is discretized into Defective == {True, False} with a threshold 1. ```Defect = True if bugs > 1 else 0```
 
 ### Prediction Phase
-+ CART is now trained on Binary Data.
++ CART is now trained on Binary Data. This is actually [better than original results](https://github.com/rahlk/Research/wiki/SMOTE-Pt-I), there smoting didn't happen on binary data.
   - A threshold of Bugs > 1 is used to determine if a row is defective (or not).
   - CART is trained on a the other half of the pruned dataset. **NOTE: I do not use the same rows of the training data for planning and prediction.**
 
@@ -52,3 +57,7 @@ rank ,         name ,    med   ,  iqr
    1 ,        jedit ,    -1.23  ,   5.32 (        -------|-----*        ), -4,  0,  2
    1 ,      forrest ,     0.00  ,  42.22 (   -------*    |              ), -20,  0,  30
    1 ,     velocity ,    -1  ,  0 (*              |              ), -1,  -1,  -1
+```
+## So... What next?
+ - Create a New Contrast Set Rig with just CART, see if that helps increasing the gain.
+ - I noticed my Tuning Rig [reported on Jan 29th](https://github.com/rahlk/Research/wiki/SMOTE) was not parsing parameters to my CART with SMOTE as I wanted it to; thus, I am now re-evaluating the effect of SMOTE+tuning just to be sure.. 
