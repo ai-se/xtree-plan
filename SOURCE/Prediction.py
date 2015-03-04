@@ -12,11 +12,11 @@ pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 from random import choice, uniform as rand
-from sklearn.ensemble import AdaBoostRegressor
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from smote import *
 import pandas as pd
 from abcd import _Abcd
@@ -104,12 +104,12 @@ def _where2pred():
 
 def rforest(train, test, tunings = None, smoteit = True):
   "    RF"
-  # Apply random forest Regressor to predict the number of bugs.
+  # Apply random forest Classifier to predict the number of bugs.
   if smoteit: train = SMOTE(train)
   if not tunings:
-    clf = RandomForestRegressor(n_estimators = 100)
+    clf = RandomForestClassifier(n_estimators = 100)
   else:
-    clf = RandomForestRegressor(n_estimators = int(tunings[0]),
+    clf = RandomForestClassifier(n_estimators = int(tunings[0]),
                                  max_features = tunings[1] / 100,
                                  min_samples_leaf = int(tunings[2]),
                                  min_samples_split = int(tunings[3])
@@ -139,19 +139,20 @@ def _RF():
 
 def CART(train, test, tunings = None, smoteit = True, duplicate = False):
   "  CART"
-  # Apply random forest Regressor to predict the number of bugs.
+  # Apply random forest Classifier to predict the number of bugs.
   if smoteit: train = SMOTE(train
                             , atleast = 50
                             , atmost = 101
                             , resample = duplicate)
 
-  if not tunings: clf = DecisionTreeRegressor()
+  if not tunings: clf = DecisionTreeClassifier(criterion = 'entropy')
   else:
-    clf = DecisionTreeRegressor(max_depth = int(tunings[0]),
+    clf = DecisionTreeClassifier(max_depth = int(tunings[0]),
                                  min_samples_split = int(tunings[1]),
                                  min_samples_leaf = int(tunings[2]),
                                  max_features = float(tunings[3] / 100),
-                                 max_leaf_nodes = int(tunings[4]))
+                                 max_leaf_nodes = int(tunings[4]),
+                                 criterion = 'entropy')
   train_DF = formatData(train)
   test_DF = formatData(test)
   features = train_DF.columns[:-2]
@@ -177,7 +178,7 @@ def _CART():
 def adaboost(train, test, smoteit = True):
   "ADABOOST"
   if smoteit: train = SMOTE(train)
-  clf = AdaBoostRegressor()
+  clf = AdaBoostClassifier()
   train_DF = formatData(train)
   test_DF = formatData(test)
   features = train_DF.columns[:-2]
@@ -231,7 +232,7 @@ def _logit():
 def knn(train, test, smoteit = True):
   "kNN"
   if smoteit: train = SMOTE(train)
-  neigh = KNeighborsRegressor()
+  neigh = KNeighborsClassifier()
   train_DF = formatData(train)
   test_DF = formatData(test)
   features = train_DF.columns[:-2]
