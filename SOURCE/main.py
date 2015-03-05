@@ -23,7 +23,7 @@ import pandas as pd
 from sk import rdivDemo
 from pdb import set_trace
 from dEvol import tuner
-
+from Planner2 import treatments as treatments2
 def Bugs(tbl):
   cells = [i.cells[-2] for i in tbl._rows]
   return cells
@@ -70,7 +70,7 @@ def main():
 #       print(p.__doc__)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 3
+      reps = 1
       abcd = [[], []];
       for t in _tuneit:
 #        tunedParams = None if not t else params
@@ -91,10 +91,12 @@ def main():
             # Tune?
             tunedParams = None if not t else tuner(p, train[_n])
             # Find and apply contrast sets
-            newTab = treatments(train = train[_n],
-                                test = test[_n],
-                                verbose = False,
-                                smoteit = False).main()
+#            newTab = treatments2(train = train[_n],
+#                                test = test[_n],
+#                                verbose = False,
+#                                smoteit = False).main()
+            newTab = treatments2(train = train[_n],
+                                test = test[_n]).main()
 #            set_trace()
            # Actual bugs
             actual = Bugs(test_df)
@@ -117,17 +119,17 @@ def main():
 #             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
-#            outa.append(_Abcd(before = actual, after = before)[-1])
+            outa.append(_Abcd(before = actual, after = before)[-1])
 #            print(outa)
-            print('Gain =  %1.2f' % float(\
-            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
-            print(showoff(dataName[n], before, after)[1])
-#            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
+#            print('Gain =  %1.2f' % float(\
+#            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
+#            print(showoff(dataName[n], before, after)[1])
+            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
 #
-#          out1 = [o for o in out1 if np.isfinite(o)]
-#          out1.insert(0, dataName[n])
+          out1 = [o for o in out1 if np.isfinite(o)]
+          out1.insert(0, dataName[n])
 
-#          outa.insert(0, dataName[n])
+          outa.insert(0, dataName[n])
 #             %print('Prediction accuracy (g)  %.2d' % out[-1])
 #             print (out[-1])
     #         if _smote:
@@ -139,8 +141,8 @@ def main():
     #           else out.insert(0, p.__doc__ + '(raw, Naive)')
     #           abcd[1].append(out)
     # print(out1)
-#    out11.append(out1)
-#    outA1.append(outa)
+    out11.append(out1)
+    outA1.append(outa)
       # print()
       # cd.update({p.__doc__:sorted(cd)})
       # res.update({p.__doc__:(abcd[0][0:reps],
@@ -152,12 +154,10 @@ def main():
     # rdivDemo(outA1, isLatex = False)
     # print('```')
 
-#    print('```')
-#    rdivDemo(out11, isLatex = False)
-#    rdivDemo(outA1, isLatex = False)
-# #     print(cd)
-    # printsk(res)
-#    print('```')
+    print('```')   
+    rdivDemo(out11, isLatex = False)
+    rdivDemo(outA1, isLatex = False)
+    print('```')
 
           # sk.rdivDemo(stat)
           # Save the histogram after applying contrast sets.
