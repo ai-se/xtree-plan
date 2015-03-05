@@ -70,7 +70,7 @@ def main():
 #       print(p.__doc__)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 1
+      reps = 10
       abcd = [[], []];
       for t in _tuneit:
 #        tunedParams = None if not t else params
@@ -153,12 +153,13 @@ def main():
     # print('```')
     # rdivDemo(outA1, isLatex = False)
     # print('```')
-
-    print('```')   
-    rdivDemo(out11, isLatex = False)
-    rdivDemo(outA1, isLatex = False)
-    print('```')
-
+    try:
+      print('```')   
+      rdivDemo(out11, isLatex = False)
+      rdivDemo(outA1, isLatex = False)
+      print('```')
+    except IndexError:
+      pass
           # sk.rdivDemo(stat)
           # Save the histogram after applying contrast sets.
           # saveImg(bugs, num_bins = 10, fname = 'bugsAfter', ext = '.jpg')
