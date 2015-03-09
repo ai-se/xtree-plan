@@ -113,8 +113,8 @@ def main():
 
             predTest = clone(test_df, rows = predRows)
             newTab = treatments2(train = train[_n]
-                                 , test = test[_n]).main()
-#                                  , test_df = predTest).main()
+                                 , test = test[_n]
+                                 , test_df = predTest).main()
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = True)
