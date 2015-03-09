@@ -21,17 +21,14 @@ from sklearn.tree import DecisionTreeClassifier
 
 from Prediction import *
 from _imports import *
-from abcd import _Abcd
 from cliffsDelta import *
 from contrastset import *
-# from dectree import *
 from hist import *
 from smote import *
 import makeAmodel as mam
 from methods1 import *
 import numpy as np
 import pandas as pd
-import sk
 
 def settings(**d): return o(
   name = "WHICH 2",
@@ -45,38 +42,38 @@ def settings(**d): return o(
 opt = settings()
 
 class treatments():
-  def __init__(i, train, test):
-    i.test, i.train = test, train
-    i.new_Tab = []
-  
-  def clusterer(i):
-    i.train_df = createTbl(i.train, isBin = True)
-    clusters = list(set([f.cells[-1] for f in i.train_df._rows]))
+  def __init__(self, train, test):
+    self.test, self.train = test, train
+    self.new_Tab = []
+
+  def clusterer(self):
+    self.train_df = createTbl(self.train, isBin = True)
+    clusters = list(set([f.cells[-1] for f in self.train_df._rows]))
     ClusterRows = {}
     for _id in list(set(clusters)):
-      ClusterRows.update({_id:[f for f in i.train_df._rows if f.cells[-1] == _id]}) 
+      ClusterRows.update({_id:[f for f in self.train_df._rows if f.cells[-1] == _id]})
     return ClusterRows
-  
-  def knn(i, one, two):
+
+  def knn(self, one, two):
     pdistVect = []
 #    set_trace()
     for ind, n in enumerate(two):
       pdistVect.append([ind, euclidean(one[:-1], n[:-1])])
     indices = sorted(pdistVect, key = lambda F:F[1], reverse = True)
     return [two[n[0]] for n in indices]
-  
-  def pairs(i, lst):
+
+  def pairs(self, lst):
     for j in lst[0:]:
       last = j
-      for i in lst[0:]:
-        yield last, i
+      for self in lst[0:]:
+        yield last, self
 
-  def getMeans(i, ClusterRows):
+  def getMeans(self, ClusterRows):
     vertices = []
     for r in ClusterRows:
       vertex = []
       dat = ClusterRows[r];
-      for indx in xrange(len(dat[0].cells)-1):
+      for indx in xrange(len(dat[0].cells) - 1):
         try:
           vertex.append(float(np.mean([k.cells[indx] for k in dat])))
         except TypeError:
@@ -84,44 +81,44 @@ class treatments():
       vertices.append(vertex)
     return vertices
 
-  def getHyperplanes(i):
+  def getHyperplanes(self):
     hyperPlanes = []
-    ClusterRows = i.getMeans(i.clusterer());
+    ClusterRows = self.getMeans(self.clusterer());
     while ClusterRows:
       one = ClusterRows.pop()
       try:
-        two = i.knn(one, ClusterRows)[0]
-      except IndexError: 
+        two = self.knn(one, ClusterRows)[0]
+      except IndexError:
         two = one
       hyperPlanes.append([one, two])
     return hyperPlanes
 
-  def projection(i, one, two, three):
+  def projection(self, one, two, three):
     plane = [b - a for a, b in zip(one, two)]
     norm = np.linalg.norm(plane)
-    unitVect = [p/norm for p in plane]
+    unitVect = [p / norm for p in plane]
     proj = np.dot(three, unitVect)
     return proj
-  
-  def main(i):
-    hyperPlanes = i.getHyperplanes()
-    i.test_df = createTbl(i.test)
-    for rows in i.test_df._rows:
+
+  def main(self):
+    hyperPlanes = self.getHyperplanes()
+    self.test_df = createTbl(self.test)
+    for rows in self.test_df._rows:
       newRow = rows
       if rows.cells[-2] > 0:
-        vertices = sorted(hyperPlanes, key = lambda F:i.projection(F[0][:-1], 
+        vertices = sorted(hyperPlanes, key = lambda F:self.projection(F[0][:-1],
           F[1][:-1], rows.cells[:-2]), reverse = True)[0]
         [good, bad] = sorted(vertices, key = lambda F: F[-1])
-        newRow.cells[:-2] = [my + opt.f*(better - my) for better, 
+        newRow.cells[:-2] = [my + opt.f * (better - my) for better,
                             my in zip(good[:-1], rows.cells[:-2])]
-        i.new_Tab.append(newRow)
-      
-    return clone(i.test_df, rows = [r.cells for r in i.new_Tab], discrete = True) 
+        self.new_Tab.append(newRow)
+
+    return clone(self.test_df, rows = [r.cells for r in self.new_Tab], discrete = True)
 
 def testPlanner2():
   dir = '../Data'
   one, two = explore(dir)
-  newTab = treatments(one[0],two[0]).main()
+  newTab = treatments(one[0], two[0]).main()
 
 if __name__ == '__main__':
   testPlanner2()

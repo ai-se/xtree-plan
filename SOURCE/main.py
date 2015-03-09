@@ -70,7 +70,7 @@ def main():
 #       print(p.__doc__)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 10
+      reps = 5
       abcd = [[], []];
       for t in _tuneit:
 #        tunedParams = None if not t else params
@@ -109,20 +109,20 @@ def main():
             # Use the classifier to predict the number of bugs in the new data.
             after = p(train_DF, newTab,
                       tunings = tunedParams,
-                      smoteit = _smote)
+                      smoteit = True)
             # after1 = [0 if a < 2 else 1 for a in after]
 
-            # set_trace()
-
+#             set_trace()
 #             write('.')
 #             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
 #             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
 #             write('Test: '); [write(l) for l in test[_n]],
-            outa.append(_Abcd(before = actual, after = before)[-1])
+            outa.append(_Abcd(before = actual, after = before))
+#             print(outa)
 #            print(outa)
-#            print('Gain =  %1.2f' % float(\
-#            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
+            print('Gain =  %1.2f' % float(\
+            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
 #            print(showoff(dataName[n], before, after)[1])
             out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
 #
@@ -154,9 +154,9 @@ def main():
     # rdivDemo(outA1, isLatex = False)
     # print('```')
     try:
-      print('```')   
+      print('```')
       rdivDemo(out11, isLatex = False)
-      rdivDemo(outA1, isLatex = False)
+#       rdivDemo(outA1, isLatex = False)
       print('```')
     except IndexError:
       pass

@@ -145,7 +145,7 @@ def CART(train, test, tunings = None, smoteit = True, duplicate = False):
                             , atmost = 101
                             , resample = duplicate)
 
-  if not tunings: clf = DecisionTreeClassifier(criterion = 'entropy')
+  if not tunings: clf = DecisionTreeClassifier(criterion = 'entropy',)
   else:
     clf = DecisionTreeClassifier(max_depth = int(tunings[0]),
                                  min_samples_split = int(tunings[1]),
