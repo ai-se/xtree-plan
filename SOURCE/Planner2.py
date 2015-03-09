@@ -46,51 +46,53 @@ def settings(**d): return o(
 
 opt = settings()
 
+class vertex():
+  def __init__(self, ID, rows):
+    self._id = ID
+    self.rows = rows
+    self.represent = None
+  def score(self):
+    return np.mean([r.cells[-2] for r in self.rows])
+  def representative(self):
+    return [float(np.mean([k.cells[indx] for k in self.rows])) \
+            for indx in xrange(len(self.rows[0].cells) - 2)]
+
+
 class treatments():
-  def __init__(self, train, test):
+  def __init__(self, train, test, train_df = None, test_df = None):
     self.test, self.train = test, train
     self.new_Tab = []
-    self.train_df = createTbl(self.train, isBin = True, bugThres = 1)
+    self.train_df = train_df if train_df \
+                    else createTbl(self.train
+                                   , isBin = True
+                                   , bugThres = 1)
 
+    self.test_df = test_df if test_df \
+                   else createTbl(self.test
+                                  , isBin = True
+                                  , bugThres = 1)
 
   def clusterer(self):
-    clusters = list(set([f.cells[-1] for f in self.train_df._rows]))
-    ClusterRows = {}
-    for _id in list(set(clusters)):
-      ClusterRows.update({_id:[f for f in self.train_df._rows \
-                                if f.cells[-1] == _id]})
-    return ClusterRows
+    IDs = list(set([f.cells[-1] for f in self.train_df._rows]))
+    clusters = []
+    for _id in list(set(IDs)):
+      clusters.append(vertex(ID = _id, rows = [f for f in self.train_df._rows \
+                                               if f.cells[-1] == _id]))
+    return clusters
 
   def knn(self, one, two):
     pdistVect = []
 #    set_trace()
     for ind, n in enumerate(two):
-      pdistVect.append([ind, euclidean(one[:-1], n[:-1])])
+      pdistVect.append([ind, euclidean(one.representative()
+                                       , n.representative())])
     indices = sorted(pdistVect, key = lambda F:F[1], reverse = True)
     return [two[n[0]] for n in indices]
 
-  def pairs(self, lst):
-    for j in lst[0:]:
-      last = j
-      for self in lst[0:]:
-        yield last, self
-
-  def getMeans(self, ClusterRows):
-    vertices = []
-    for r in ClusterRows:
-      vertex = []
-      dat = ClusterRows[r];
-      for indx in xrange(len(dat[0].cells) - 1):
-        try:
-          vertex.append(float(np.mean([k.cells[indx] for k in dat])))
-        except TypeError:
-          set_trace()
-      vertices.append(vertex)
-    return vertices
 
   def getHyperplanes(self):
     hyperPlanes = []
-    ClusterRows = self.getMeans(self.clusterer());
+    ClusterRows = self.clusterer();
     while ClusterRows:
       one = ClusterRows.pop()
       try:
@@ -100,60 +102,52 @@ class treatments():
       hyperPlanes.append([one, two])
     return hyperPlanes
 
-  def projection(self, one, two, three):
-    plane = [b - a for a, b in zip(one, two)]
+  def projection(self, node_one, node_two, three):
+    if node_one.score() < node_two.score():
+      one, two = node_one, node_two
+    else:
+      one, two = node_two, node_one
+    plane = [b - a for a, b in zip(one.representative(), two.representative())]
     norm = np.linalg.norm(plane)
     unitVect = [p / norm for p in plane]
-    proj = np.dot(three, unitVect)
+    proj = np.dot(three.representative(), unitVect)
     return proj
-
-#   def rankedFeatures(self, rows, t, features = None):
-#     features = features if features else t.indep[:-1]
-#     klass = t.klass[0].col
-#     def ranked(f):
-#       syms, at, n = {}, {}, len(rows)
-# #       for x in f.counts.keys():
-# #         syms[x] = Sym()
-#       for row in rows:
-#         key = row.cells[f.col]
-#         val = row.cells[klass - 1]
-# #         syms[key] + val
-#         at[key] = at.get(key, []) + [row]
-#       e = 0
-#       for val in syms.values():
-#         if val.n:
-#           e += val.n / n * val.ent()
-#       return e, f, syms, at
-#     return sorted(ranked(f) for f in features)
-#
-#
-#   def infogain(self, t, opt = The.tree):
-#     for f in t.headers:
-#       f.selected = False
-#     lst = self.rankedFeatures(t._rows[:-1], t)
-#     n = int(len(lst))
-#     n = max(n, 1)
-#     for _, f, _, _ in lst[:n]:
-#       f.selected = True
-#     return [(f, at) for e, f, syms, at in lst[:n]]
 
   def fWeight(self, criterion = 'Entropy'):
     lbs = W().weights(self.train_df)
     return [l / max(lbs) * 0.9 for l in lbs]
 
+  def mutate(self, me, others, extent = opt.f):
+    def one234(self, pop, f = lambda x:id(x)):
+      seen = []
+      def oneOther():
+        x = any(pop)
+        while f(x) in seen:
+          x = any(pop)
+        seen.append(f(x))
+        return x
+      return oneOther(), oneOther(), oneOther(), oneOther()
+    two, three, four, five = one234(others.rows)
+    return [my + extent * (good1 + good2 - good3 - good4) for my
+            , good1, good2, good3, good4 in zip(me[:-2]
+                                                , two[:-2], three[:-2]
+                                                , four[:-2] , five[:2])]
+
+
   def main(self):
     hyperPlanes = self.getHyperplanes()
-    self.test_df = createTbl(self.test, isBin = True, bugThres = 1)
+    set_trace()
     opt.f = self.fWeight()
     for rows in self.test_df._rows:
       newRow = rows
       if rows.cells[-2] > 0:
-        vertices = sorted(hyperPlanes, key = lambda F:self.projection(F[0][:-1],
-          F[1][:-1], rows.cells[:-2]), reverse = True)[0]
-        [good, bad] = sorted(vertices, key = lambda F: F[-1])
-        newRow.cells[:-2] = [my + f * (better - my) for f, better,
-                            my in zip(opt.f, good[:-1], rows.cells[:-2])]
-        self.new_Tab.append(newRow)
+        vertices = sorted(hyperPlanes, key = lambda F:self.projection(F[0][:-1]
+                                                                    , F[1][:-1]
+                                                             , rows.cells[:-2])
+                                                           , reverse = True)[0]
+        [good, bad] = sorted(vertices, key = lambda F: F.score())
+        newRow.cells[:-2] = self.mutate(rows.cells, good)
+      self.new_Tab.append(newRow)
 
     return clone(self.test_df
                  , rows = [r.cells for r in self.new_Tab]
@@ -162,7 +156,7 @@ class treatments():
 def testPlanner2():
   dir = '../Data'
   one, two = explore(dir)
-  newTab = treatments(one[0], two[0]).fWeight()
+  newTab = treatments(one[0], two[0]).main()
 
 if __name__ == '__main__':
   testPlanner2()

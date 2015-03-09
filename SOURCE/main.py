@@ -88,6 +88,7 @@ def main():
 #            set_trace()
             # Testing data
             test_df = createTbl(test[_n], isBin = True)
+            predRows = []
             # Tune?
             tunedParams = None if not t else tuner(p, train[_n])
             # Find and apply contrast sets
@@ -95,8 +96,6 @@ def main():
 #                                test = test[_n],
 #                                verbose = False,
 #                                smoteit = False).main()
-            newTab = treatments2(train = train[_n],
-                                test = test[_n]).main()
 #            set_trace()
            # Actual bugs
             actual = Bugs(test_df)
@@ -105,8 +104,17 @@ def main():
             before = p(train_DF, test_df,
                        tunings = tunedParams,
                        smoteit = True)
+            for predicted, row in zip(before, test_df._rows):
+              tmp = row.cells
+              tmp[-1] = predicted
+              predRows.append(tmp)
             # before1 = [0 if b < 1 else 1 for b in before]
             # Use the classifier to predict the number of bugs in the new data.
+
+            predTest = clone(test_df, rows = predRows)
+            newTab = treatments2(train = train[_n]
+                                 , test = test[_n]).main()
+#                                  , test_df = predTest).main()
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = True)

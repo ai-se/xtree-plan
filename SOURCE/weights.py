@@ -32,7 +32,8 @@ class prilims(object):
     for i in t0.headers:
       H.append(i.__dict__['name'])
     rows.insert(0, H)
-    return {rows[0][z]:[p[z] for p in rows[1:] if z <= len(rows[1]) - 1] for z in xrange(0, len(rows[0]))}
+    return {rows[0][z]:[p[z] for p in rows[1:] if z <= len(rows[1]) - 1] \
+             for z in xrange(0, len(rows[0]))}
 
   def chardiv(self, lst):
     """"
@@ -43,8 +44,12 @@ class prilims(object):
       for p in zip(xs[:-1], xs[1:]):
         yield p
 
-    sortOrder = [i[0] for i in sorted(enumerate(lst[0]), key = lambda x:x[1], reverse = False)]
-    sortedIndep = [i[1] for i in sorted(enumerate(lst[0]), key = lambda x:x[1], reverse = False)]
+    sortOrder = [i[0] for i in sorted(enumerate(lst[0])
+                                      , key = lambda x:x[1]
+                                      , reverse = False)]
+    sortedIndep = [i[1] for i in sorted(enumerate(lst[0])
+                                        , key = lambda x:x[1]
+                                        , reverse = False)]
     sortedDep = [lst[1][z] for z in sortOrder]
     cuts = [];divs = []
     for x in xrange(1, len(sortedIndep)):
@@ -52,7 +57,8 @@ class prilims(object):
         cuts.append(x)
     cuts.insert(0, 0); cuts.insert(len(cuts), len(sortOrder))
     for x, y in pairs(cuts):
-      divs.append((sortedIndep[x], np.std(sortedDep[x:y]), [(sortedIndep[z], sortedDep[z]) for z in xrange(x, y)]))
+      divs.append((sortedIndep[x], np.std(sortedDep[x:y])
+                   , [(sortedIndep[z], sortedDep[z]) for z in xrange(x, y)]))
     return divs
 
   def sdiv(self, lst, tiny = 3, cohen = 0.3,
