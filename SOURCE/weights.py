@@ -22,12 +22,11 @@ class prilims(object):
     pass
 
   def unwrap(self, t0):
-    #===========================================================================
-    # This is a cool function, I am quite proud of it's succinctness.
-    # It creates a dictionary with table headers as keys and corresponding
-    # columns as the values. Example, T={'Header1': [1,2,3,4]; 'Header2':...},
-    # you get the point. I used dict comprehensions containing list comprehensions
-    #===========================================================================
+    """
+    It creates a dictionary with table headers as keys and corresponding
+    columns as the values. Example, T={'Header1': [1,2,3,4]; 'Header2':...}...
+    you get the point.
+    """
     rows = map(lambda x :x.cells, t0._rows)
     H = [];
     for i in t0.headers:
@@ -36,13 +35,14 @@ class prilims(object):
     return {rows[0][z]:[p[z] for p in rows[1:] if z <= len(rows[1]) - 1] for z in xrange(0, len(rows[0]))}
 
   def chardiv(self, lst):
-    #===========================================================================
-    # This works by sorting all the variables in the alphabetical order and
-    # determining cuts based on index locations where the alphabets change.
-    #===========================================================================
+    """"
+    This works by sorting all the variables in the alphabetical order and
+    determining cuts based on index locations where the alphabets change.
+    """
     def pairs(xs):
       for p in zip(xs[:-1], xs[1:]):
         yield p
+
     sortOrder = [i[0] for i in sorted(enumerate(lst[0]), key = lambda x:x[1], reverse = False)]
     sortedIndep = [i[1] for i in sorted(enumerate(lst[0]), key = lambda x:x[1], reverse = False)]
     sortedDep = [lst[1][z] for z in sortOrder]
@@ -101,7 +101,8 @@ class weights(object):
     # element like [[1,2,3]], flatten returns [1,2,3]
     def findcuts(lst1, lst2):
       #--- Determines whether to use sdiv or chardiv
-      return self.p.sdiv(zip(lst1, lst2)) if not isinstance(lst1[1], str) else self.p.chardiv([lst1, lst2])
+      return self.p.sdiv(zip(lst1, lst2)) \
+        if not isinstance(lst1[1], str) else self.p.chardiv([lst1, lst2])
     cuts1 = [findcuts(y, flatten(depen)) for y in indep]
     return cuts1
   def weights(self, t0):
@@ -127,7 +128,7 @@ class main:
 
 if __name__=="__main__":
   main()
-  """
+"""
 
 
 
