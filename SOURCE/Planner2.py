@@ -110,15 +110,15 @@ class treatments():
     plane = [b - a for a, b in zip(one.representative(), two.representative())]
     norm = np.linalg.norm(plane)
     unitVect = [p / norm for p in plane]
-    proj = np.dot(three.representative(), unitVect)
+    proj = np.dot(three, unitVect)
     return proj
 
   def fWeight(self, criterion = 'Entropy'):
     lbs = W().weights(self.train_df)
     return [l / max(lbs) * 0.9 for l in lbs]
 
-  def mutate(self, me, others, extent = opt.f):
-    def one234(self, pop, f = lambda x:id(x)):
+  def mutate(self, me, others):
+    def one234(pop, f = lambda x:id(x)):
       seen = []
       def oneOther():
         x = any(pop)
@@ -126,25 +126,22 @@ class treatments():
           x = any(pop)
         seen.append(f(x))
         return x
-      return oneOther(), oneOther(), oneOther(), oneOther()
-    two, three, four, five = one234(others.rows)
-    return [my + extent * (good1 + good2 - good3 - good4) for my
-            , good1, good2, good3, good4 in zip(me[:-2]
-                                                , two[:-2], three[:-2]
-                                                , four[:-2] , five[:2])]
+      return oneOther()
+    two = one234(others.rows)
+    return [my + f * (my - good) for f, my, good in zip(opt.f, me[:-2]
+                                                          , two.cells[:-2])]
 
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
-    set_trace()
     opt.f = self.fWeight()
     for rows in self.test_df._rows:
       newRow = rows
       if rows.cells[-2] > 0:
-        vertices = sorted(hyperPlanes, key = lambda F:self.projection(F[0][:-1]
-                                                                    , F[1][:-1]
-                                                             , rows.cells[:-2])
-                                                           , reverse = True)[0]
+        vertices = sorted(hyperPlanes,
+                          key = lambda F:self.projection(F[0], F[1]
+                                                         , rows.cells[:-2])
+                                                         , reverse = True)[0]
         [good, bad] = sorted(vertices, key = lambda F: F.score())
         newRow.cells[:-2] = self.mutate(rows.cells, good)
       self.new_Tab.append(newRow)
