@@ -106,14 +106,14 @@ def main():
                        smoteit = True)
             for predicted, row in zip(before, test_df._rows):
               tmp = row.cells
-              tmp[-1] = predicted
-              predRows.append(tmp)
+              tmp[-2] = predicted
+              if predicted > 0: predRows.append(tmp)
             # before1 = [0 if b < 1 else 1 for b in before]
             # Use the classifier to predict the number of bugs in the new data.
 
             predTest = clone(test_df, rows = predRows)
             newTab = treatments2(train = train[_n]
-                                 , test = test[_n]
+                                 , test = test[_n]  # ).main()
                                  , test_df = predTest).main()
             after = p(train_DF, newTab,
                       tunings = tunedParams,

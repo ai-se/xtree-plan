@@ -5,7 +5,8 @@ from os import environ
 from os import getcwd
 from pdb import set_trace
 from weights import weights as W
-from random import uniform, randint
+from random import uniform as rand
+from random import randint as randi
 import sys
 
 # Update PYTHONPATH
@@ -115,7 +116,7 @@ class treatments():
 
   def fWeight(self, criterion = 'Entropy'):
     lbs = W().weights(self.train_df)
-    return [l / max(lbs) * 0.9 for l in lbs]
+    return [l / max(lbs) * rand() for l in lbs]
 
   def mutate(self, me, others):
     def one234(pop, f = lambda x:id(x)):
@@ -128,7 +129,7 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + f * (my - good) for f, my, good in zip(opt.f, me[:-2]
+    return [my + f * (good - my) for f, my, good in zip(opt.f, me[:-2]
                                                           , two.cells[:-2])]
 
 
