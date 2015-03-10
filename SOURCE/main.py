@@ -46,6 +46,8 @@ def printsk(res):
     tosh.append([dat4[0][0]] + [k[-1] for k in dat4])
   rdivDemo(tosh, isLatex = False)
 
+def cliffsDelta(tabBefore, tabAfter):
+  pass
 def main():
   dir = '../Data'
   from os import walk
@@ -115,6 +117,7 @@ def main():
             newTab = treatments2(train = train[_n]
                                  , test = test[_n]  # ).main()
                                  , test_df = predTest).main()
+
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = True)

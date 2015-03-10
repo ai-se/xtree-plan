@@ -138,13 +138,13 @@ class treatments():
     opt.f = self.fWeight()
     for rows in self.test_df._rows:
       newRow = rows
-      if rows.cells[-2] > 0:
-        vertices = sorted(hyperPlanes,
-                          key = lambda F:self.projection(F[0], F[1]
-                                                         , rows.cells[:-2])
-                                                         , reverse = True)[0]
-        [good, bad] = sorted(vertices, key = lambda F: F.score())
-        newRow.cells[:-2] = self.mutate(rows.cells, good)
+#       if rows.cells[-2] > 0:
+      vertices = sorted(hyperPlanes,
+                        key = lambda F:self.projection(F[0], F[1]
+                                                       , rows.cells[:-2])
+                                                       , reverse = True)[0]
+      [good, bad] = sorted(vertices, key = lambda F: F.score())
+      newRow.cells[:-2] = self.mutate(rows.cells, good)
       self.new_Tab.append(newRow)
 
     return clone(self.test_df
