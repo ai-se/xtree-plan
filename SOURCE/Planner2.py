@@ -81,13 +81,13 @@ class treatments():
                                                if f.cells[-1] == _id]))
     return clusters
 
-  def knn(self, one, two):
+  def knn(self, one, two, far = False):
     pdistVect = []
 #    set_trace()
     for ind, n in enumerate(two):
       pdistVect.append([ind, euclidean(one.representative()
                                        , n.representative())])
-    indices = sorted(pdistVect, key = lambda F:F[1], reverse = True)
+    indices = sorted(pdistVect, key = lambda F:F[1], reverse = far)
     return [two[n[0]] for n in indices]
 
 
@@ -116,7 +116,7 @@ class treatments():
 
   def fWeight(self, criterion = 'Entropy'):
     lbs = W().weights(self.train_df)
-    return [l / max(lbs) * rand() for l in lbs]
+    return [l / sum(lbs) for l in lbs]
 
   def mutate(self, me, others):
     def one234(pop, f = lambda x:id(x)):
@@ -131,7 +131,6 @@ class treatments():
     two = one234(others.rows)
     return [my + f * (good - my) for f, my, good in zip(opt.f, me[:-2]
                                                           , two.cells[:-2])]
-
 
   def main(self):
     hyperPlanes = self.getHyperplanes()

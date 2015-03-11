@@ -46,8 +46,13 @@ def printsk(res):
     tosh.append([dat4[0][0]] + [k[-1] for k in dat4])
   rdivDemo(tosh, isLatex = False)
 
-def cliffsDelta(tabBefore, tabAfter):
-  pass
+def cliffsDelta(lst1, lst2):
+  m, n = len(lst1), len(lst2)
+  dom = lambda a, b: -1 if a<b else 1 if a>b else 0
+  dominationMtx = [[dom(a, b) for a in lst1] for b in lst2]
+  delta = sum([sum(b) for b in dominationMtx])/(m*n)
+  return delta
+
 def main():
   dir = '../Data'
   from os import walk
@@ -69,7 +74,6 @@ def main():
     data = [one[i] + two[i] for i in xrange(len(one))];
     print('##', dataName[n])
     for p in Prd:
-#       print(p.__doc__)
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
       reps = 5
@@ -78,10 +82,7 @@ def main():
 #        tunedParams = None if not t else params
         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
-#           print('### SMOTE-ing') if _smote else print('### No SMOTE-ing')
-    #       print('```')
 #          for _n in xrange(0):
-#          set_trace()
           _n = -1
           # Training data
           for _ in xrange(reps):
@@ -99,10 +100,7 @@ def main():
 #                                verbose = False,
 #                                smoteit = False).main()
 #            set_trace()
-           # Actual bugs
             actual = Bugs(test_df)
-            # actual1 = [0 if a < 2 else 1 for a in actual]
-            # Use the classifier to predict the number of bugs in the raw data.
             before = p(train_DF, test_df,
                        tunings = tunedParams,
                        smoteit = True)
@@ -110,8 +108,6 @@ def main():
               tmp = row.cells
               tmp[-2] = predicted
               if predicted > 0: predRows.append(tmp)
-            # before1 = [0 if b < 1 else 1 for b in before]
-            # Use the classifier to predict the number of bugs in the new data.
 
             predTest = clone(test_df, rows = predRows)
             newTab = treatments2(train = train[_n]
@@ -121,72 +117,28 @@ def main():
             after = p(train_DF, newTab,
                       tunings = tunedParams,
                       smoteit = True)
-            # after1 = [0 if a < 2 else 1 for a in after]
-
-#             set_trace()
-#             write('.')
-#             write('Training: '); [write(l + ', ') for l in train[_n]]; print('\n')
-#             cd.append(showoff(dataName[n], actual1, after1))
 #             print(showoff(dataName[n], before, after))
-#             write('Test: '); [write(l) for l in test[_n]],
             outa.append(_Abcd(before = actual, after = before))
-#             print(outa)
-#            print(outa)
-            print('Gain =  %1.2f' % float(\
-            	   (sum(before) - sum(after)) / sum(before) * 100), r'%')
-#            print(showoff(dataName[n], before, after)[1])
-            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
-#
+#            set_trace()
+            cliffs = cliffsDelta(Bugs(predTest), after)
+#            print(cliffsDelta(Bugs(predTest), after))
+#            print('Gain =  %1.2f' % float(\
+#            	   (sum(Bugs(predTest)) - sum(after)) / sum(Bugs(predTest)) * 100), r'%')
+            out1.append(cliffs)
+#            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
           out1 = [o for o in out1 if np.isfinite(o)]
           out1.insert(0, dataName[n])
 
           outa.insert(0, dataName[n])
-#             %print('Prediction accuracy (g)  %.2d' % out[-1])
-#             print (out[-1])
-    #         if _smote:
-    #           out.insert(0, p.__doc__ + '(s, Tuned)  ') if t \
-    #           else out.insert(0, p.__doc__ + '(s, Naive)  ')
-    #           abcd[0].append(out)
-    #         else:
-    #           out.insert(0, p.__doc__ + '(raw, Tuned)') if t \
-    #           else out.insert(0, p.__doc__ + '(raw, Naive)')
-    #           abcd[1].append(out)
-    # print(out1)
     out11.append(out1)
     outA1.append(outa)
-      # print()
-      # cd.update({p.__doc__:sorted(cd)})
-      # res.update({p.__doc__:(abcd[0][0:reps],
-      #                      abcd[0][reps:] ,
-      #                      abcd[1][0:reps],
-      #                      abcd[1][reps:])})
-  # rdivDemo(out11, isLatex = True)
-    # print('```')
-    # rdivDemo(outA1, isLatex = False)
-    # print('```')
     try:
       print('```')
       rdivDemo(out11, isLatex = False)
-#       rdivDemo(outA1, isLatex = False)
+#      rdivDemo(outA1, isLatex = False)
       print('```')
     except IndexError:
       pass
-          # sk.rdivDemo(stat)
-          # Save the histogram after applying contrast sets.
-          # saveImg(bugs, num_bins = 10, fname = 'bugsAfter', ext = '.jpg')
-
-          # <<DEGUG: Halt Code>>
-     # cd.update({p.__doc__:sorted(cd)})
-      # set_trace()
 
 if __name__ == '__main__':
-#  dir = '../Data'
-#  one, two = explore(dir)
-#  data = [one[i] + two[i] for i in xrange(len(one))];
-#  for p in [CART, rforest]:
-#    params = tuner(p, data[0])
-#    print (params)
-# #  _CART()k
-# #  _logit()
-# #  _adaboost()
   main()
