@@ -64,11 +64,13 @@ def main():
   cd = {}
   abcd = []
   res = {}
-  out11 = [];
-  outA1 = [];
   for n in xrange(numData):
 
+    out11 = [];
+    outA1 = [];
     out1 = [];
+    outFar = [];
+    outNear = [];
     outa = []
     one, two = explore(dir)
     data = [one[i] + two[i] for i in xrange(len(one))];
@@ -76,7 +78,7 @@ def main():
     for p in Prd:
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
-      reps = 5
+      reps = 1
       abcd = [[], []];
       for t in _tuneit:
         tunedParams = None if not t else params
@@ -109,38 +111,51 @@ def main():
 #                                 verbose = False,
 #                                 smoteit = False).main()
 
-            newTab = treatments2(train = train[_n]
+            newTab_near = treatments2(train = train[_n]
+                                 , far = False
+                                 , test = test[_n]  # ).main()
+                                 , test_df = predTest).main() \
+                                 if predRows \
+                                 else treatments2(train = train[_n]
+                                                , test = test[_n]).main()
+            newTab_far = treatments2(train = train[_n]
                                  , test = test[_n]  # ).main()
                                  , test_df = predTest).main() \
                                  if predRows \
                                  else treatments2(train = train[_n]
                                                 , test = test[_n]).main()
 
-            after = p(train_DF, newTab,
+            after_far = p(train_DF, newTab_far,
+                      tunings = tunedParams,
+                      smoteit = True)
+            after_near = p(train_DF, newTab_near,
                       tunings = tunedParams,
                       smoteit = True)
 #             print(showoff(dataName[n], before, after))
             outa.append(_Abcd(before = actual, after = before))
 #            set_trace()
-            cliffs = cliffsDelta(Bugs(predTest), after)
-            print(cliffsDelta(Bugs(predTest), after))
+            cliffsFar = cliffsDelta(Bugs(predTest), after_far)
+            cliffsNear = cliffsDelta(Bugs(predTest), after_near)
+#             print(cliffsDelta(Bugs(predTest), after))
 #            print('Gain =  %1.2f' % float(\
 #            	   (sum(Bugs(predTest)) - sum(after)) / sum(Bugs(predTest)) * 100), r'%')
-            out1.append(cliffs)
+            outFar.append(cliffsFar)
+            outNear.append(cliffsNear)
 #            out1.append(float((sum(before) - sum(after)) / sum(before) * 100))
-          out1 = [o for o in out1 if np.isfinite(o)]
-          out1.insert(0, dataName[n])
+#           out1 = [o for o in out1 if np.isfinite(o)]
+          outNear.insert(0, dataName[n] + '_Far')
+          outFar.insert(0, dataName[n] + '_Near')
 
           outa.insert(0, dataName[n])
-    out11.append(out1)
-    outA1.append(outa)
-    try:
-      print('```')
-      rdivDemo(out11, isLatex = False)
-#      rdivDemo(outA1, isLatex = False)
-      print('```')
-    except IndexError:
-      pass
+        out11.extend([outNear, outFar])
+        outA1.append(outa)
+        try:
+          print('```')
+          rdivDemo(out11, isLatex = False)
+    #      rdivDemo(outA1, isLatex = False)
+          print('```')
+        except IndexError:
+          pass
 
 if __name__ == '__main__':
   main()

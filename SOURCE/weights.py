@@ -111,11 +111,11 @@ class weights(object):
       return self.p.sdiv(zip(lst1, lst2)) \
         if not isinstance(lst1[1], str) else self.p.chardiv([lst1, lst2])
     cuts1 = [findcuts(y, flatten(depen)) for y in indep]
-    return cuts1
+    return cuts1, [i.__dict__['name'] for i in tbl.headers[:-2]]
   def weights(self, t0):
     # Compute weights based on minimum variance, note also that the weights are
     # normalized such that they add up to 1.
-    a = self.cuts(t0)
+    a, names = self.cuts(t0)
     mVar = 0
     weights = []
     for k in a:
@@ -123,7 +123,7 @@ class weights(object):
         mVar += l[1]
       weights.append(mVar / len(k))
 #     weights = (1 - weights / np.max(weights))
-    return [abs(w - max(weights)) for w in weights]
+    return [abs(w - max(weights)) for w in weights], names
 
 """
 class main:

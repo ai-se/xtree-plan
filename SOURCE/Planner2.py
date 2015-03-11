@@ -60,8 +60,12 @@ class vertex():
 
 
 class treatments():
-  def __init__(self, train, test, train_df = None, test_df = None):
+  def __init__(self, train, test
+               , far = True
+               , train_df = None
+               , test_df = None):
     self.test, self.train = test, train
+    self.far = far
     self.new_Tab = []
     self.train_df = train_df if train_df \
                     else createTbl(self.train
@@ -81,13 +85,13 @@ class treatments():
                                                if f.cells[-1] == _id]))
     return clusters
 
-  def knn(self, one, two, far = False):
+  def knn(self, one, two):
     pdistVect = []
 #    set_trace()
     for ind, n in enumerate(two):
       pdistVect.append([ind, euclidean(one.representative()
                                        , n.representative())])
-    indices = sorted(pdistVect, key = lambda F:F[1], reverse = far)
+    indices = sorted(pdistVect, key = lambda F:F[1], reverse = self.far)
     return [two[n[0]] for n in indices]
 
 
@@ -116,7 +120,7 @@ class treatments():
 
   def fWeight(self, criterion = 'Variance'):
     lbs = W(use = criterion).weights(self.train_df)
-    return [l / sum(lbs) for l in lbs]
+    return [l / max(lbs) for l in lbs]
 
   def mutate(self, me, others):
     def one234(pop, f = lambda x:id(x)):
@@ -129,12 +133,12 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + f * (good - my) for f, my, good in zip(opt.f, me[:-2]
-                                                          , two.cells[:-2])]
+    return [my + 0.5 * (good - my) for my, good in zip(me[:-2]
+                                                      , others.representative())]
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
-    opt.f = self.fWeight()
+    # opt.f = self.fWeight()
     for rows in self.test_df._rows:
       newRow = rows
 #       if rows.cells[-2] > 0:
@@ -153,7 +157,7 @@ class treatments():
 def testPlanner2():
   dir = '../Data'
   one, two = explore(dir)
-  newTab = treatments(one[0], two[0]).main()
+  a, b = treatments(one[0], two[0]).fWeight(criterion = 'Variance')
 
 if __name__ == '__main__':
   testPlanner2()
