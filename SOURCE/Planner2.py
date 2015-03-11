@@ -37,8 +37,8 @@ from counts import *
 # import sk
 
 def settings(**d): return o(
-  name = "WHICH 2",
-  what = "WHICH2 - A Contrast Set Planner",
+  name = "WHAT",
+  what = "WHAT - A Contrast Set Planner",
   author = "Rahul Krishna",
   copyleft = "(c) 2014, MIT license, http://goo.gl/3UYBp",
   seed = 1,
