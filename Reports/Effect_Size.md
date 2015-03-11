@@ -2,7 +2,7 @@
 
 - Cliffs Delta was applied to perform an effect size test on the dataset.
 
-<img src="https://github.com/ai-se/Transfer-Learning/blob/master/Reports/_img/cliffsdelta.png" alt="alt text" width="300" height="60">
+<img src="https://github.com/ai-se/Transfer-Learning/blob/master/Reports/_img/cliffsdelta.png" aligh="middle" alt="alt text" width="300" height="60">
 
 - 
 ```
