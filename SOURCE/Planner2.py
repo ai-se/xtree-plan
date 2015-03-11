@@ -114,8 +114,8 @@ class treatments():
     proj = np.dot(three, unitVect)
     return proj
 
-  def fWeight(self, criterion = 'Entropy'):
-    lbs = W().weights(self.train_df)
+  def fWeight(self, criterion = 'Variance'):
+    lbs = W(use = criterion).weights(self.train_df)
     return [l / sum(lbs) for l in lbs]
 
   def mutate(self, me, others):

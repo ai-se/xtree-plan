@@ -48,9 +48,9 @@ def printsk(res):
 
 def cliffsDelta(lst1, lst2):
   m, n = len(lst1), len(lst2)
-  dom = lambda a, b: -1 if a<b else 1 if a>b else 0
+  dom = lambda a, b:-1 if a < b else 1 if a > b else 0
   dominationMtx = [[dom(a, b) for a in lst1] for b in lst2]
-  delta = sum([sum(b) for b in dominationMtx])/(m*n)
+  delta = sum([sum(b) for b in dominationMtx]) / (m * n)
   return delta
 
 def main():
@@ -79,7 +79,7 @@ def main():
       reps = 5
       abcd = [[], []];
       for t in _tuneit:
-#        tunedParams = None if not t else params
+        tunedParams = None if not t else params
         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
 #          for _n in xrange(0):
@@ -93,26 +93,28 @@ def main():
             test_df = createTbl(test[_n], isBin = True)
             predRows = []
             # Tune?
-            tunedParams = None if not t else tuner(p, train[_n])
-            # Find and apply contrast sets
-#            newTab = treatments2(train = train[_n],
-#                                test = test[_n],
-#                                verbose = False,
-#                                smoteit = False).main()
-#            set_trace()
             actual = Bugs(test_df)
             before = p(train_DF, test_df,
                        tunings = tunedParams,
                        smoteit = True)
+            tunedParams = None if not t else tuner(p, train[_n])
             for predicted, row in zip(before, test_df._rows):
               tmp = row.cells
               tmp[-2] = predicted
               if predicted > 0: predRows.append(tmp)
-
             predTest = clone(test_df, rows = predRows)
+            # Find and apply contrast sets
+#             newTab = treatments(train = train[_n],
+#                                 test = test[_n],
+#                                 verbose = False,
+#                                 smoteit = False).main()
+
             newTab = treatments2(train = train[_n]
                                  , test = test[_n]  # ).main()
-                                 , test_df = predTest).main()
+                                 , test_df = predTest).main() \
+                                 if predRows \
+                                 else treatments2(train = train[_n]
+                                                , test = test[_n]).main()
 
             after = p(train_DF, newTab,
                       tunings = tunedParams,
@@ -121,7 +123,7 @@ def main():
             outa.append(_Abcd(before = actual, after = before))
 #            set_trace()
             cliffs = cliffsDelta(Bugs(predTest), after)
-#            print(cliffsDelta(Bugs(predTest), after))
+            print(cliffsDelta(Bugs(predTest), after))
 #            print('Gain =  %1.2f' % float(\
 #            	   (sum(Bugs(predTest)) - sum(after)) / sum(Bugs(predTest)) * 100), r'%')
             out1.append(cliffs)

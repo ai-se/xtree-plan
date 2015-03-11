@@ -94,7 +94,8 @@ class prilims(object):
 
 
 class weights(object):
-  def __init__(self):
+  def __init__(self, use = 'Variance'):
+    self.criterion = use
     self.p = prilims()
     pass
   def cuts(self, tbl):
