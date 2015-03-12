@@ -4,7 +4,7 @@ class run():
     self.pred = pred
     self._smoteit = _smoteit
     self.tunedParams = None if not _tuneit else tuner(p, train[_n])
-    self.train = dataName
+    self.train, self.test = self.categorize()
     self.reps = reps
     self._n = _n
   
