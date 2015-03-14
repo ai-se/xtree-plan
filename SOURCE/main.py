@@ -24,16 +24,21 @@ from sk import rdivDemo
 from pdb import set_trace
 from dEvol import tuner
 from Planner2 import treatments as treatments2
+
+
 def Bugs(tbl):
   cells = [i.cells[-2] for i in tbl._rows]
   return cells
+
 
 def withinClass(data):
   N = len(data)
   return [(data[:n], [data[n]]) for n in range(1, N)]
 
+
 def write(str):
   sys.stdout.write(str)
+
 
 def printsk(res):
   "Now printing only g"
@@ -44,14 +49,16 @@ def printsk(res):
     tosh.append([dat2[0][0]] + [k[-1] for k in dat2])
     tosh.append([dat3[0][0]] + [k[-1] for k in dat3])
     tosh.append([dat4[0][0]] + [k[-1] for k in dat4])
-  rdivDemo(tosh, isLatex = False)
+  rdivDemo(tosh, isLatex=False)
+
 
 def cliffsDelta(lst1, lst2):
   m, n = len(lst1), len(lst2)
-  dom = lambda a, b:-1 if a < b else 1 if a > b else 0
+  dom = lambda a, b: -1 if a < b else 1 if a > b else 0
   dominationMtx = [[dom(a, b) for a in lst1] for b in lst2]
   delta = sum([sum(b) for b in dominationMtx]) / (m * n)
   return delta
+
 
 def main():
   dir = '../Data'
@@ -66,73 +73,69 @@ def main():
   res = {}
   for n in xrange(numData):
 
-    out11 = [];
-    outA1 = [];
-    out1 = [];
-    outFar = [];
-    outNear = [];
+    out11 = []
+    outA1 = []
+    out1 = []
+    outFar = []
+    outNear = []
     outa = []
     one, two = explore(dir)
-    data = [one[i] + two[i] for i in xrange(len(one))];
+    data = [one[i] + two[i] for i in xrange(len(one))]
     print('##', dataName[n])
     for p in Prd:
       train = [dat[0] for dat in withinClass(data[n])]
       test = [dat[1] for dat in withinClass(data[n])]
       reps = 10
-      abcd = [[], []];
+      abcd = [[], []]
       for t in _tuneit:
         tunedParams = None if not t else params
         print('### Tuning') if t else print('### No Tuning')
         for _smote in _smoteit:
-#          for _n in xrange(0):
+          #          for _n in xrange(0):
           _n = -1
           # Training data
           for _ in xrange(reps):
 
-            train_DF = createTbl(train[_n], isBin = True)
+            train_DF = createTbl(train[_n], isBin=True)
 #            set_trace()
             # Testing data
-            test_df = createTbl(test[_n], isBin = True)
+            test_df = createTbl(test[_n], isBin=True)
             predRows = []
             # Tune?
             actual = Bugs(test_df)
             before = p(train_DF, test_df,
-                       tunings = tunedParams,
-                       smoteit = True)
+                       tunings=tunedParams,
+                       smoteit=True)
             tunedParams = None if not t else tuner(p, train[_n])
             for predicted, row in zip(before, test_df._rows):
               tmp = row.cells
               tmp[-2] = predicted
-              if predicted > 0: predRows.append(tmp)
-            predTest = clone(test_df, rows = predRows)
+              if predicted > 0:
+                predRows.append(tmp)
+            predTest = clone(test_df, rows=predRows)
             # Find and apply contrast sets
 #             newTab = treatments(train = train[_n],
 #                                 test = test[_n],
 #                                 verbose = False,
 #                                 smoteit = False).main()
 
-            newTab_near = treatments2(train = train[_n]
-                                 , far = False
-                                 , test = test[_n]  # ).main()
-                                 , test_df = predTest).main() \
-                                 if predRows \
-                                 else treatments2(train = train[_n]
-                                                , test = test[_n]).main()
-            newTab_far = treatments2(train = train[_n]
-                                 , test = test[_n]  # ).main()
-                                 , test_df = predTest).main() \
-                                 if predRows \
-                                 else treatments2(train = train[_n]
-                                                , test = test[_n]).main()
+            newTab_near = treatments2(train=train[_n], far=False, test=test[_n]  # ).main()
+                                      , test_df=predTest).main() \
+                if predRows \
+                else treatments2(train=train[_n], test=test[_n]).main()
+            newTab_far = treatments2(train=train[_n], test=test[_n]  # ).main()
+                                     , test_df=predTest).main() \
+                if predRows \
+                else treatments2(train=train[_n], test=test[_n]).main()
 
             after_far = p(train_DF, newTab_far,
-                      tunings = tunedParams,
-                      smoteit = True)
+                          tunings=tunedParams,
+                          smoteit=True)
             after_near = p(train_DF, newTab_near,
-                      tunings = tunedParams,
-                      smoteit = True)
+                           tunings=tunedParams,
+                           smoteit=True)
 #             print(showoff(dataName[n], before, after))
-            outa.append(_Abcd(before = actual, after = before))
+            outa.append(_Abcd(before=actual, after=before))
 #            set_trace()
             cliffsFar = cliffsDelta(Bugs(predTest), after_far)
             cliffsNear = cliffsDelta(Bugs(predTest), after_near)
@@ -151,7 +154,7 @@ def main():
         outA1.append(outa)
         try:
           print('```')
-          rdivDemo(out11, isLatex = False)
+          rdivDemo(out11, isLatex=False)
     #      rdivDemo(outA1, isLatex = False)
           print('```')
         except IndexError:
