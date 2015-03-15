@@ -52,7 +52,7 @@ def printsk(res):
   rdivDemo(tosh, isLatex=False)
 
 
-def cliffsDelta(lst1, lst2):
+def cliffsdelta(lst1, lst2):
   m, n = len(lst1), len(lst2)
   dom = lambda a, b: -1 if a < b else 1 if a > b else 0
   dominationMtx = [[dom(a, b) for a in lst1] for b in lst2]
@@ -137,8 +137,8 @@ def main():
 #             print(showoff(dataName[n], before, after))
             outa.append(_Abcd(before=actual, after=before))
 #            set_trace()
-            cliffsFar = cliffsDelta(Bugs(predTest), after_far)
-            cliffsNear = cliffsDelta(Bugs(predTest), after_near)
+            cliffsFar = cliffsdelta(Bugs(predTest), after_far)
+            cliffsNear = cliffsdelta(Bugs(predTest), after_near)
 #             print(cliffsDelta(Bugs(predTest), after))
 #            print('Gain =  %1.2f' % float(\
 #            	   (sum(Bugs(predTest)) - sum(after)) / sum(Bugs(predTest)) * 100), r'%')

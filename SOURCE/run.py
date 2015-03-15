@@ -14,7 +14,7 @@ from Prediction import *
 from Planning import *
 from _imports import *
 from abcd import _Abcd
-from cliffsDelta import showoff
+from cliffsDelta import cliffs
 from contrastset import *
 from dectree import *
 from methods1 import *
@@ -32,6 +32,7 @@ class run():
   def __init__(self, pred=CART, _smoteit=True, _n=-1,
                _tuneit=False, dataName=None, reps=10):
     self.pred = pred
+    self.out, self.out_pred = [], []
     self._smoteit = _smoteit
     self.train, self.test = self.categorize()
     self.reps = reps
@@ -54,13 +55,52 @@ class run():
         if name == self.dataName:
           return indx
 
-    return [dat[0] for dat in withinClass(data[whereis()])]\
-        , [dat[1] for dat in withinClass(data[whereis()])]  # Train, Test
+    return [
+        dat[0] for dat in withinClass(
+            data[
+                whereis()])], [
+        dat[1] for dat in withinClass(
+            data[
+                whereis()])]  # Train, Test
 
   def go(self):
-    out11 = []
-    outA1 = []
-    out1 = []
-    outFar = []
-    outNear = []
-    outa = []
+
+    for _ in xrange(self.reps):
+      predRows = []
+      train_DF = createTbl(self.train[self._n], isBin=True)
+      test_df = createTbl(self.test[self._n], isBin=True)
+      actual = Bugs(test_df)
+      before = self.pred(train_DF, test_df,
+                         tunings=self.tunedParams,
+                         smoteit=True)
+
+      for predicted, row in zip(before, test_df._rows):
+        tmp = row.cells
+        tmp[-2] = predicted
+        if predicted > 0:
+          predRows.append(tmp)
+
+      predTest = clone(test_df, rows=predRows)
+
+      if predRows:
+        newTab = treatments2(
+            train=self.train[self._n],
+            test=self.test[self._n],
+            test_df=predTest,
+            far=False).main()
+      else:
+        newTab = treatments2(
+            train=self.train[
+                self._n], test=self.test[
+                self._n]).main()
+
+      after = self.pred(train_DF, newTab,
+                        tunings=self.tunedParams,
+                        smoteit=True)
+
+      self.out_pred.append(_Abcd(before=actual, after=before))
+      delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
+      self.out.append(delta)
+    self.out.insert(0, self.dataName)
+    self.out_pred.insert(0, self.dataName)
+    print(self.out)
