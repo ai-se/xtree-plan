@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2d1-5>
+Subject: Job 155936: <tcsh save xerces> Done
+
+Job <tcsh save xerces> was submitted from host <login05> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2d1-5>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Mon Mar 16 11:48:38 2015
+Results reported at Mon Mar 16 11:56:40 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save xerces
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    432.83 sec.
+    Max Memory :       101 MB
+    Max Swap   :       721 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err.155936> for stderr output of this job.
+

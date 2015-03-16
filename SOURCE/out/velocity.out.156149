@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-9>
+Subject: Job 156149: <tcsh save velocity> Done
+
+Job <tcsh save velocity> was submitted from host <login05> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <2*n2c1-9>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <2*n2c1-10>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Mon Mar 16 12:41:01 2015
+Results reported at Mon Mar 16 12:43:39 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save velocity
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    132.90 sec.
+    Max Memory :        92 MB
+    Max Swap   :       713 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/velocity.err.156149> for stderr output of this job.
+
