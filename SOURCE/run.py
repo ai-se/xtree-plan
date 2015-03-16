@@ -113,4 +113,4 @@ def _test():
   R = run(dataName='ant').go()
 
 if __name__ == '__main__':
-  _test()
+  eval(cmd())
