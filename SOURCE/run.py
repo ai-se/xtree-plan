@@ -95,7 +95,7 @@ class run():
         newTab = treatments2(
             train=self.train[
                 self._n], test=self.test[
-                self._n]).main()
+                self._n], far=False).main()
 
       after = self.pred(train_DF, newTab,
                         tunings=self.tunedParams,
