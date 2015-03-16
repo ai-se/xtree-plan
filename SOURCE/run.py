@@ -109,8 +109,8 @@ class run():
     print(self.out)
 
 
-def _test():
-  R = run(dataName='ant').go()
+def _test(file):
+  R = run(dataName=file).go()
 
 if __name__ == '__main__':
   eval(cmd())
