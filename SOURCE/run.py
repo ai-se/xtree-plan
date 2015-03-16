@@ -25,6 +25,7 @@ from pdb import set_trace
 from dEvol import tuner
 from Planner2 import treatments as treatments2
 from os import walk
+from demos import cmd
 
 
 class run():
@@ -32,6 +33,7 @@ class run():
   def __init__(self, pred=CART, _smoteit=True, _n=-1,
                _tuneit=False, dataName=None, reps=10):
     self.pred = pred
+    self.dataName = dataName
     self.out, self.out_pred = [], []
     self._smoteit = _smoteit
     self.train, self.test = self.categorize()
@@ -41,6 +43,7 @@ class run():
         self.pred, self.train[_n])
 
   def categorize(self):
+    dir = '../Data'
     self.projects = [Name for _, Name, __ in walk(dir)][0]
     self.numData = len(self.projects)  # Number of data
     one, two = explore(dir)
@@ -104,3 +107,10 @@ class run():
     self.out.insert(0, self.dataName)
     self.out_pred.insert(0, self.dataName)
     print(self.out)
+
+
+def _test():
+  R = run(dataName='ant').go()
+
+if __name__ == '__main__':
+  _test()
