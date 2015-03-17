@@ -120,7 +120,7 @@ class treatments():
 
   def fWeight(self, criterion='Variance'):
     lbs = W(use=criterion).weights(self.train_df)
-    return [l / max(lbs) for l in lbs]
+    return [l / max(lbs[0]) for l in lbs[0]]
 
   def mutate(self, me, others):
     def one234(pop, f=lambda x: id(x)):
@@ -134,12 +134,12 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + 0.5 * (good - my)
-            for my, good in zip(me[:-2], others.representative())]
+    return [my + 0.25 * f * (good - my)
+            for f, my, good in zip(opt.f, me[:-2], others.representative())]
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
-    # opt.f = self.fWeight()
+    opt.f = self.fWeight()
     for rows in self.test_df._rows:
       newRow = rows
 #       if rows.cells[-2] > 0:

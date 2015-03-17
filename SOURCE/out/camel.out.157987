@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-7>
+Subject: Job 157987: <tcsh save camel 30574> Done
+
+Job <tcsh save camel 30574> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c1-7>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Mon Mar 16 23:11:30 2015
+Results reported at Mon Mar 16 23:22:13 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save camel 30574
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    628.17 sec.
+    Max Memory :       103 MB
+    Max Swap   :       723 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/camel.err.157987> for stderr output of this job.
+

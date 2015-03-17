@@ -31,8 +31,11 @@ from demos import cmd
 class run():
 
   def __init__(self, pred=CART, _smoteit=True, _n=-1,
-               _tuneit=False, dataName=None, reps=10):
+               _tuneit=False, dataName=None, reps=10,
+               extent = 0.5, fWeight = False):
     self.pred = pred
+    self.extent = extent
+    self.fWeight = fWeight
     self.dataName = dataName
     self.out, self.out_pred = [], []
     self._smoteit = _smoteit
@@ -104,7 +107,7 @@ class run():
       self.out_pred.append(_Abcd(before=actual, after=before))
       delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
       self.out.append(delta)
-    self.out.insert(0, self.dataName)
+    self.out.insert(0, self.dataName+'_0.25+w')
     self.out_pred.insert(0, self.dataName)
     print(self.out)
 
