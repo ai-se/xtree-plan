@@ -68,8 +68,9 @@ class vertex():
 class treatments():
 
   def __init__(
-          self, train, test, far=True, train_df=None, test_df=None, infoPrune=0.33):
+          self, train, test, far=True, train_df=None, test_df=None, Prune = True, infoPrune=0.5):
     self.test, self.train = test, train
+    self.Prune = Prune
     self.infoPrune = infoPrune
     self.far = far
     self.new_Tab = []
@@ -126,7 +127,7 @@ class treatments():
     indx = int(self.infoPrune * len(sortedLbs)) - 1
     cutoff = sortedLbs[indx]
     L = [l / max(lbs[0]) for l in lbs[0]]
-    return [0 if l < cutoff else l for l in L]
+    return [0 if l < cutoff else l for l in L] if self.Prune else L
 
   def mutate(self, me, others):
     def one234(pop, f=lambda x: id(x)):

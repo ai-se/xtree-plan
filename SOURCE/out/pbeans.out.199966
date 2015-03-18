@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-4>
+Subject: Job 199966: <tcsh save pbeans 4926> Done
+
+Job <tcsh save pbeans 4926> was submitted from host <login05> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-4>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Wed Mar 18 14:38:32 2015
+Results reported at Wed Mar 18 14:40:56 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save pbeans 4926
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    106.94 sec.
+    Max Memory :        92 MB
+    Max Swap   :       712 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/pbeans.err.199966> for stderr output of this job.
+

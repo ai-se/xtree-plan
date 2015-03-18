@@ -93,12 +93,15 @@ class run():
             train=self.train[self._n],
             test=self.test[self._n],
             test_df=predTest,
-            far=False).main()
+            far=False,
+            infoPrune = 0.75,
+            Prune = True).main()
       else:
         newTab = treatments2(
             train=self.train[
                 self._n], test=self.test[
-                self._n], far=False).main()
+                self._n], far=False,
+                infoPrune = 0.75, Prune = True).main()
 
       after = self.pred(train_DF, newTab,
                         tunings=self.tunedParams,
@@ -107,7 +110,7 @@ class run():
       self.out_pred.append(_Abcd(before=actual, after=before))
       delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
       self.out.append(delta)
-    self.out.insert(0, self.dataName+'_0.75+w+iP')
+    self.out.insert(0, self.dataName+'_0.75+w+iP(0.75)')
     self.out_pred.insert(0, self.dataName)
     print(self.out)
 
