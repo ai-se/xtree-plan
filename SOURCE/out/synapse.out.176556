@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2e5-7>
+Subject: Job 176556: <tcsh save synapse 30374> Exited
+
+Job <tcsh save synapse 30374> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2e5-7>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Tue Mar 17 14:27:32 2015
+Results reported at Tue Mar 17 14:27:51 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save synapse 30374
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time   :     13.45 sec.
+    Max Memory :         2 MB
+    Max Swap   :        25 MB
+
+    Max Processes  :         1
+    Max Threads    :         1
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/synapse.err.176556> for stderr output of this job.
+

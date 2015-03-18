@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2e2-12>
+Subject: Job 176534: <tcsh save camel 16201> Done
+
+Job <tcsh save camel 16201> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2e2-12>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Tue Mar 17 14:20:58 2015
+Results reported at Tue Mar 17 14:33:44 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save camel 16201
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    756.90 sec.
+    Max Memory :       102 MB
+    Max Swap   :       722 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/camel.err.176534> for stderr output of this job.
+

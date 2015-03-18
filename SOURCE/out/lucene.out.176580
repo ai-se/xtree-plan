@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-10>
+Subject: Job 176580: <tcsh save lucene 30327> Done
+
+Job <tcsh save lucene 30327> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <2*n2c1-10>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <2*n2c1-9>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Tue Mar 17 14:35:58 2015
+Results reported at Tue Mar 17 14:39:46 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save lucene 30327
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    211.00 sec.
+    Max Memory :        93 MB
+    Max Swap   :       713 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/lucene.err.176580> for stderr output of this job.
+

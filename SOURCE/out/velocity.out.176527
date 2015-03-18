@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2e2-2>
+Subject: Job 176527: <tcsh save velocity 8080> Done
+
+Job <tcsh save velocity 8080> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2e2-2>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Tue Mar 17 14:20:39 2015
+Results reported at Tue Mar 17 14:24:00 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save velocity 8080
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    171.37 sec.
+    Max Memory :        93 MB
+    Max Swap   :       713 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/velocity.err.176527> for stderr output of this job.
+

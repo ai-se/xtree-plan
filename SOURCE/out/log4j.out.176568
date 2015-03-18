@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-10>
+Subject: Job 176568: <tcsh save log4j 16781> Done
+
+Job <tcsh save log4j 16781> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <2*n2c1-10>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <2*n2c1-7>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Tue Mar 17 14:32:19 2015
+Results reported at Tue Mar 17 14:34:04 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save log4j 16781
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :     92.83 sec.
+    Max Memory :        91 MB
+    Max Swap   :       711 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/log4j.err.176568> for stderr output of this job.
+

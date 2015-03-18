@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-13>
+Subject: Job 176551: <tcsh save jedit 20234> Exited
+
+Job <tcsh save jedit 20234> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <3*n2c3-13>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <1*n2c3-7>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Tue Mar 17 14:26:48 2015
+Results reported at Tue Mar 17 14:27:25 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save jedit 20234
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time   :     27.43 sec.
+    Max Memory :        93 MB
+    Max Swap   :       714 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/jedit.err.176551> for stderr output of this job.
+
