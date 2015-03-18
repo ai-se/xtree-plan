@@ -138,8 +138,8 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + 0.75 * f * (good - my)
-            for f, my, good in zip(opt.f, me[:-2], others.representative())]
+    return [my + 0.5 * (good - my)
+            for my, good in zip(me[:-2], others.representative())]
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
@@ -161,6 +161,7 @@ def testPlanner2():
   dir = '../Data'
   one, two = explore(dir)
   a = treatments(one[0], two[0]).fWeight(criterion='Variance')
+  set_trace()
 
 if __name__ == '__main__':
   testPlanner2()
