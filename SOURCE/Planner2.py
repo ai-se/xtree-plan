@@ -69,7 +69,7 @@ class treatments():
 
   def __init__(self, train, test, far=True, train_df=None, test_df=None):
     self.test, self.train = test, train
-    self.infoPrune = 0.33
+    self.infoPrune = 0.1
     self.far = far
     self.new_Tab = []
     self.train_df = train_df if train_df \
@@ -125,6 +125,7 @@ class treatments():
     indx = int(self.infoPrune * len(sortedLbs)) - 1
     cutoff = sortedLbs[indx]
     L = [l / max(lbs[0]) for l in lbs[0]]
+    set_trace()
     return [0 if l < cutoff else l for l in L]
 
   def mutate(self, me, others):
@@ -161,7 +162,7 @@ class treatments():
 def testPlanner2():
   dir = '../Data'
   one, two = explore(dir)
-  a = treatments(one[0], two[0]).fWeight(criterion='Variance')
+  fWeight = treatments(one[0], two[0]).fWeight(criterion='Variance')
   set_trace()
 
 if __name__ == '__main__':
