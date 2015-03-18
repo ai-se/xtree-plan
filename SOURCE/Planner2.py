@@ -67,9 +67,10 @@ class vertex():
 
 class treatments():
 
-  def __init__(self, train, test, far=True, train_df=None, test_df=None):
+  def __init__(
+          self, train, test, far=True, train_df=None, test_df=None, infoPrune=0.33):
     self.test, self.train = test, train
-    self.infoPrune = 0.1
+    self.infoPrune = infoPrune
     self.far = far
     self.new_Tab = []
     self.train_df = train_df if train_df \
@@ -121,11 +122,10 @@ class treatments():
 
   def fWeight(self, criterion='Variance'):
     lbs = W(use=criterion).weights(self.train_df)
-    sortedLbs = sorted([l / max(lbs[0]) for l in lbs[0]])
+    sortedLbs = sorted([l / max(lbs[0]) for l in lbs[0]], reverse=True)
     indx = int(self.infoPrune * len(sortedLbs)) - 1
     cutoff = sortedLbs[indx]
     L = [l / max(lbs[0]) for l in lbs[0]]
-    set_trace()
     return [0 if l < cutoff else l for l in L]
 
   def mutate(self, me, others):

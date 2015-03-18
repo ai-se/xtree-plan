@@ -29,7 +29,21 @@ class type1():
     return lists
 
   def list2sk(self, lst):
-    return rdivDemo(lst, isLatex=True)
+    print(r"""\documentclass{article}
+    \usepackage{colortbl}
+    \usepackage{fullpage}
+    \usepackage[table]{xcolor}
+    %%%% needed %%%
+    \usepackage{picture}
+    \newcommand{\quart}[4]{\begin{picture}(100,6)%1
+    {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+    \begin{document}
+    """)
+    rdivDemo(lst, isLatex=True)
+    print("\\end{tabular}}")
+    print(r"""
+    \end{document}
+    """)
 
   def log2list(self):
     lst = []
@@ -57,11 +71,30 @@ class type2():
       lists.append(float(ll))
     return lists
 
+  def printHeader(self):
+    print(r"""\documentclass{article}
+    \usepackage{colortbl}
+    \usepackage{fullpage}
+    \usepackage[table]{xcolor}
+    %%%% needed %%%
+    \usepackage{picture}
+    \newcommand{\quart}[4]{\begin{picture}(100,6)%1
+    {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+    \begin{document}
+    """)
+
+  def printFooter(self):
+    print("\\end{tabular}}")
+    print(r"""
+    \end{document}
+    """)
+
   def list2sk(self, lst):
-    return rdivDemo(lst, isLatex=True)
+    rdivDemo(lst, isLatex=True)
 
   def log2list(self):
     dir = './log'
+    self.printHeader()
     files = [filenames for (
         dirpath,
         dirnames,
@@ -80,7 +113,8 @@ class type2():
           if line:
             lst.append(self.striplines(line[:-1]))
       if lst:
-        print(self.list2sk(lst))
+        self.list2sk(lst)
+    self.printFooter()
 
 
 def _test():
