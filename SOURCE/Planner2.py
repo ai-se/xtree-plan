@@ -124,7 +124,8 @@ class treatments():
     sortedLbs = sorted([l / max(lbs[0]) for l in lbs[0]])
     indx = int(self.infoPrune * len(sortedLbs)) - 1
     cutoff = sortedLbs[indx]
-    return [l / max(lbs[0]) if l > cutoff else 0 for l in lbs[0]]
+    L = [l / max(lbs[0]) for l in lbs[0]]
+    return [0 if l < cutoff else l for l in L]
 
   def mutate(self, me, others):
     def one234(pop, f=lambda x: id(x)):
@@ -138,8 +139,8 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + 0.75 * (good - my)
-            for my, good in zip(me[:-2], others.representative())]
+    return [my + 0.25 * f * (good - my)
+            for f, my, good in zip(opt.f, me[:-2], others.representative())]
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
