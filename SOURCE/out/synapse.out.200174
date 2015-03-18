@@ -1,29 +1,29 @@
 
 ------------------------------------------------------------
 Sender: LSF System <lsfadmin@n2c3-2>
-Subject: Job 200049: <tcsh save ant 14538> Done
+Subject: Job 200174: <tcsh save synapse 30247> Exited
 
-Job <tcsh save ant 14538> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job <tcsh save synapse 30247> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
 Job was executed on host(s) <4*n2c3-2>, in queue <long>, as user <rkrish11> in cluster <henry2>.
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
-Started at Wed Mar 18 15:41:42 2015
-Results reported at Wed Mar 18 15:49:00 2015
+Started at Wed Mar 18 16:22:28 2015
+Results reported at Wed Mar 18 16:23:17 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save ant 14538
+tcsh save synapse 30247
 ------------------------------------------------------------
 
-Successfully completed.
+Exited with exit code 1.
 
 Resource usage summary:
 
-    CPU time   :    411.54 sec.
-    Max Memory :        99 MB
-    Max Swap   :       719 MB
+    CPU time   :     28.89 sec.
+    Max Memory :        91 MB
+    Max Swap   :       711 MB
 
     Max Processes  :         4
     Max Threads    :         5
@@ -34,5 +34,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/ant.err.200049> for stderr output of this job.
+Read file <./err/synapse.err.200174> for stderr output of this job.
 

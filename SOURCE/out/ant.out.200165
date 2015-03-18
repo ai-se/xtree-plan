@@ -1,29 +1,29 @@
 
 ------------------------------------------------------------
 Sender: LSF System <lsfadmin@n2c1-1>
-Subject: Job 200057: <tcsh save log4j 3762> Done
+Subject: Job 200165: <tcsh save ant 10471> Done
 
-Job <tcsh save log4j 3762> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job <tcsh save ant 10471> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
 Job was executed on host(s) <4*n2c1-1>, in queue <long>, as user <rkrish11> in cluster <henry2>.
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
-Started at Wed Mar 18 15:41:42 2015
-Results reported at Wed Mar 18 15:43:35 2015
+Started at Wed Mar 18 16:22:28 2015
+Results reported at Wed Mar 18 16:29:34 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save log4j 3762
+tcsh save ant 10471
 ------------------------------------------------------------
 
 Successfully completed.
 
 Resource usage summary:
 
-    CPU time   :     91.52 sec.
-    Max Memory :        91 MB
-    Max Swap   :       711 MB
+    CPU time   :    407.48 sec.
+    Max Memory :        99 MB
+    Max Swap   :       719 MB
 
     Max Processes  :         4
     Max Threads    :         5
@@ -34,5 +34,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/log4j.err.200057> for stderr output of this job.
+Read file <./err/ant.err.200165> for stderr output of this job.
 

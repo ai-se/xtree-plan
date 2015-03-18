@@ -1,30 +1,30 @@
 
 ------------------------------------------------------------
 Sender: LSF System <lsfadmin@n2c1-9>
-Subject: Job 200060: <tcsh save xalan 7135> Done
+Subject: Job 200168: <tcsh save ivy 22522> Done
 
-Job <tcsh save xalan 7135> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job <tcsh save ivy 22522> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
 Job was executed on host(s) <2*n2c1-9>, in queue <long>, as user <rkrish11> in cluster <henry2>.
                             <2*n2c1-6>
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
-Started at Wed Mar 18 15:41:42 2015
-Results reported at Wed Mar 18 15:59:51 2015
+Started at Wed Mar 18 16:22:28 2015
+Results reported at Wed Mar 18 16:25:07 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save xalan 7135
+tcsh save ivy 22522
 ------------------------------------------------------------
 
 Successfully completed.
 
 Resource usage summary:
 
-    CPU time   :   1069.56 sec.
-    Max Memory :       104 MB
-    Max Swap   :       724 MB
+    CPU time   :    135.79 sec.
+    Max Memory :        92 MB
+    Max Swap   :       713 MB
 
     Max Processes  :         4
     Max Threads    :         5
@@ -35,5 +35,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/xalan.err.200060> for stderr output of this job.
+Read file <./err/ivy.err.200168> for stderr output of this job.
 

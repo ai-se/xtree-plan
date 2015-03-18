@@ -1,29 +1,29 @@
 
 ------------------------------------------------------------
 Sender: LSF System <lsfadmin@n2c3-4>
-Subject: Job 200054: <tcsh save poi 4515> Done
+Subject: Job 200175: <tcsh save velocity 16318> Done
 
-Job <tcsh save poi 4515> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job <tcsh save velocity 16318> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
 Job was executed on host(s) <4*n2c3-4>, in queue <long>, as user <rkrish11> in cluster <henry2>.
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
-Started at Wed Mar 18 15:41:42 2015
-Results reported at Wed Mar 18 15:49:56 2015
+Started at Wed Mar 18 16:22:28 2015
+Results reported at Wed Mar 18 16:25:36 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save poi 4515
+tcsh save velocity 16318
 ------------------------------------------------------------
 
 Successfully completed.
 
 Resource usage summary:
 
-    CPU time   :    398.21 sec.
-    Max Memory :        96 MB
-    Max Swap   :       717 MB
+    CPU time   :    166.54 sec.
+    Max Memory :        92 MB
+    Max Swap   :       713 MB
 
     Max Processes  :         4
     Max Threads    :         5
@@ -34,5 +34,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/poi.err.200054> for stderr output of this job.
+Read file <./err/velocity.err.200175> for stderr output of this job.
 
