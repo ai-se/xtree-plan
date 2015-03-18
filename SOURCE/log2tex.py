@@ -40,7 +40,7 @@ class type1():
     \begin{document}
     """)
     rdivDemo(lst, isLatex=True)
-    print("\\end{tabular}}")
+    print("\hline\\end{tabular}}")
     print(r"""
     \end{document}
     """)
@@ -84,12 +84,13 @@ class type2():
     """)
 
   def printFooter(self):
-    print("\\end{tabular}}")
+    print(r"\hline\end{tabular}}")
     print(r"""
     \end{document}
     """)
 
   def list2sk(self, lst):
+    print("\section*{}")
     rdivDemo(lst, isLatex=True)
 
   def log2list(self):
