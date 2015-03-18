@@ -1,29 +1,29 @@
 
 ------------------------------------------------------------
-Sender: LSF System <lsfadmin@n2c1-7>
-Subject: Job 197887: <tcsh save log4j 19283> Done
+Sender: LSF System <lsfadmin@n2c3-14>
+Subject: Job 197883: <tcsh save jedit 3659> Done
 
-Job <tcsh save log4j 19283> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
-Job was executed on host(s) <4*n2c1-7>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+Job <tcsh save jedit 3659> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-14>, in queue <long>, as user <rkrish11> in cluster <henry2>.
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
 Started at Wed Mar 18 10:26:05 2015
-Results reported at Wed Mar 18 10:28:02 2015
+Results reported at Wed Mar 18 10:36:50 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save log4j 19283
+tcsh save jedit 3659
 ------------------------------------------------------------
 
 Successfully completed.
 
 Resource usage summary:
 
-    CPU time   :     93.49 sec.
-    Max Memory :        91 MB
-    Max Swap   :       711 MB
+    CPU time   :    625.24 sec.
+    Max Memory :        99 MB
+    Max Swap   :       719 MB
 
     Max Processes  :         4
     Max Threads    :         5
@@ -34,5 +34,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/log4j.err.197887> for stderr output of this job.
+Read file <./err/jedit.err.197883> for stderr output of this job.
 

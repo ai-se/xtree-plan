@@ -138,7 +138,7 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + 0.5 * (good - my)
+    return [my + 0.75 * (good - my)
             for my, good in zip(me[:-2], others.representative())]
 
   def main(self):
