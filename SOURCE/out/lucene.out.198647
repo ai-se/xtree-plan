@@ -1,28 +1,28 @@
 
 ------------------------------------------------------------
-Sender: LSF System <lsfadmin@n2c3-14>
-Subject: Job 198644: <tcsh save ivy 6929> Done
+Sender: LSF System <lsfadmin@n2c3-2>
+Subject: Job 198647: <tcsh save lucene 16801> Done
 
-Job <tcsh save ivy 6929> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
-Job was executed on host(s) <4*n2c3-14>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+Job <tcsh save lucene 16801> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-2>, in queue <long>, as user <rkrish11> in cluster <henry2>.
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
-Started at Wed Mar 18 10:36:54 2015
-Results reported at Wed Mar 18 10:39:35 2015
+Started at Wed Mar 18 10:38:35 2015
+Results reported at Wed Mar 18 10:42:33 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save ivy 6929
+tcsh save lucene 16801
 ------------------------------------------------------------
 
 Successfully completed.
 
 Resource usage summary:
 
-    CPU time   :    133.87 sec.
-    Max Memory :        92 MB
+    CPU time   :    202.90 sec.
+    Max Memory :        93 MB
     Max Swap   :       713 MB
 
     Max Processes  :         4
@@ -34,5 +34,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/ivy.err.198644> for stderr output of this job.
+Read file <./err/lucene.err.198647> for stderr output of this job.
 

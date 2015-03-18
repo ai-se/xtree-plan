@@ -1,28 +1,28 @@
 
 ------------------------------------------------------------
-Sender: LSF System <lsfadmin@n2d1-9>
-Subject: Job 198645: <tcsh save jedit 8400> Done
+Sender: LSF System <lsfadmin@n2c3-14>
+Subject: Job 198653: <tcsh save xerces 27457> Done
 
-Job <tcsh save jedit 8400> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
-Job was executed on host(s) <4*n2d1-9>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+Job <tcsh save xerces 27457> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-14>, in queue <long>, as user <rkrish11> in cluster <henry2>.
 </home/rkrish11> was used as the home directory.
 </home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
-Started at Wed Mar 18 10:37:31 2015
-Results reported at Wed Mar 18 10:48:02 2015
+Started at Wed Mar 18 10:40:57 2015
+Results reported at Wed Mar 18 10:50:28 2015
 
 Your job looked like:
 
 ------------------------------------------------------------
 # LSBATCH: User input
-tcsh save jedit 8400
+tcsh save xerces 27457
 ------------------------------------------------------------
 
 Successfully completed.
 
 Resource usage summary:
 
-    CPU time   :    560.72 sec.
-    Max Memory :        99 MB
+    CPU time   :    554.14 sec.
+    Max Memory :        98 MB
     Max Swap   :       719 MB
 
     Max Processes  :         4
@@ -34,5 +34,5 @@ The output (if any) is above this job summary.
 
 PS:
 
-Read file <./err/jedit.err.198645> for stderr output of this job.
+Read file <./err/xerces.err.198653> for stderr output of this job.
 
