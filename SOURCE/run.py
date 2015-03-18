@@ -107,7 +107,7 @@ class run():
       self.out_pred.append(_Abcd(before=actual, after=before))
       delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
       self.out.append(delta)
-    self.out.insert(0, self.dataName+'_0.25+w')
+    self.out.insert(0, self.dataName+'_0.75+w+iP')
     self.out_pred.insert(0, self.dataName)
     print(self.out)
 
