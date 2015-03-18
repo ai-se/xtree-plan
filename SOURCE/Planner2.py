@@ -68,8 +68,9 @@ class vertex():
 class treatments():
 
   def __init__(
-          self, train, test, far=True, train_df=None, test_df=None, Prune = True, infoPrune=0.5):
+          self, train, test, far=True, train_df=None, test_df=None, Prune = True, infoPrune=0.5, extent = 0.75):
     self.test, self.train = test, train
+    self.extent = extent
     self.Prune = Prune
     self.infoPrune = infoPrune
     self.far = far
@@ -141,7 +142,7 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + 0.75 * f * (good - my)
+    return [my + self.extent * f * (good - my)
             for f, my, good in zip(opt.f, me[:-2], others.representative())]
 
   def main(self):
