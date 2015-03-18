@@ -38,8 +38,10 @@ class type1():
     for file in files:
       f = open(dir + '/' + file, 'r')
       for line in f:
-        lst.append(self.striplines(line[:-1]))
-    print(self.list2sk(lst))
+        if line:
+          lst.append(self.striplines(line[:-1]))
+    if lst:
+      print(self.list2sk(lst))
 
 
 class type2():
@@ -75,8 +77,10 @@ class type2():
       for file in project:
         f = open(folder + '/' + file, 'r')
         for line in f:
-          lst.append(self.striplines(line[:-1]))
-      print(self.list2sk(lst))
+          if line:
+            lst.append(self.striplines(line[:-1]))
+      if lst:
+        print(self.list2sk(lst))
 
 
 def _test():
