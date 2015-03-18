@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{colortbl} % not sure if needed
+\usepackage[table]{xcolor} % not sure if needed
+%%%% needed %%%
+\usepackage{picture}
+\newcommand{\quart}[4]{\begin{picture}(100,6)%1
+{\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+\begin{document}
+\section*{Results}
+\begin{enumerate}
+\item Mutate to the mean of each cluster.
+\item Extent of Muatation = 0.5 (No Feature weighting).
+\item Use the nearest neighbour (instead of the farthest).
+\item Cliffsdelta has been used:
+$$
+\delta = \frac{\#(list1<list2) - \#(list1<list2)}{len(list1)\times len(list2)}
+$$
+\item Suggested interpretation of $\delta$: 
+	\begin{itemize}
+	\item $\delta<0.147$ --  Difference is Negligible
+	\item $0.147< \delta < 0.33$ -- Difference is Small
+	\item $0.33 < \delta< 0.474$ -- Difference is Medium
+	\item $\delta > 0.474$ -- Difference is Large			
+	\end{itemize}
+\end{enumerate}
+\begin{table}[h!]
+\centering
+\caption{Cliffs-Delta (10 Repetitions)} \vspace{5pt}
+{\large
+\begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\arrayrulecolor{darkgray}
+\hline
+Rank & Treatment & Median & IQR & Quartiles\\\hline
+  1 &        log4j &    0.28  &  0.07 & \quart{0}{10}{5}{111} \\
+  1 &        xalan &    0.4  &  0.05 & \quart{17}{7}{23}{111} \\
+\hline  2 &        jedit &    0.42  &  0.09 & \quart{22}{13}{26}{111} \\
+  2 &          ivy &    0.44  &  0.11 & \quart{24}{17}{29}{111} \\
+  2 &        camel &    0.47  &  0.05 & \quart{29}{7}{33}{111} \\
+  2 &     velocity &    0.51  &  0.06 & \quart{35}{9}{39}{111} \\
+  2 &       xerces &    0.53  &  0.07 & \quart{33}{11}{42}{111} \\
+  2 &          ant &    0.56  &  0.15 & \quart{29}{22}{47}{111} \\
+\hline  3 &       pbeans &    0.8  &  0.32 & \quart{52}{47}{82}{111} \\\hline
+\end{tabular}}
+\end{table}
+\end{document}
