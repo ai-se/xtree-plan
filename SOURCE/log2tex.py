@@ -84,7 +84,6 @@ class type2():
     """)
 
   def printFooter(self):
-    print(r"\hline\end{tabular}}")
     print(r"""
     \end{document}
     """)
