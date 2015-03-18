@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-5>
+Subject: Job 200000: <tcsh save lucene 10453> Done
+
+Job <tcsh save lucene 10453> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-5>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Wed Mar 18 15:10:45 2015
+Results reported at Wed Mar 18 15:15:06 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save lucene 10453
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    208.62 sec.
+    Max Memory :        93 MB
+    Max Swap   :       714 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/lucene.err.200000> for stderr output of this job.
+

@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-7>
+Subject: Job 200027: <tcsh save pbeans 14804> Done
+
+Job <tcsh save pbeans 14804> was submitted from host <login04> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <2*n2c1-7>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <2*n2c1-9>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Wed Mar 18 15:13:57 2015
+Results reported at Wed Mar 18 15:15:17 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save pbeans 14804
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :     57.86 sec.
+    Max Memory :        91 MB
+    Max Swap   :       711 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/pbeans.err.200027> for stderr output of this job.
+
