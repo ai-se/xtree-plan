@@ -1,0 +1,40 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-9>
+Subject: Job 200706: <tcsh save jedit 32747> Exited
+
+Job <tcsh save jedit 32747> was submitted from host <login01> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <2*n2c1-9>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <2*n2c1-6>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Thu Mar 19 12:52:50 2015
+Results reported at Thu Mar 19 12:58:15 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save jedit 32747
+------------------------------------------------------------
+
+TERM_OWNER: job killed by owner.
+Exited with exit code 130.
+
+Resource usage summary:
+
+    CPU time   :    307.75 sec.
+    Max Memory :        98 MB
+    Max Swap   :       719 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/jedit.err.200706> for stderr output of this job.
+

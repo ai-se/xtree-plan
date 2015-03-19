@@ -71,6 +71,7 @@ class treatments():
           self, train, test, far=True, train_df=None, test_df=None, Prune = True, infoPrune=0.5, extent = 0.75):
     self.test, self.train = test, train
     self.extent = extent
+    print(self.extent)
     self.Prune = Prune
     self.infoPrune = infoPrune
     self.far = far
@@ -142,7 +143,7 @@ class treatments():
         return x
       return oneOther()
     two = one234(others.rows)
-    return [my + self.extent * f * (good - my)
+    return [my + self.extent * (good - my)
             for f, my, good in zip(opt.f, me[:-2], others.representative())]
 
   def main(self):

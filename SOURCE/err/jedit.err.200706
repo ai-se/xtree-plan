@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "run.py", line 123, in <module>
+    eval(cmd())
+  File "<string>", line 1, in <module>
+  File "run.py", line 120, in _test
+    R = run(dataName=file, extent = 0.25).go()
+  File "run.py", line 76, in go
+    train_DF = createTbl(self.train[self._n], isBin=True)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/methods1.py", line 42, in createTbl
+    m = makeaModel.csv2py(t, _smote = _smote)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/makeAmodel.py", line 74, in csv2py
+    tbl._rows))
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/makeAmodel.py", line 25, in data
+    for r in _rows],
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/makeAmodel.py", line 9, in __init__
+    def __init__(self, **d): self.update(**d)
+KeyboardInterrupt

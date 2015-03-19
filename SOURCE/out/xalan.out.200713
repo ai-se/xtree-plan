@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-10>
+Subject: Job 200713: <tcsh save xalan 16452> Exited
+
+Job <tcsh save xalan 16452> was submitted from host <login01> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-10>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Thu Mar 19 12:52:50 2015
+Results reported at Thu Mar 19 12:58:14 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save xalan 16452
+------------------------------------------------------------
+
+TERM_OWNER: job killed by owner.
+Exited with exit code 130.
+
+Resource usage summary:
+
+    CPU time   :    306.22 sec.
+    Max Memory :       103 MB
+    Max Swap   :       723 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/xalan.err.200713> for stderr output of this job.
+

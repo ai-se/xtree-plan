@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c1-3>
+Subject: Job 200704: <tcsh save forrest 20653> Exited
+
+Job <tcsh save forrest 20653> was submitted from host <login01> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c1-3>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Thu Mar 19 12:52:50 2015
+Results reported at Thu Mar 19 12:53:12 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save forrest 20653
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time   :      2.20 sec.
+    Max Memory :         3 MB
+    Max Swap   :        26 MB
+
+    Max Processes  :         1
+    Max Threads    :         1
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/forrest.err.200704> for stderr output of this job.
+

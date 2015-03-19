@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "run.py", line 123, in <module>
+    eval(cmd())
+  File "<string>", line 1, in <module>
+  File "run.py", line 120, in _test
+    R = run(dataName=file, extent = 0.25).go()
+  File "run.py", line 99, in go
+    Prune = False).main()
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/Planner2.py", line 80, in __init__
+    else createTbl(self.train, isBin=True, bugThres=1)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/methods1.py", line 46, in createTbl
+    tree = where2(m, m._rows)  # Decision tree using where2
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 231, in where2
+    node._kids += [where2(m, easts, lvl + 1, node)]
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 225, in where2
+    wests, west, easts, east, c = fastmap(m, data)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 66, in fastmap
+    west, east = somepairs(m, data)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 46, in somepairs
+    two = furthest(m, one, data)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 139, in furthest
+    tmp = dist(m, i, j)
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 112, in dist
+    n1 = norm(m, c, i.cells[c])
+  File "/home/rkrish11/git/Transfer-learning/SOURCE/_imports/where2.py", line 126, in norm
+    return (atom(val) - atom(m.lo[c])) / (atom(m.hi[c]) - atom(m.lo[c]) + 0.0001)
+KeyboardInterrupt

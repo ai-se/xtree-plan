@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-7>
+Subject: Job 200712: <tcsh save velocity 30571> Done
+
+Job <tcsh save velocity 30571> was submitted from host <login01> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-7>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Thu Mar 19 12:52:50 2015
+Results reported at Thu Mar 19 12:55:59 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save velocity 30571
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    171.30 sec.
+    Max Memory :        91 MB
+    Max Swap   :       712 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/velocity.err.200712> for stderr output of this job.
+
