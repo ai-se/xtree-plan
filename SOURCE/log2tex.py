@@ -23,12 +23,13 @@ class type1():
   def striplines(self, line):
     lists = []
     listedline = line[1:-1].strip().split(',')  # split around the = sign
+    self.projName = listedline[0][1:-1].strip().split('_')[0]
     lists.append(listedline[0][1:-1])
     for ll in listedline[1:]:
       lists.append(float(ll))
     return lists
 
-  def list2sk(self, lst):
+  def printHeader(self):
     print(r"""\documentclass{article}
     \usepackage{colortbl}
     \usepackage{fullpage}
@@ -39,15 +40,20 @@ class type1():
     {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
     \begin{document}
     """)
-    rdivDemo(lst, isLatex=True)
-    print("\hline\\end{tabular}}")
+
+  def printFooter(self):
     print(r"""
     \end{document}
     """)
 
+  def list2sk(self, lst):
+    print("\subsection*{" + self.projName + "}")
+    rdivDemo(lst, isLatex=True)
+
   def log2list(self):
     lst = []
     dir = './log'
+    self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
       f = open(dir + '/' + file, 'r')
@@ -55,7 +61,8 @@ class type1():
         if line:
           lst.append(self.striplines(line[:-1]))
     if lst:
-      print(self.list2sk(lst))
+      self.list2sk(lst)
+    self.printFooter()
 
 
 class type2():
@@ -118,7 +125,7 @@ class type2():
 
 
 def _test():
-  type2().log2list()
+  type1().log2list()
 
 if __name__ == '__main__':
   _test()

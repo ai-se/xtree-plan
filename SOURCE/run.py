@@ -30,12 +30,23 @@ from demos import cmd
 
 class run():
 
-  def __init__(self, pred=CART, _smoteit=True, _n=-1,
-               _tuneit=False, dataName=None, reps=10,
-               extent = 0.5, fWeight = False):
+  def __init__(
+          self,
+          pred=CART,
+          _smoteit=True,
+          _n=-1,
+          _tuneit=False,
+          dataName=None,
+          reps=1,
+          extent=0.5,
+          fSelect=False,
+          Prune=False,
+          infoPrune=0.75):
     self.pred = pred
     self.extent = extent
-    self.fWeight = fWeight
+    self.fSelect = fSelect
+    self.Prune = Prune
+    self.infoPrune = infoPrune
     self.dataName = dataName
     self.out, self.out_pred = [], []
     self._smoteit = _smoteit
@@ -93,16 +104,20 @@ class run():
             train=self.train[self._n],
             test=self.test[self._n],
             test_df=predTest,
-            extent = self.extent,
+            extent=self.extent,
             far=False,
-            infoPrune = 0.75,
-            Prune = False).main()
+            infoPrune=self.infoPrune,
+            Prune=self.Prune).main()
       else:
         newTab = treatments2(
             train=self.train[
-                self._n], test=self.test[
-                self._n], far=False, extent = self.extent, 
-                infoPrune = 0.75, Prune = False).main()
+                self._n],
+            test=self.test[
+                self._n],
+            far=False,
+            extent=self.extent,
+            infoPrune=self.infoPrune,
+            Prune=self.Prune).main()
 
       after = self.pred(train_DF, newTab,
                         tunings=self.tunedParams,
@@ -111,13 +126,226 @@ class run():
       self.out_pred.append(_Abcd(before=actual, after=before))
       delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
       self.out.append(delta)
-    self.out.insert(0, self.dataName+'_'+str(self.extent))
+    if self.extent == 0:
+      append = 'Base'
+    else:
+      if self.Prune:
+        append = str(
+            self.extent) + '_iP(' + str(
+            int(self.infoPrune * 100)) + r'%)' if not self.fSelect else str(
+            self.extent) + '_w_iP(' + str(
+            int(self.infoPrune * 100)) + r'%)'
+      else:
+        append = str(
+            self.extent) if not self.fSelect else str(
+            self.extent) + '_w'
+
+    self.out.insert(0, self.dataName + '_' + append)
     self.out_pred.insert(0, self.dataName)
     print(self.out)
 
 
 def _test(file):
-  R = run(dataName=file, extent = 0.25).go()
+  """
+  Baselining
+  """
+  R = run(
+      dataName=file,
+      extent=0.00,
+      reps=12,
+      fSelect=False,
+      Prune=False,
+      infoPrune=None).go()
+
+  """
+  Mutation without Feature Selection
+  """
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=False,
+      Prune=False,
+      infoPrune=None).go()
+
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=False,
+      Prune=False,
+      infoPrune=None).go()
+
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=False,
+      Prune=False,
+      infoPrune=None).go()
+
+  """
+  Mutation with Feature Selection
+  """
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=True,
+      Prune=False,
+      infoPrune=None).go()
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=True,
+      Prune=False,
+      infoPrune=None).go()
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=True,
+      Prune=False,
+      infoPrune=None).go()
+  """
+  Information Pruning with Feature Selection
+  """
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.25).go()
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.5).go()
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.75).go()
+
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.25).go()
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.50).go()
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.75).go()
+
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.25).go()
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.5).go()
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=True,
+      Prune=True,
+      infoPrune=0.75).go()
+
+  """
+  Information Pruning without Feature Selection
+  """
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.25).go()
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.5).go()
+  R = run(
+      dataName=file,
+      extent=0.25,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.75).go()
+
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.25).go()
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.50).go()
+  R = run(
+      dataName=file,
+      extent=0.50,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.75).go()
+
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.25).go()
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.5).go()
+  R = run(
+      dataName=file,
+      extent=0.75,
+      reps=12,
+      fSelect=False,
+      Prune=True,
+      infoPrune=0.75).go()
 
 if __name__ == '__main__':
-  eval(cmd())
+  _test('ant')
+#   eval(cmd())
