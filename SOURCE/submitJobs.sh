@@ -6,7 +6,6 @@
 rm err/*
 rm out/*
 for VAR in "ant" "camel" "forrest" "ivy" "jedit"  "poi" "lucene" "pbeans" "log4j" "synapse" "velocity" "xalan" "xerces"
-do  
-  mkdir log/$VAR
+do
   bsub -W 6000 -n 4 -o ./out/$VAR.out.%J -e ./err/$VAR.err.%J tcsh save "$VAR" $RANDOM
 done
