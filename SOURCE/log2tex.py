@@ -51,17 +51,18 @@ class type1():
     rdivDemo(lst, isLatex=True)
 
   def log2list(self):
-    lst = []
     dir = './log'
     self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
+      set_trace()
+      lst = []
       f = open(dir + '/' + file, 'r')
       for line in f:
         if line:
           lst.append(self.striplines(line[:-1]))
-    if lst:
-      self.list2sk(lst)
+      if lst:
+        self.list2sk(lst)
     self.printFooter()
 
 

@@ -28,7 +28,7 @@
 *.synctex.gz
 *.project
 *.texclipse
-*.gitignore
+*.log
 
 # PYC files
 *.pyc 

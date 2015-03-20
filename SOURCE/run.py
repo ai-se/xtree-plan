@@ -121,8 +121,9 @@ class run():
 
       after = self.pred(train_DF, newTab,
                         tunings=self.tunedParams,
-                        smoteit=False)
+                        smoteit=True)
 
+#       set_trace()
       self.out_pred.append(_Abcd(before=actual, after=before))
       delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
       self.out.append(delta)
@@ -152,7 +153,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.00,
-      reps=12,
+      reps=1,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -163,7 +164,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.25,
-      reps=12,
+      reps=1,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -171,7 +172,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.50,
-      reps=12,
+      reps=1,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -179,7 +180,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.75,
-      reps=12,
+      reps=1,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -347,5 +348,4 @@ def _test(file):
       infoPrune=0.75).go()
 
 if __name__ == '__main__':
-  _test('ant')
-#   eval(cmd())
+  eval(cmd())
