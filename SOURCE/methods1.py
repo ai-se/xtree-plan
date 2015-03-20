@@ -15,20 +15,18 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import smote
 
+
 def newTable(tbl, headerLabel, Rows):
- tbl2 = clone(tbl)
- newHead = Sym()
- newHead.col = len(tbl.headers)
- newHead.name = headerLabel
- tbl2.headers = tbl.headers + [newHead]
- return clone(tbl2, rows = Rows)
+  tbl2 = clone(tbl)
+  newHead = Sym()
+  newHead.col = len(tbl.headers)
+  newHead.name = headerLabel
+  tbl2.headers = tbl.headers + [newHead]
+  return clone(tbl2, rows=Rows)
 
-def createTbl(data
-            , settings = None 
-            , _smote = False
-            , isBin = False
-            , bugThres = 2):
 
+def createTbl(
+        data, settings=None, _smote=False, isBin=False, bugThres=2, duplicate=False):
   """
   kwargs:
   _smote = True/False : SMOTE input data (or not)
@@ -39,10 +37,10 @@ def createTbl(data
   makeaModel = makeAmodel.makeAModel()
   _r = []
   for t in data:
-    m = makeaModel.csv2py(t, _smote = _smote)
+    m = makeaModel.csv2py(t, _smote=_smote, duplicate=duplicate)
     _r += m._rows
   m._rows = _r
-  prepare(m, settings = None)  # Initialize all parameters for where2 to run
+  prepare(m, settings=None)  # Initialize all parameters for where2 to run
   tree = where2(m, m._rows)  # Decision tree using where2
   tbl = table(t)
 
@@ -59,18 +57,18 @@ def createTbl(data
 
   return newTable(tbl, headerLabel, Rows)
 
+
 def test_createTbl():
   dir = '../Data/camel/camel-1.6.csv'
-  newTbl = createTbl([dir], _smote = False)
-  newTblSMOTE = createTbl([dir], _smote = True)
+  newTbl = createTbl([dir], _smote=False)
+  newTblSMOTE = createTbl([dir], _smote=True)
   print(len(newTbl._rows), len(newTblSMOTE._rows))
 
 
 def drop(test, tree):
- loc = apex(test, tree)
- return loc
+  loc = apex(test, tree)
+  return loc
 
 
 if __name__ == '__main__':
   test_createTbl()
-

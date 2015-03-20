@@ -33,10 +33,11 @@ class type1():
     print(r"""\documentclass{article}
     \usepackage{colortbl}
     \usepackage{fullpage}
+    \usepackage{booktabs}
+    \usepackage{bigstrut}
     \usepackage[table]{xcolor}
-    %%%% needed %%%
     \usepackage{picture}
-    \newcommand{\quart}[4]{\begin{picture}(100,6)%1
+    \newcommand{\quart}[4]{\begin{picture}(100,6)
     {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
     \begin{document}
     """)
@@ -55,7 +56,6 @@ class type1():
     self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
-      set_trace()
       lst = []
       f = open(dir + '/' + file, 'r')
       for line in f:
@@ -84,9 +84,8 @@ class type2():
     \usepackage{colortbl}
     \usepackage{fullpage}
     \usepackage[table]{xcolor}
-    %%%% needed %%%
     \usepackage{picture}
-    \newcommand{\quart}[4]{\begin{picture}(100,6)%1
+    \newcommand{\quart}[4]{\begin{picture}(100,6)
     {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
     \begin{document}
     """)

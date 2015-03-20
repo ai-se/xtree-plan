@@ -76,6 +76,8 @@ class treatments():
           test_df=None,
           fSelect=True,
           Prune=True,
+          smote=False,
+          resample=False,
           infoPrune=0.5,
           extent=0.75):
     self.test, self.train = test, train
@@ -86,10 +88,20 @@ class treatments():
     self.far = far
     self.new_Tab = []
     self.train_df = train_df if train_df \
-        else createTbl(self.train, isBin=True, bugThres=1)
+        else createTbl(
+            self.train,
+            isBin=True,
+            bugThres=1,
+            _smote=smote,
+            duplicate=resample)
 
     self.test_df = test_df if test_df \
-        else createTbl(self.test, isBin=True, bugThres=1)
+        else createTbl(
+            self.test,
+            isBin=True,
+            bugThres=1,
+            _smote=smote,
+            duplicate=resample)
 
   def clusterer(self):
     IDs = list(set([f.cells[-1] for f in self.train_df._rows]))
