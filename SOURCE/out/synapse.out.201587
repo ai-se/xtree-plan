@@ -1,0 +1,39 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-2>
+Subject: Job 201587: <tcsh save synapse 1143> Exited
+
+Job <tcsh save synapse 1143> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <2*n2c3-2>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+                            <2*n2c3-9>
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Thu Mar 19 22:39:03 2015
+Results reported at Thu Mar 19 22:40:12 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save synapse 1143
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time   :     32.09 sec.
+    Max Memory :        91 MB
+    Max Swap   :       712 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/synapse.err.201587> for stderr output of this job.
+

@@ -1,2 +1,2 @@
 #! /bin/tcsh
-python run.py _test $1 > log/$1.$2.log
+python run.py _test $1 > log/$1.$2

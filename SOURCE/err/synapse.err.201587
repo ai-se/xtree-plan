@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "run.py", line 351, in <module>
+    eval(cmd())
+  File "<string>", line 1, in <module>
+  File "run.py", line 159, in _test
+    infoPrune=None).go()
+  File "run.py", line 128, in go
+    delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
+  File "/home/rkrish11/git/pystats/cliffsDelta.py", line 18, in delta
+    delta = sum([sum(b) for b in dominationMtx]) / (m * n)
+ZeroDivisionError: division by zero

@@ -1,0 +1,38 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-7>
+Subject: Job 201589: <tcsh save xalan 31465> Done
+
+Job <tcsh save xalan 31465> was submitted from host <login03> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-7>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Thu Mar 19 22:39:03 2015
+Results reported at Fri Mar 20 07:19:12 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+tcsh save xalan 31465
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :  31164.49 sec.
+    Max Memory :       105 MB
+    Max Swap   :       726 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err/xalan.err.201589> for stderr output of this job.
+

@@ -153,7 +153,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.00,
-      reps=1,
+      reps=12,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -164,7 +164,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.25,
-      reps=1,
+      reps=12,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -172,7 +172,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.50,
-      reps=1,
+      reps=12,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
@@ -180,7 +180,7 @@ def _test(file):
   R = run(
       dataName=file,
       extent=0.75,
-      reps=1,
+      reps=12,
       fSelect=False,
       Prune=False,
       infoPrune=None).go()
