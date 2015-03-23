@@ -59,7 +59,7 @@ def SMOTE(data = None, k = 5, atleast = 10
     for _ in xrange(atleast):
       for one in data:
         neigh = knn(one, data)[1:k + 1];
-        # If you're thinking the following try/catch statement is bad coding etiquette, my apologies.
+        # If you're thinking the following try/catch statement is bad coding etiquette i i . 
         try:
           two = choice(neigh)
         except IndexError:
