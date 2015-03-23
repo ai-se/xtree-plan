@@ -15,7 +15,8 @@ HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
+WHAT = '../SOURCE/'
+sys.path.extend([axe, pystat, cwd, WHAT])
 
 from methods1 import *
 
