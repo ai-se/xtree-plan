@@ -23,7 +23,7 @@ import pandas as pd
 from sk import rdivDemo
 from pdb import set_trace
 from dEvol import tuner
-from Planner2 import treatments as treatments2
+from WHAT import treatments as treatments2
 from os import walk
 from demos import cmd
 
