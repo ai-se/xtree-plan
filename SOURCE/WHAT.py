@@ -16,25 +16,11 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-
-from Prediction import *
 from _imports import *
-# from abcd import _Abcd
-from cliffsDelta import *
-from contrastset import *
-# from dectree import *
-from hist import *
-from smote import *
-import makeAmodel as mam
 from methods1 import *
 import numpy as np
+from scipy.spatial.distance import euclidean
 import pandas as pd
-from counts import *
-# import sk
 
 
 def settings(**d):

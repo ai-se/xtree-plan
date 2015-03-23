@@ -33,6 +33,10 @@
 # PYC files
 *.pyc 
 
+# Error and Output directories
+err/
+out/
+
 # Mac IDE files
 *.swp
 *~

@@ -1,5 +1,5 @@
 #! /Users/rkrsn/anaconda/bin/python
-from os import environ, getcwd
+from os import environ, getcwd, walk
 import sys
 # Update PYTHONPATH
 HOME = environ['HOME']
@@ -14,6 +14,22 @@ import makeAmodel
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import smote
+
+
+def explore(dir):
+  datasets = []
+  for (dirpath, dirnames, filenames) in walk(dir):
+    datasets.append(dirpath)
+
+  training = []
+  testing = []
+  for k in datasets[1:]:
+    train = [[dirPath, fname] for dirPath, _, fname in walk(k)]
+    test = [train[0][0] + '/' + train[0][1].pop(-1)]
+    training.append(
+        [train[0][0] + '/' + p for p in train[0][1] if not p == '.DS_Store'])
+    testing.append(test)
+  return training, testing
 
 
 def newTable(tbl, headerLabel, Rows):

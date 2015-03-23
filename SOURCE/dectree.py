@@ -1,9 +1,11 @@
 from __future__ import division
-import sys, pdb, os
+import sys
+import pdb
+import os
 from os import walk
-sys.path.insert(0, os.getcwd() + '/_imports/');
+sys.path.insert(0, os.getcwd() + '/_imports/')
 import libWhere
-sys.path.insert(1, '/User/rkrsn/git/axe/axe/');
+sys.path.insert(1, '/User/rkrsn/git/axe/axe/')
 from lib import *
 sys.dont_write_bytecode = True
 from dtree import *
@@ -13,25 +15,12 @@ from settingsWhere import *
 from settings import *
 from methods1 import *
 from contrastset import *
-import random, numpy as np
+import random
+import numpy as np
 import makeAmodel
 randi = random.randint
 rseed = random.seed
 # from _imports import *
-
-def explore(dir):
- datasets = []
- for (dirpath, dirnames, filenames) in walk(dir):
-    datasets.append(dirpath)
-
- training = []
- testing = []
- for k in datasets[1:]:
-  train = [[dirPath, fname] for dirPath, _, fname in walk(k)]
-  test = [train[0][0] + '/' + train[0][1].pop(-1)]
-  training.append([train[0][0] + '/' + p for p in train[0][1] if not p == '.DS_Store']);
-  testing.append(test)
- return training, testing
 
 """
 def tdivPrec(where = None , dtree = None, train = None, test = None):
@@ -63,7 +52,7 @@ def tdivPrec(where = None , dtree = None, train = None, test = None):
 
 
 """
- #Testing
+# Testing
 """
  _r = []
  for tt in test:
