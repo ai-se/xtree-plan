@@ -89,7 +89,7 @@ def reformat(file, train_test=True, ttr=0.5, save=False):
       for b in body:
         writer.writerow(b)
   elif train_test:
-    train = body[:int(ttr * len(body))]
+    train = sample(body, int(ttr * len(body)))
     test = [b for b in body if not b in train]
     return header, train, test
   else:
@@ -119,14 +119,29 @@ def main():
   before, after = [], []
   for fname, file in zip(filenames, files):
     train, test = file[0], file[1]
-    for _ in xrange(10):
+    for _ in xrange(5):
       before.extend(test[test.columns[-1]].astype('float32').tolist())
       after.extend(predictor(train=train, test=test).CART())
     out = [(1 - abs(b - a) / b) * 100 for b, a in zip(before, after)]
     out.insert(0, fname[:-4])
     E.append(out)
 
-  rdivDemo(E, isLatex=False)
+  print(r"""\documentclass{article}
+  \usepackage{colortbl}
+  \usepackage{fullpage}
+  \usepackage{booktabs}
+  \usepackage{bigstrut}
+  \usepackage[table]{xcolor}
+  \usepackage{picture}
+  \newcommand{\quart}[4]{\begin{picture}(100,6)
+  {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+  \begin{document}
+  """)
+  rdivDemo(E, isLatex=True)
+  print(r"""
+    \end{document}
+    """)
+
   #----------- DEGUB ----------------
   set_trace()
 
