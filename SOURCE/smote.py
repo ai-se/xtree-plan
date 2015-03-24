@@ -11,7 +11,6 @@ cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 from random import choice, seed as rseed, uniform as rand
 import pandas as pd
-from dectree import *
 
 
 def SMOTE(data=None, k=5, atleast=10, atmost=51, bugIndx=2, resample=False):
