@@ -173,6 +173,9 @@ class fileHandler():
       out.insert(0, d[0].strip().split('/')[-1])
       E.append(out)
 
+    #----------- DEGUB ----------------
+    set_trace()
+
     print(r"""\documentclass{article}
     \usepackage{colortbl}
     \usepackage{fullpage}
@@ -188,9 +191,6 @@ class fileHandler():
     print(r"""
       \end{document}
       """)
-
-  #----------- DEGUB ----------------
-    set_trace()
 
 
 def _test():
