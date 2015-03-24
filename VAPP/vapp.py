@@ -19,6 +19,7 @@ cwd = getcwd()  # Current Directory
 WHAT = '../SOURCE/'
 sys.path.extend([axe, pystat, cwd, WHAT])
 
+from sk import rdivDemo
 from smote import SMOTE
 from methods1 import *
 
@@ -66,7 +67,7 @@ class predictor():
     return preds
 
 
-def reformat(file, train_test=True, ttr=0.66, save=False):
+def reformat(file, train_test=True, ttr=0.5, save=False):
   """
   Reformat the raw data to suit my other codes.
   **Already done, leave SAVE switched off!**
@@ -88,7 +89,7 @@ def reformat(file, train_test=True, ttr=0.66, save=False):
       for b in body:
         writer.writerow(b)
   elif train_test:
-    train = sample(body, int(ttr * len(body)))
+    train = body[:int(ttr * len(body))]
     test = [b for b in body if not b in train]
     return header, train, test
   else:
@@ -107,16 +108,27 @@ def explorer(dir='../CPM/'):
       dirpath,
       dirnames,
       filenames) in walk(dir)][0]
-  return [file2pandas(dir + file) for file in files]
+  return files, [file2pandas(dir + file) for file in files]
 
 
 def main():
   dir = '../CPM/'
-  files = explorer(dir)
-  train, test = files[0][0], files[0][1]
-  before = test[test.columns[-1]].astype('float32').tolist()
-  after = predictor(train=train, test=test).CART()
-  print(([(1 - abs(b - a) / b) * 100 for b, a in zip(before, after)]))
+  filenames, files = explorer(dir)
+  E = []
+  out = []
+  before, after = [], []
+  for fname, file in zip(filenames, files):
+    train, test = file[0], file[1]
+    for _ in xrange(10):
+      before.extend(test[test.columns[-1]].astype('float32').tolist())
+      after.extend(predictor(train=train, test=test).CART())
+    out = [(1 - abs(b - a) / b) * 100 for b, a in zip(before, after)]
+    out.insert(0, fname[:-4])
+    E.append(out)
+
+  rdivDemo(E, isLatex=False)
+  #----------- DEGUB ----------------
+  set_trace()
 
 
 def _test():
