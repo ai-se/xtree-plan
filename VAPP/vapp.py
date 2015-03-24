@@ -4,10 +4,13 @@ from __future__ import division
 from os import environ
 from os import getcwd
 from os import walk
+from os import system
 from pdb import set_trace
 from random import uniform as rand
 from random import randint as randi
 from random import sample
+from subprocess import call
+from subprocess import PIPE
 import pandas
 import sys
 from sklearn.tree import DecisionTreeRegressor
@@ -22,6 +25,10 @@ sys.path.extend([axe, pystat, cwd, WHAT])
 from sk import rdivDemo
 from smote import SMOTE
 from methods1 import *
+from WHAT import treatments as WHAT
+from Prediction import formatData
+from Prediction import CART as cart
+from cliffsDelta import cliffs
 
 
 class predictor():
@@ -67,87 +74,127 @@ class predictor():
     return preds
 
 
-def reformat(file, train_test=True, ttr=0.5, save=False):
-  """
-  Reformat the raw data to suit my other codes.
-  **Already done, leave SAVE switched off!**
-  """
-  fread = open(file, 'r')
-  rows = [line for line in fread]
-  header = rows[0].strip().split(',')  # Get the headers
-  body = [[1 if r == 'Y' else 0 if r == 'N' else r for r in row.strip().split(',')]
-          for row in rows[1:]]
-  if save:
+class fileHandler():
+
+  def __init__(self, dir='../CPM/'):
+    self.dir = dir
+
+  def reformat(self, file, train_test=True, ttr=0.5, save=False):
+    """
+    Reformat the raw data to suit my other codes.
+    **Already done, leave SAVE switched off!**
+    """
     import csv
-    "Format the headers by prefixing '$' and '<'"
-    header = ['$' + h for h in header]
-    header[-1] = header[-1][0] + '<' + header[-1][1:]
-    "Write Header"
-    with open(file, 'w') as fwrite:
-      writer = csv.writer(fwrite, delimiter=',')
-      writer.writerow(header)
-      for b in body:
-        writer.writerow(b)
-  elif train_test:
-    train = sample(body, int(ttr * len(body)))
-    test = [b for b in body if not b in train]
-    return header, train, test
-  else:
-    return header, body
+    fread = open(self.dir + file, 'r')
+    rows = [line for line in fread]
+    header = rows[0].strip().split(',')  # Get the headers
+    body = [[1 if r == 'Y' else 0 if r == 'N' else r for r in row.strip().split(',')]
+            for row in rows[1:]]
+    if save:
+      "Format the headers by prefixing '$' and '<'"
+      header = ['$' + h for h in header]
+      header[-1] = header[-1][0] + '<' + header[-1][1:]
+      "Write Header"
+      with open(file, 'w') as fwrite:
+        writer = csv.writer(fwrite, delimiter=',')
+        writer.writerow(header)
+        for b in body:
+          writer.writerow(b)
+    elif train_test:
+      call(["mkdir", "./Data/" + file[:-7]], stdout=PIPE)
+      with open("./Data/" + file[:-7] + '/Train.csv', 'w+') as fwrite:
+        writer = csv.writer(fwrite, delimiter=',')
+        train = sample(body, int(ttr * len(body)))
+        writer.writerow(header)
+        for b in train:
+          writer.writerow(b)
 
+      with open("./Data/" + file[:-7] + '/Test.csv', 'w+') as fwrite:
+        writer = csv.writer(fwrite, delimiter=',')
+        test = [b for b in body if not b in train]
+        writer.writerow(header)
+        for b in test:
+          writer.writerow(b)
+#       return header, train, test
+    else:
+      return header, body
 
-def file2pandas(file):
-  head, train, test = reformat(file)
-  return [pandas.DataFrame(
-      train, columns=head), pandas.DataFrame(
-      test, columns=head)]
+  def file2pandas(self, file):
+    fread = open(file, 'r')
+    rows = [line for line in fread]
+    head = rows[0].strip().split(',')  # Get the headers
+    body = [[1 if r == 'Y' else 0 if r == 'N' else r for r in row.strip().split(',')]
+            for row in rows[1:]]
+    return pandas.DataFrame(body, columns=head)
 
+  def explorer(self):
+    files = [filenames for (
+        dirpath,
+        dirnames,
+        filenames) in walk(self.dir)][0]
+    for f in files:
+      self.reformat(f)
+    datasets = []
+    projects = {}
+    for (dirpath, dirnames, filenames) in walk(cwd + '/Data/'):
+      datasets.append([dirpath, filenames])
+    return datasets[1:]
 
-def explorer(dir='../CPM/'):
-  files = [filenames for (
-      dirpath,
-      dirnames,
-      filenames) in walk(dir)][0]
-  return files, [file2pandas(dir + file) for file in files]
+#     return files, [self.file2pandas(dir + file) for file in files]
 
+  def main(self):
+    E = []
+    out = []
+    data = self.explorer()
+    for d in data:
+      for _ in xrange(1):
+        train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
+        test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
+        train_df = self.file2pandas(d[0] + '/' + d[1][1])
+        test_df = self.file2pandas(d[0] + '/' + d[1][0])
+        actual = test_df[test_df.columns[-1]].astype('float32').tolist()
+        before = cart(train=train, test=test, smoteit=False)
+        newTab = WHAT(
+            train=[d[0] + '/' + d[1][1]],
+            test=[d[0] + '/' + d[1][0]],
+            train_df=train,
+            bin=True,
+            test_df=test,
+            extent=0.5,
+            far=False,
+            smote=False,
+            resample=False,
+            infoPrune=0.99,
+            method='any',
+            Prune=False).main()
+        newTab_df = formatData(newTab)
+        after = cart(train=train, test=newTab, smoteit=False)
+        out.append(cliffs(lst1=before, lst2=after).delta())
+      out.insert(0, d[0].strip().split('/')[-1])
+      E.append(out)
 
-def main():
-  dir = '../CPM/'
-  filenames, files = explorer(dir)
-  E = []
-  out = []
-  before, after = [], []
-  for fname, file in zip(filenames, files):
-    train, test = file[0], file[1]
-    for _ in xrange(5):
-      before.extend(test[test.columns[-1]].astype('float32').tolist())
-      after.extend(predictor(train=train, test=test).CART())
-    out = [(1 - abs(b - a) / b) * 100 for b, a in zip(before, after)]
-    out.insert(0, fname[:-4])
-    E.append(out)
-
-  print(r"""\documentclass{article}
-  \usepackage{colortbl}
-  \usepackage{fullpage}
-  \usepackage{booktabs}
-  \usepackage{bigstrut}
-  \usepackage[table]{xcolor}
-  \usepackage{picture}
-  \newcommand{\quart}[4]{\begin{picture}(100,6)
-  {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
-  \begin{document}
-  """)
-  rdivDemo(E, isLatex=True)
-  print(r"""
-    \end{document}
+    print(r"""\documentclass{article}
+    \usepackage{colortbl}
+    \usepackage{fullpage}
+    \usepackage{booktabs}
+    \usepackage{bigstrut}
+    \usepackage[table]{xcolor}
+    \usepackage{picture}
+    \newcommand{\quart}[4]{\begin{picture}(100,6)
+    {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+    \begin{document}
     """)
+    rdivDemo(E, isLatex=True)
+    print(r"""
+      \end{document}
+      """)
 
   #----------- DEGUB ----------------
-  set_trace()
+    set_trace()
 
 
 def _test():
-  main()
+  fileHandler().main()
 
 if __name__ == '__main__':
   _test()
