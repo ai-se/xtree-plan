@@ -5,8 +5,8 @@ from os import environ
 from os import getcwd
 from pdb import set_trace
 from weights import weights as W
-from random import uniform as rand
-from random import sample
+from random import random as rand
+from random import choice as any
 from random import randint as randi
 import sys
 
@@ -51,11 +51,13 @@ class vertex():
     if method == 'mean':
       return [float(np.mean([k.cells[indx] for k in self.rows]))
               for indx in xrange(len(self.rows[0].cells) - 2)]
-    if method == 'median':
+    elif method == 'median':
       return [float(np.median([k.cells[indx] for k in self.rows]))
               for indx in xrange(len(self.rows[0].cells) - 2)]
-    elif 'any':
-      return sample(self.rows, 1).cells[:-2]
+    elif method == 'best':
+      return sorted(self.rows, key=lambda F: F.cells[-2])[0].cells[:-2]
+    elif method == 'any':
+      return any(self.rows, 1).cells[:-2]
 
 
 class treatments():
@@ -161,9 +163,9 @@ class treatments():
       if my == good:
         return my
       elif f:
-        return good if rand(0, 1) < extent * f else my
+        return good if rand() < extent * f else my
       else:
-        return good if rand(0, 1) < extent else my
+        return good if rand() < extent else my
 
     def one234(pop, f=lambda x: id(x)):
       seen = []

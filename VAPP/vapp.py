@@ -65,12 +65,12 @@ class predictor():
                                   max_features=float(self.tunings[3] / 100),
                                   max_leaf_nodes=int(self.tunings[4]),
                                   criterion='entropy')
-    features = self.train.columns[:-1]
-    klass = self.train[self.train.columns[-1]]
+    features = self.train.columns[:-2]
+    klass = self.train[self.train.columns[-2]]
     # set_trace()
     clf.fit(self.train[features].astype('float32'), klass.astype('float32'))
     preds = clf.predict(
-        self.test[self.test.columns[:-1]].astype('float32')).tolist()
+        self.test[self.test.columns[:-2]].astype('float32')).tolist()
     return preds
 
 
@@ -143,17 +143,19 @@ class fileHandler():
 #     return files, [self.file2pandas(dir + file) for file in files]
 
   def main(self):
-    E = []
-    out = []
+    effectSize = []
+    Accuracy = []
     data = self.explorer()
-    for d in data:
-      for _ in xrange(1):
+    for d in data[:1]:
+      out_eff = []
+      out_acc = []
+      for _ in xrange(10):
         train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
         test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
-        train_df = self.file2pandas(d[0] + '/' + d[1][1])
-        test_df = self.file2pandas(d[0] + '/' + d[1][0])
-        actual = test_df[test_df.columns[-1]].astype('float32').tolist()
-        before = cart(train=train, test=test, smoteit=False)
+        train_df = formatData(train)
+        test_df = formatData(train)
+        actual = test_df[test_df.columns[-2]].astype('float32').tolist()
+        before = predictor(train=train_df, test=test_df).CART()
         newTab = WHAT(
             train=[d[0] + '/' + d[1][1]],
             test=[d[0] + '/' + d[1][0]],
@@ -165,17 +167,20 @@ class fileHandler():
             smote=False,
             resample=False,
             infoPrune=0.99,
-            method='any',
+            method='best',
             Prune=False).main()
         newTab_df = formatData(newTab)
-        after = cart(train=train, test=newTab, smoteit=False)
-        out.append(cliffs(lst1=before, lst2=after).delta())
-      out.insert(0, d[0].strip().split('/')[-1])
-      E.append(out)
+        after = predictor(train=train_df, test=newTab_df).CART()
+        out_eff.append(cliffs(lst1=actual, lst2=after).delta())
+        out_acc.extend(
+            [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
 
-    #----------- DEGUB ----------------
+      out_eff.insert(0, d[0].strip().split('/')[-1])
+      effectSize.append(out_eff)
+      out_acc.insert(0, d[0].strip().split('/')[-1])
+      Accuracy.append(out_acc)
+
     set_trace()
-
     print(r"""\documentclass{article}
     \usepackage{colortbl}
     \usepackage{fullpage}
@@ -187,10 +192,15 @@ class fileHandler():
     {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
     \begin{document}
     """)
-    rdivDemo(E, isLatex=True)
+    print(r"\subsubsection*{Prediction Accuracy}")
+    rdivDemo(Accuracy, isLatex=True)
+    print(r"\subsubsection*{CliffsDelta Scores}")
+    rdivDemo(effectSize, isLatex=True)
     print(r"""
       \end{document}
       """)
+    #----------- DEGUB ----------------
+    set_trace()
 
 
 def _test():
