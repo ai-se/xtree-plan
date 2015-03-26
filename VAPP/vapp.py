@@ -142,14 +142,53 @@ class fileHandler():
 
 #     return files, [self.file2pandas(dir + file) for file in files]
 
+  def overlayCurve(self, x, y, fname=None, ext=None):
+    from numpy import linspace
+    import matplotlib.pyplot as plt
+    import matplotlib.lines as mlines
+
+    fname = 'Untitled' if not fname else fname
+    ext = '.jpg' if not ext else ext
+    xlim = linspace(1, len(x), len(x))
+    ylim = linspace(1, len(y), len(y))
+    # plt.subplot(221)
+    try:
+      plt.plot(xlim, sorted(x), 'r', ylim, sorted(y), 'b')
+    except ValueError:
+      set_trace()
+    # add a 'best fit' line
+    plt.xlabel('Test Cases')
+    plt.ylabel('Performance Scores (s)')
+    plt.title(fname)
+    # plt.title(r'Histogram (Median Bugs in each class)')
+
+    # Tweak spacing to prevent clipping of ylabel
+    plt.subplots_adjust(left=0.15)
+    "Legend"
+    blue_line = mlines.Line2D([], [], color='blue', marker='*',
+                              markersize=0, label='After')
+    red_line = mlines.Line2D([], [], color='red', marker='*',
+                             markersize=0, label='Before')
+    plt.legend(
+        bbox_to_anchor=(
+            0.3,
+            1),
+        loc=1,
+        borderaxespad=0.,
+        handles=[
+            red_line,
+            blue_line])
+    plt.savefig('./_fig/' + fname + ext)
+    plt.close()
+
   def main(self):
     effectSize = []
     Accuracy = []
     data = self.explorer()
-    for d in data[:1]:
+    for d in data:
       out_eff = []
       out_acc = []
-      for _ in xrange(10):
+      for _ in xrange(1):
         train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
         test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
         train_df = formatData(train)
@@ -174,7 +213,10 @@ class fileHandler():
         out_eff.append(cliffs(lst1=actual, lst2=after).delta())
         out_acc.extend(
             [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-
+        self.overlayCurve(before,
+                          after,
+                          fname=d[0].strip().split('/')[-1],
+                          ext='.jpg')
       out_eff.insert(0, d[0].strip().split('/')[-1])
       effectSize.append(out_eff)
       out_acc.insert(0, d[0].strip().split('/')[-1])

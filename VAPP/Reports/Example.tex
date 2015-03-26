@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{times}
+\usepackage{booktabs}
+\usepackage{bigstrut}
+\usepackage{subfig}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\graphicspath{../_fig/}
+\begin{document}
+	\begin{figure}
+		\centering
+		\subfloat[][Apache]{\includegraphics[width=0.5\linewidth]{../_fig/Apache.jpg}\label{<figure1>}}
+		\subfloat[][LLVM]{\includegraphics[width=0.5\linewidth]{../_fig/LLVM.jpg}\label{<figure2>}}\\
+		\subfloat[][BDBJ]{\includegraphics[width=0.5\linewidth]{../_fig/BDBJ.jpg}\label{<figure3>}}
+		\subfloat[][BDBC]{\includegraphics[width=0.5\linewidth]{../_fig/BDBC.jpg}\label{<figure4>}}\\
+		\subfloat[][BDBJ]{\includegraphics[width=0.5\linewidth]{../_fig/SQL.jpg}\label{<figure5>}}
+		\subfloat[][BDBC]{\includegraphics[width=0.5\linewidth]{../_fig/X264.jpg}\label{<figure6>}}\\
+		\label{steady_state}
+	\end{figure}
+\end{document}
