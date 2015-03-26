@@ -234,10 +234,11 @@ class fileHandler():
           train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
           test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
           train_df = formatData(train)
-          test_df = formatData(train)
+          test_df = formatData(test)
           actual = test_df[
               test_df.columns[-2]].astype('float32').tolist()
           before = predictor(train=train_df, test=test_df).CART()
+#           set_trace()
           newTab = WHAT(
               train=[d[0] + '/' + d[1][1]],
               test=[d[0] + '/' + d[1][0]],
@@ -259,7 +260,7 @@ class fileHandler():
           out_acc.extend(
               [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
     out_eff.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
-    out_acc.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
+    out_acc.insert(0, name)
     return out_acc, out_eff
     #----------- DEGUB ----------------
 #     set_trace()
@@ -287,22 +288,23 @@ def postabmle():
 
 def _test(name='Apache'):
   Accuracy, Gain = [], []
-  for _prune in [False, True]:
-    for _info in [0.25, 0.5, 0.75]:
-      for fSel in [True, False]:
-        for ext in [0.25, 0.5, 0.75]:
-          Accuracy.append(fileHandler().main(
-              name=name,
-              ext=ext,
-              _prune=_prune,
-              _info=_info,
-              fSel=fSel)[0])
-          Gain.append(fileHandler().main(
-              name=name,
-              ext=ext,
-              _prune=_prune,
-              _info=_info,
-              fSel=fSel)[1])
+  for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+    for _prune in [False]:  # , True]:
+      for _info in [0.25]:  # , 0.5, 0.75]:
+        for fSel in [True]:  # , False]:
+          for ext in [0.25]:  # , 0.5, 0.75]:
+            Accuracy.append(fileHandler().main(
+                name=name,
+                ext=ext,
+                _prune=_prune,
+                _info=_info,
+                fSel=fSel)[0])
+#             Gain.append(fileHandler().main(
+#                 name=name,
+#                 ext=ext,
+#                 _prune=_prune,
+#                 _info=_info,
+#                 fSel=fSel)[1])
 
   preamble1()
   print(r"\subsubsection*{Prediction Accuracy}")
