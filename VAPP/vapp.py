@@ -29,6 +29,7 @@ from WHAT import treatments as WHAT
 from Prediction import formatData
 from Prediction import CART as cart
 from cliffsDelta import cliffs
+from demos import cmd
 
 
 class predictor():
@@ -127,13 +128,14 @@ class fileHandler():
             for row in rows[1:]]
     return pandas.DataFrame(body, columns=head)
 
-  def explorer(self):
+  def explorer(self, name):
     files = [filenames for (
         dirpath,
         dirnames,
         filenames) in walk(self.dir)][0]
     for f in files:
-      self.reformat(f)
+      if f[:-7] == name:
+        self.reformat(f)
     datasets = []
     projects = {}
     for (dirpath, dirnames, filenames) in walk(cwd + '/Data/'):
@@ -142,28 +144,29 @@ class fileHandler():
 
 #     return files, [self.file2pandas(dir + file) for file in files]
 
-  def overlayCurve(self, x, y, fname=None, ext=None):
+  def overlayCurve(
+          self, x, y, fname=None, ext=None, textbox=False, string=None):
     from numpy import linspace
     import matplotlib.pyplot as plt
     import matplotlib.lines as mlines
 
     fname = 'Untitled' if not fname else fname
     ext = '.jpg' if not ext else ext
+    fig = plt.figure()
+    ax = fig.add_axes([0.1, 0.1, 0.6, 0.75])
     xlim = linspace(1, len(x), len(x))
     ylim = linspace(1, len(y), len(y))
     # plt.subplot(221)
-    try:
-      plt.plot(xlim, sorted(x), 'r', ylim, sorted(y), 'b')
-    except ValueError:
-      set_trace()
+    ax.plot(xlim, sorted(x), 'r')
+    ax.plot(ylim, sorted(y), 'b')
     # add a 'best fit' line
-    plt.xlabel('Test Cases')
-    plt.ylabel('Performance Scores (s)')
+    ax.set_xlabel('Test Cases', size=18)
+    ax.set_ylabel('Performance Scores (s)', size=18)
     plt.title(fname)
     # plt.title(r'Histogram (Median Bugs in each class)')
 
     # Tweak spacing to prevent clipping of ylabel
-    plt.subplots_adjust(left=0.15)
+#     plt.subplots_adjust(left=0.15)
     "Legend"
     blue_line = mlines.Line2D([], [], color='blue', marker='*',
                               markersize=0, label='After')
@@ -171,59 +174,99 @@ class fileHandler():
                              markersize=0, label='Before')
     plt.legend(
         bbox_to_anchor=(
-            0.3,
+            1.05,
             1),
-        loc=1,
+        loc=2,
         borderaxespad=0.,
         handles=[
             red_line,
             blue_line])
+    if textbox:
+      "Textbox"
+      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+      ax.text(0.05, 0.95, string, fontsize=14,
+              verticalalignment='top', bbox=props)
     plt.savefig('./_fig/' + fname + ext)
     plt.close()
 
-  def main(self):
+  def preamble(self):
+    print(r"""
+\documentclass{article}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{times}
+\usepackage{booktabs}
+\usepackage{bigstrut}
+\usepackage{subfig}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\graphicspath{../_fig/}
+\begin{document}
+\title{text}
+\maketitle
+""")
+
+  def figname(self, fSel, ext, _prune, _info):
+    a = '_w' if fSel else ""
+    b = str(int(ext * 100))
+    c = "_iP(%s)" % (str(int(_info * 100))) if _prune else ""
+    suffix = '_%s%s%s' % (b, a, c)
+    A = " Feature Weighting" if fSel else ""
+    B = ", %s Information Pruning" % (
+        str(int(_info * 100)) + r"\%") if _prune else ""
+    comment = "Mutation Probability = %.2f,%s%s" % (ext, A, B)
+    return suffix, comment
+
+  def main(self, name='Apache', reps=10, fSel=True,
+           ext=0.5, _prune=False, _info=0.25):
     effectSize = []
     Accuracy = []
-    data = self.explorer()
-    for d in data:
-      out_eff = []
-      out_acc = []
-      for _ in xrange(1):
-        train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
-        test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
-        train_df = formatData(train)
-        test_df = formatData(train)
-        actual = test_df[test_df.columns[-2]].astype('float32').tolist()
-        before = predictor(train=train_df, test=test_df).CART()
-        newTab = WHAT(
-            train=[d[0] + '/' + d[1][1]],
-            test=[d[0] + '/' + d[1][0]],
-            train_df=train,
-            bin=True,
-            test_df=test,
-            extent=0.5,
-            far=False,
-            smote=False,
-            resample=False,
-            infoPrune=0.99,
-            method='best',
-            Prune=False).main()
-        newTab_df = formatData(newTab)
-        after = predictor(train=train_df, test=newTab_df).CART()
-        out_eff.append(cliffs(lst1=actual, lst2=after).delta())
-        out_acc.extend(
-            [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-        self.overlayCurve(before,
-                          after,
-                          fname=d[0].strip().split('/')[-1],
-                          ext='.jpg')
-      out_eff.insert(0, d[0].strip().split('/')[-1])
-      effectSize.append(out_eff)
-      out_acc.insert(0, d[0].strip().split('/')[-1])
-      Accuracy.append(out_acc)
+    out_eff = []
+    out_acc = []
+    for _ in xrange(reps):
+      data = self.explorer(name)
+      # self.preamble()
+      for d in data:
+        #       print("\\subsection{%s}\n \\begin{figure}\n \\centering" %
+        #             (d[0].strip().split('/')[-1]))
+        if name == d[0].strip().split('/')[-1]:
+          #           set_trace()
+          train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
+          test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
+          train_df = formatData(train)
+          test_df = formatData(train)
+          actual = test_df[
+              test_df.columns[-2]].astype('float32').tolist()
+          before = predictor(train=train_df, test=test_df).CART()
+          newTab = WHAT(
+              train=[d[0] + '/' + d[1][1]],
+              test=[d[0] + '/' + d[1][0]],
+              train_df=train,
+              bin=True,
+              test_df=test,
+              extent=ext,
+              fSelect=fSel,
+              far=False,
+              smote=False,
+              resample=False,
+              infoPrune=_info,
+              method='best',
+              Prune=_prune).main()
+          newTab_df = formatData(newTab)
+          after = predictor(train=train_df, test=newTab_df).CART()
+          cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
+          out_eff.append(sum(before) / sum(after))
+          out_acc.extend(
+              [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
+    out_eff.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
+    out_acc.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
+    return out_acc, out_eff
+    #----------- DEGUB ----------------
+#     set_trace()
 
-    set_trace()
-    print(r"""\documentclass{article}
+
+def preamble1():
+  print(r"""\documentclass{article}
     \usepackage{colortbl}
     \usepackage{fullpage}
     \usepackage{booktabs}
@@ -234,19 +277,58 @@ class fileHandler():
     {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
     \begin{document}
     """)
-    print(r"\subsubsection*{Prediction Accuracy}")
-    rdivDemo(Accuracy, isLatex=True)
-    print(r"\subsubsection*{CliffsDelta Scores}")
-    rdivDemo(effectSize, isLatex=True)
-    print(r"""
-      \end{document}
-      """)
-    #----------- DEGUB ----------------
-    set_trace()
 
 
-def _test():
-  fileHandler().main()
+def postabmle():
+  print(r"""
+  \end{document}
+  """)
+
+
+def _test(name='Apache'):
+  Accuracy, Gain = [], []
+  for _prune in [False, True]:
+    for _info in [0.25, 0.5, 0.75]:
+      for fSel in [True, False]:
+        for ext in [0.25, 0.5, 0.75]:
+          Accuracy.append(fileHandler().main(
+              name=name,
+              ext=ext,
+              _prune=_prune,
+              _info=_info,
+              fSel=fSel)[0])
+          Gain.append(fileHandler().main(
+              name=name,
+              ext=ext,
+              _prune=_prune,
+              _info=_info,
+              fSel=fSel)[1])
+
+  preamble1()
+  print(r"\subsubsection*{Prediction Accuracy}")
+  rdivDemo(Accuracy, isLatex=True)
+  print(r"\subsubsection*{CliffsDelta Scores}")
+  rdivDemo(Gain, isLatex=True)
+  postabmle()
 
 if __name__ == '__main__':
   _test()
+# if __name__ == '__main__':
+#   eval(cmd())
+  #                 textstr = \
+#                     ' Gain($\\frac{AUC Before}{AUC After}$=%0.2f'\
+#                     % (sum(before) / sum(after))
+#                 name = "%s%s" % (d[0].strip().split(
+#                     '/')[-1], self.figname(fSel, ext, _prune, _info)[0])
+#                 comment = self.figname(fSel, ext, _prune, _info)[1]
+#                 self.overlayCurve(before,
+#                                   after,
+#                                   fname=name,
+#                                   ext='.jpg',
+#                                   textbox=False,
+#                                   string=textstr)
+#                 print(
+#                     "\\subfloat[][%s]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
+#                     (comment + textstr, name + '.jpg'))
+#       print(r"\end{figure}")
+#     print(r"\end{document}")
