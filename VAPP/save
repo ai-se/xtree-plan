@@ -1,0 +1,2 @@
+#! /bin/tcsh
+python vapp.py _test $1 > log/$1.$2

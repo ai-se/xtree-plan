@@ -23,6 +23,7 @@ WHAT = '../SOURCE/'
 sys.path.extend([axe, pystat, cwd, WHAT])
 
 from sk import rdivDemo
+from sk import scottknott
 from smote import SMOTE
 from methods1 import *
 from WHAT import treatments as WHAT
@@ -30,6 +31,7 @@ from Prediction import formatData
 from Prediction import CART as cart
 from cliffsDelta import cliffs
 from demos import cmd
+from numpy import median
 
 
 class predictor():
@@ -102,7 +104,7 @@ class fileHandler():
         for b in body:
           writer.writerow(b)
     elif train_test:
-      call(["mkdir", "./Data/" + file[:-7]], stdout=PIPE)
+      # call(["mkdir", "./Data/" + file[:-7]], stdout=PIPE)
       with open("./Data/" + file[:-7] + '/Train.csv', 'w+') as fwrite:
         writer = csv.writer(fwrite, delimiter=',')
         train = sample(body, int(ttr * len(body)))
@@ -139,55 +141,11 @@ class fileHandler():
     datasets = []
     projects = {}
     for (dirpath, dirnames, filenames) in walk(cwd + '/Data/'):
-      datasets.append([dirpath, filenames])
-    return datasets[1:]
+      if name in dirpath:
+        datasets.append([dirpath, filenames])
+    return datasets
 
 #     return files, [self.file2pandas(dir + file) for file in files]
-
-  def overlayCurve(
-          self, x, y, fname=None, ext=None, textbox=False, string=None):
-    from numpy import linspace
-    import matplotlib.pyplot as plt
-    import matplotlib.lines as mlines
-
-    fname = 'Untitled' if not fname else fname
-    ext = '.jpg' if not ext else ext
-    fig = plt.figure()
-    ax = fig.add_axes([0.1, 0.1, 0.6, 0.75])
-    xlim = linspace(1, len(x), len(x))
-    ylim = linspace(1, len(y), len(y))
-    # plt.subplot(221)
-    ax.plot(xlim, sorted(x), 'r')
-    ax.plot(ylim, sorted(y), 'b')
-    # add a 'best fit' line
-    ax.set_xlabel('Test Cases', size=18)
-    ax.set_ylabel('Performance Scores (s)', size=18)
-    plt.title(fname)
-    # plt.title(r'Histogram (Median Bugs in each class)')
-
-    # Tweak spacing to prevent clipping of ylabel
-#     plt.subplots_adjust(left=0.15)
-    "Legend"
-    blue_line = mlines.Line2D([], [], color='blue', marker='*',
-                              markersize=0, label='After')
-    red_line = mlines.Line2D([], [], color='red', marker='*',
-                             markersize=0, label='Before')
-    plt.legend(
-        bbox_to_anchor=(
-            1.05,
-            1),
-        loc=2,
-        borderaxespad=0.,
-        handles=[
-            red_line,
-            blue_line])
-    if textbox:
-      "Textbox"
-      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-      ax.text(0.05, 0.95, string, fontsize=14,
-              verticalalignment='top', bbox=props)
-    plt.savefig('./_fig/' + fname + ext)
-    plt.close()
 
   def preamble(self):
     print(r"""
@@ -207,24 +165,29 @@ class fileHandler():
 """)
 
   def figname(self, fSel, ext, _prune, _info):
-    a = '_w' if fSel else ""
-    b = str(int(ext * 100))
-    c = "_iP(%s)" % (str(int(_info * 100))) if _prune else ""
-    suffix = '_%s%s%s' % (b, a, c)
-    A = " Feature Weighting" if fSel else ""
-    B = ", %s Information Pruning" % (
-        str(int(_info * 100)) + r"\%") if _prune else ""
-    comment = "Mutation Probability = %.2f,%s%s" % (ext, A, B)
-    return suffix, comment
+    if ext:
+      a = '_w' if fSel else ""
+      b = str(int(ext * 100))
+      c = "_iP(%s)" % (str(int(_info * 100))) if _prune else ""
+      suffix = '_%s%s%s' % (b, a, c)
+      A = " Feature Weighting" if fSel else ""
+      B = ", %s Information Pruning" % (
+          str(int(_info * 100)) + r"\%") if _prune else ""
+      comment = "Mutation Probability = %.2f,%s%s" % (ext, A, B)
+      return suffix, comment
+    else:
+      return "_baseline", "Baseline"
 
   def main(self, name='Apache', reps=10, fSel=True,
            ext=0.5, _prune=False, _info=0.25):
     effectSize = []
     Accuracy = []
-    out_eff = []
+    out_auc = []
+    out_md = []
     out_acc = []
     for _ in xrange(reps):
       data = self.explorer(name)
+
       # self.preamble()
       for d in data:
         #       print("\\subsection{%s}\n \\begin{figure}\n \\centering" %
@@ -256,12 +219,14 @@ class fileHandler():
           newTab_df = formatData(newTab)
           after = predictor(train=train_df, test=newTab_df).CART()
           cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
-          out_eff.append(sum(before) / sum(after))
+          out_auc.append(sum(before) / sum(after))
+          out_md.append(median(before) / median(after))
           out_acc.extend(
               [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-    out_eff.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
+    out_auc.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
+    out_md.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
     out_acc.insert(0, name)
-    return out_acc, out_eff
+    return out_acc, out_auc, out_md
     #----------- DEGUB ----------------
 #     set_trace()
 
@@ -286,37 +251,112 @@ def postabmle():
   """)
 
 
+def overlayCurve(
+        self, x, y, z, fname=None, ext=None, textbox=False, string=None):
+  from numpy import linspace
+  import matplotlib.pyplot as plt
+  import matplotlib.lines as mlines
+
+  fname = 'Untitled' if not fname else fname
+  ext = '.jpg' if not ext else ext
+  fig = plt.figure()
+  ax = fig.add_axes([0.1, 0.1, 0.6, 0.75])
+  xlim = linspace(1, len(x), len(x))
+  ylim = linspace(1, len(y), len(y))
+  zlim = linspace(1, len(z), len(z))
+  # plt.subplot(221)
+  ax.plot(xlim, sorted(x), 'r')
+  ax.plot(ylim, sorted(y), 'b')
+  ax.plot(zlim, sorted(z), 'k')
+  # add a 'best fit' line
+  ax.set_xlabel('Test Cases', size=18)
+  ax.set_ylabel('Performance Scores (s)', size=18)
+  plt.title(fname)
+  # plt.title(r'Histogram (Median Bugs in each class)')
+
+  # Tweak spacing to prevent clipping of ylabel
+#     plt.subplots_adjust(left=0.15)
+  "Legend"
+  black_line = mlines.Line2D([], [], color='black', marker='*',
+                             markersize=0, label='Baseline')
+  blue_line = mlines.Line2D([], [], color='blue', marker='*',
+                            markersize=0, label='After')
+  red_line = mlines.Line2D([], [], color='red', marker='*',
+                           markersize=0, label='Before')
+  plt.legend(
+      bbox_to_anchor=(
+          1.05,
+          1),
+      loc=2,
+      borderaxespad=0.,
+      handles=[black_line,
+               red_line,
+               blue_line])
+  if textbox:
+    "Textbox"
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    ax.text(0.05, 0.95, string, fontsize=14,
+            verticalalignment='top', bbox=props)
+  plt.savefig('./_fig/' + fname + ext)
+  plt.close()
+
+
 def _test(name='Apache'):
-  Accuracy, Gain = [], []
-  for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-    for _prune in [False]:  # , True]:
-      for _info in [0.25]:  # , 0.5, 0.75]:
-        for fSel in [True]:  # , False]:
-          for ext in [0.25]:  # , 0.5, 0.75]:
-            Accuracy.append(fileHandler().main(
-                name=name,
-                ext=ext,
-                _prune=_prune,
-                _info=_info,
-                fSel=fSel)[0])
-#             Gain.append(fileHandler().main(
-#                 name=name,
-#                 ext=ext,
-#                 _prune=_prune,
-#                 _info=_info,
-#                 fSel=fSel)[1])
+  Accuracy = []
+#   preamble1()
+#   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+  Gain = []
+  medianDelta = []
 
-  preamble1()
-  print(r"\subsubsection*{Prediction Accuracy}")
-  rdivDemo(Accuracy, isLatex=True)
-  print(r"\subsubsection*{CliffsDelta Scores}")
-  rdivDemo(Gain, isLatex=True)
-  postabmle()
+  Gain.append(fileHandler().main(
+      name=name,
+      ext=0,
+      _prune=False,
+      _info=1,
+      fSel=False)[2])
 
-if __name__ == '__main__':
-  _test()
+  for fSel in [True, False]:
+    for ext in [0.25, 0.5, 0.75]:
+      #             Accuracy.append(fileHandler().main(
+      #                 name=name,
+      #                 ext=ext,
+      #                 _prune=_prune,
+      #                 _info=_info,
+      #                 fSel=fSel)[0])
+      Gain.append(fileHandler().main(
+          name=name,
+          ext=ext,
+          _prune=False,
+          _info=1,
+          fSel=fSel)[2])
+  for _info in [0.25, 0.5, 0.75]:
+    for fSel in [True, False]:
+      for ext in [0.25, 0.5, 0.75]:
+        #             Accuracy.append(fileHandler().main(
+        #                 name=name,
+        #                 ext=ext,
+        #                 _prune=_prune,
+        #                 _info=_info,
+        #                 fSel=fSel)[0])
+        Gain.append(fileHandler().main(
+            name=name,
+            ext=ext,
+            _prune=True,
+            _info=_info,
+            fSel=fSel)[2])
+
+  for g in Gain:
+    print(g)
+#   print("\\subsubsection*{%s}" % (name))
+#   kk = rdivDemo(Gain, isLatex=True)
+#   best = kk
+#   set_trace()
+#   postabmle()
+
 # if __name__ == '__main__':
-#   eval(cmd())
+#   _test()
+if __name__ == '__main__':
+  eval(cmd())
   #                 textstr = \
 #                     ' Gain($\\frac{AUC Before}{AUC After}$=%0.2f'\
 #                     % (sum(before) / sum(after))
