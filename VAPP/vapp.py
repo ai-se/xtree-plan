@@ -230,6 +230,39 @@ class fileHandler():
     #----------- DEGUB ----------------
 #     set_trace()
 
+  def mainraw(self, name='Apache', reps=10, fSel=True,
+              ext=0.5, _prune=False, _info=0.25, method='best'):
+    data = self.explorer(name)
+    before, after = [], []
+    for _ in xrange(reps):
+      for d in data:
+        if name == d[0].strip().split('/')[-1]:
+          train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
+          test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
+          train_df = formatData(train)
+          test_df = formatData(test)
+          actual = test_df[
+              test_df.columns[-2]].astype('float32').tolist()
+          before.append(predictor(train=train_df, test=test_df).CART())
+  #           set_trace()
+          newTab = WHAT(
+              train=[d[0] + '/' + d[1][1]],
+              test=[d[0] + '/' + d[1][0]],
+              train_df=train,
+              bin=True,
+              test_df=test,
+              extent=ext,
+              fSelect=fSel,
+              far=False,
+              smote=False,
+              resample=False,
+              infoPrune=_info,
+              method=method,
+              Prune=_prune).main()
+          newTab_df = formatData(newTab)
+          after.append(predictor(train=train_df, test=newTab_df).CART())
+    return before, after
+
 
 def preamble1():
   print(r"""\documentclass{article}
@@ -252,7 +285,7 @@ def postabmle():
 
 
 def overlayCurve(
-        self, x, y, z, fname=None, ext=None, textbox=False, string=None):
+        w, x, y, z, base, fname=None, ext=None, textbox=False, string=None):
   from numpy import linspace
   import matplotlib.pyplot as plt
   import matplotlib.lines as mlines
@@ -261,13 +294,17 @@ def overlayCurve(
   ext = '.jpg' if not ext else ext
   fig = plt.figure()
   ax = fig.add_axes([0.1, 0.1, 0.6, 0.75])
-  xlim = linspace(1, len(x), len(x))
-  ylim = linspace(1, len(y), len(y))
-  zlim = linspace(1, len(z), len(z))
+  wlim = linspace(1, len(w[0]), len(w[0]))
+  xlim = linspace(1, len(x[0]), len(x[0]))
+  ylim = linspace(1, len(y[0]), len(y[0]))
+  zlim = linspace(1, len(z[0]), len(z[0]))
   # plt.subplot(221)
-  ax.plot(xlim, sorted(x), 'r')
-  ax.plot(ylim, sorted(y), 'b')
-  ax.plot(zlim, sorted(z), 'k')
+  ax.plot(xlim, sorted(w[0]), 'r')
+  ax.plot(ylim, sorted(x[0]), 'g')
+  ax.plot(xlim, sorted(y[0]), 'm')
+  ax.plot(ylim, sorted(z[0]), 'b')
+  ax.plot(zlim, sorted(base[0]), 'k')
+
   # add a 'best fit' line
   ax.set_xlabel('Test Cases', size=18)
   ax.set_ylabel('Performance Scores (s)', size=18)
@@ -277,12 +314,16 @@ def overlayCurve(
   # Tweak spacing to prevent clipping of ylabel
 #     plt.subplots_adjust(left=0.15)
   "Legend"
-  black_line = mlines.Line2D([], [], color='black', marker='*',
+  black_line = mlines.Line2D([], [], color='k', marker='*',
                              markersize=0, label='Baseline')
-  blue_line = mlines.Line2D([], [], color='blue', marker='*',
-                            markersize=0, label='After')
-  red_line = mlines.Line2D([], [], color='red', marker='*',
-                           markersize=0, label='Before')
+  blue_line = mlines.Line2D([], [], color='b', marker='*',
+                            markersize=0, label=z[1])
+  meg_line = mlines.Line2D([], [], color='m', marker='*',
+                           markersize=0, label=y[1])
+  green_line = mlines.Line2D([], [], color='g', marker='*',
+                             markersize=0, label=x[1])
+  red_line = mlines.Line2D([], [], color='r', marker='*',
+                           markersize=0, label=w[1])
   plt.legend(
       bbox_to_anchor=(
           1.05,
@@ -291,7 +332,10 @@ def overlayCurve(
       borderaxespad=0.,
       handles=[black_line,
                red_line,
-               blue_line])
+               blue_line,
+               meg_line,
+               green_line,
+               ])
   if textbox:
     "Textbox"
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
@@ -317,12 +361,6 @@ def _test(name='Apache'):
 
   for fSel in [True, False]:
     for ext in [0.25, 0.5, 0.75]:
-      #             Accuracy.append(fileHandler().main(
-      #                 name=name,
-      #                 ext=ext,
-      #                 _prune=_prune,
-      #                 _info=_info,
-      #                 fSel=fSel)[0])
       Gain.append(fileHandler().main(
           name=name,
           ext=ext,
@@ -332,12 +370,6 @@ def _test(name='Apache'):
   for _info in [0.25, 0.5, 0.75]:
     for fSel in [True, False]:
       for ext in [0.25, 0.5, 0.75]:
-        #             Accuracy.append(fileHandler().main(
-        #                 name=name,
-        #                 ext=ext,
-        #                 _prune=_prune,
-        #                 _info=_info,
-        #                 fSel=fSel)[0])
         Gain.append(fileHandler().main(
             name=name,
             ext=ext,
@@ -347,30 +379,67 @@ def _test(name='Apache'):
 
   for g in Gain:
     print(g)
-#   print("\\subsubsection*{%s}" % (name))
-#   kk = rdivDemo(Gain, isLatex=True)
-#   best = kk
-#   set_trace()
-#   postabmle()
 
-# if __name__ == '__main__':
-#   _test()
+
+def _testPlot(name='Apache'):
+  Accuracy = []
+  fileHandler().preamble()
+  figname = fileHandler().figname
+  for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+    print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
+    before, baseline = fileHandler().mainraw(
+        name=name,
+        ext=0,
+        _prune=False,
+        _info=1,
+        fSel=False)
+
+    _, best1 = fileHandler().mainraw(
+        name=name,
+        method='mean',
+        ext=0.75,
+        _prune=True,
+        _info=0.25,
+        fSel=False)
+
+    _, best2 = fileHandler().mainraw(
+        name=name,
+        ext=0.75,
+        method='median',
+        _prune=True,
+        _info=0.25,
+        fSel=False)
+
+    _, best3 = fileHandler().mainraw(
+        name=name,
+        ext=0.75,
+        method='any',
+        _prune=True,
+        _info=0.25,
+        fSel=False)
+
+    _, best4 = fileHandler().mainraw(
+        name=name,
+        ext=0.75,
+        method='best',
+        _prune=True,
+        _info=0.25,
+        fSel=False)
+
+    overlayCurve([best1[0], 'mean'],
+                 [best2[0], 'median'],
+                 [best3[0], 'random'],
+                 [best4[0], 'best'],
+                 [baseline[0], 'baseline'],
+                 fname=name,
+                 ext='.jpg',
+                 textbox=False,
+                 string=None)
+    print(
+        "\\subfloat[][]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
+        (name + '.jpg'))
+    print(r"\end{figure}")
+  print(r"\end{document}")
+
 if __name__ == '__main__':
-  eval(cmd())
-  #                 textstr = \
-#                     ' Gain($\\frac{AUC Before}{AUC After}$=%0.2f'\
-#                     % (sum(before) / sum(after))
-#                 name = "%s%s" % (d[0].strip().split(
-#                     '/')[-1], self.figname(fSel, ext, _prune, _info)[0])
-#                 comment = self.figname(fSel, ext, _prune, _info)[1]
-#                 self.overlayCurve(before,
-#                                   after,
-#                                   fname=name,
-#                                   ext='.jpg',
-#                                   textbox=False,
-#                                   string=textstr)
-#                 print(
-#                     "\\subfloat[][%s]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
-#                     (comment + textstr, name + '.jpg'))
-#       print(r"\end{figure}")
-#     print(r"\end{document}")
+  _testPlot()

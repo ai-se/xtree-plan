@@ -1,0 +1,215 @@
+\documentclass{article}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{booktabs}
+\usepackage[landscape]{geometry}
+\usepackage{subfig}
+\usepackage{bigstrut}
+\usepackage[table]{xcolor}
+\usepackage{picture}
+\usepackage{graphicx}
+\graphicspath{../_fig/}
+\newcommand{\quart}[4]{\begin{picture}(100,6)
+  {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+\begin{document}
+\section*{{\Huge \hspace{0.45\linewidth} Results}}
+  \begin{figure}[htbp!]
+    \subfloat[][Apache]{\includegraphics[width=0.4\linewidth]{../_fig/Apache.jpg}\label{}}
+    \subfloat[][SQL]{\includegraphics[width=0.4\linewidth]{../_fig/SQL.jpg}\label{}}
+    \subfloat[][BDBC]{\includegraphics[width=0.4\linewidth]{../_fig/BDBC.jpg}\label{}}\\
+    \subfloat[][BDBJ]{\includegraphics[width=0.4\linewidth]{../_fig/BDBJ.jpg}\label{}}
+    \subfloat[][X264]{\includegraphics[width=0.4\linewidth]{../_fig/X264.jpg}\label{}}
+    \subfloat[][LLVM]{\includegraphics[width=0.4\linewidth]{../_fig/LLVM.jpg}\label{}}
+  \end{figure}
+\begin{table}[h!]
+\subfloat[][APACHE]{  
+  {\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+      \hline
+      \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \bigstrut\\\hline
+      1 & Apache\_baseline &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      \hline  2 & Apache\_25\_w\_iP(75) &    1.02  &  0.05 & \quart{0}{17}{7}{0} \bigstrut\\
+      2 & Apache\_25\_w\_iP(50) &    1.03  &  0.04 & \quart{3}{14}{10}{0} \bigstrut\\
+      \hline  3 &  Apache\_25\_w &    1.05  &  0.03 & \quart{7}{10}{17}{0} \bigstrut\\
+      3 & Apache\_25\_iP(50) &    1.05  &  0.03 & \quart{7}{10}{17}{0} \bigstrut\\
+      3 &    Apache\_25 &    1.05  &  0.04 & \quart{3}{14}{17}{0} \bigstrut\\
+      3 & Apache\_25\_iP(75) &    1.05  &  0.01 & \quart{17}{4}{17}{0} \bigstrut\\
+      3 & Apache\_25\_w\_iP(25) &    1.05  &  0.04 & \quart{14}{14}{17}{0} \bigstrut\\
+      3 & Apache\_25\_iP(25) &    1.07  &  0.06 & \quart{10}{22}{24}{0} \bigstrut\\
+      \hline  4 &  Apache\_50\_w &    1.09  &  0.05 & \quart{21}{18}{32}{0} \bigstrut\\
+      4 & Apache\_50\_w\_iP(75) &    1.09  &  0.06 & \quart{17}{22}{32}{0} \bigstrut\\
+      4 & Apache\_50\_w\_iP(50) &    1.12  &  0.09 & \quart{14}{32}{42}{0} \bigstrut\\
+      4 & Apache\_50\_w\_iP(25) &    1.12  &  0.01 & \quart{39}{3}{42}{0} \bigstrut\\
+      \hline  5 & Apache\_50\_iP(75) &    1.13  &  0.05 & \quart{42}{18}{46}{0} \bigstrut\\
+      5 & Apache\_50\_iP(25) &    1.14  &  0.07 & \quart{28}{25}{49}{0} \bigstrut\\
+      5 &    Apache\_50 &    1.13  &  0.07 & \quart{39}{25}{46}{0} \bigstrut\\
+      5 &  Apache\_75\_w &    1.15  &  0.04 & \quart{46}{14}{53}{0} \bigstrut\\
+      5 & Apache\_75\_iP(75) &    1.14  &  0.14 & \quart{39}{50}{49}{0} \bigstrut\\
+      5 & Apache\_50\_iP(50) &    1.15  &  0.06 & \quart{46}{21}{53}{0} \bigstrut\\
+      5 &    Apache\_75 &    1.17  &  0.11 & \quart{42}{40}{60}{0} \bigstrut\\
+      5 & Apache\_75\_w\_iP(75) &    1.2  &  0.1 & \quart{39}{35}{71}{0} \bigstrut\\
+      \hline  6 & Apache\_75\_w\_iP(25) &    1.21  &  0.04 & \quart{60}{14}{74}{0} \bigstrut\\
+      6 & Apache\_75\_iP(50) &    1.21  &  0.07 & \quart{71}{25}{74}{0} \bigstrut\\
+      6 & Apache\_75\_iP(25) &    1.24  &  0.07 & \quart{67}{25}{85}{0} \bigstrut\\
+      6 & Apache\_75\_w\_iP(50) &    1.24  &  0.09 & \quart{67}{32}{85}{0} \bigstrut\\
+      \hline \end{tabular}}}
+\subfloat[BDBC]{  
+  {\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+      \hline
+      \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \bigstrut\\\hline
+      1 & BDBC\_baseline &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      \hline  2 &    BDBC\_25\_w &    2.23  &  0.04 & \quart{38}{2}{39}{0} \bigstrut\\
+      2 & BDBC\_25\_w\_iP(75) &    2.25  &  0.0 & \quart{40}{0}{40}{0} \bigstrut\\
+      2 & BDBC\_25\_iP(25) &    2.25  &  0.05 & \quart{39}{1}{40}{0} \bigstrut\\
+      2 & BDBC\_25\_iP(75) &    2.25  &  0.03 & \quart{39}{1}{40}{0} \bigstrut\\
+      2 & BDBC\_25\_iP(50) &    2.27  &  0.0 & \quart{40}{0}{40}{0} \bigstrut\\
+      2 & BDBC\_25\_w\_iP(50) &    2.27  &  0.02 & \quart{40}{0}{40}{0} \bigstrut\\
+      2 & BDBC\_25\_w\_iP(25) &    2.27  &  0.0 & \quart{40}{0}{40}{0} \bigstrut\\
+      2 &      BDBC\_25 &    2.29  &  0.04 & \quart{40}{1}{41}{0} \bigstrut\\
+      \hline  3 & BDBC\_50\_w\_iP(75) &    3.31  &  0.05 & \quart{73}{1}{74}{0} \bigstrut\\
+      3 &    BDBC\_50\_w &    3.31  &  0.34 & \quart{71}{11}{74}{0} \bigstrut\\
+      \hline  4 &      BDBC\_50 &    3.6  &  0.35 & \quart{73}{11}{83}{0} \bigstrut\\
+      4 & BDBC\_50\_iP(25) &    3.6  &  0.26 & \quart{75}{8}{83}{0} \bigstrut\\
+      4 & BDBC\_50\_iP(50) &    3.61  &  0.11 & \quart{82}{3}{83}{0} \bigstrut\\
+      4 & BDBC\_50\_w\_iP(50) &    3.63  &  0.31 & \quart{74}{10}{84}{0} \bigstrut\\
+      \hline  5 & BDBC\_50\_w\_iP(25) &    3.65  &  0.06 & \quart{83}{2}{84}{0} \bigstrut\\
+      5 & BDBC\_50\_iP(75) &    3.68  &  0.03 & \quart{85}{1}{85}{0} \bigstrut\\
+      \hline  6 &    BDBC\_75\_w &    3.98  &  0.06 & \quart{93}{2}{95}{0} \bigstrut\\
+      6 & BDBC\_75\_iP(50) &    4.01  &  0.07 & \quart{94}{3}{96}{0} \bigstrut\\
+      6 & BDBC\_75\_w\_iP(75) &    4.0  &  0.11 & \quart{94}{3}{96}{0} \bigstrut\\
+      6 & BDBC\_75\_iP(75) &    4.04  &  0.04 & \quart{96}{1}{97}{0} \bigstrut\\
+      6 & BDBC\_75\_w\_iP(50) &    4.04  &  0.07 & \quart{96}{2}{97}{0} \bigstrut\\
+      6 & BDBC\_75\_w\_iP(25) &    4.05  &  0.06 & \quart{96}{2}{97}{0} \bigstrut\\
+      6 & BDBC\_75\_iP(25) &    4.05  &  0.13 & \quart{95}{4}{97}{0} \bigstrut\\
+      6 &      BDBC\_75 &    4.08  &  0.04 & \quart{98}{1}{98}{0} \bigstrut\\
+      \hline \end{tabular}}}
+\end{table}  
+
+
+\begin{table}
+
+\subfloat[BDBJ]{  
+  {\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+      \hline
+      \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \bigstrut\\\hline
+      1 & BDBJ\_baseline &    1.0  &  0.0 & \quart{1}{0}{1}{1} \bigstrut\\
+      \hline  2 & BDBJ\_25\_w\_iP(75) &    1.02  &  0.02 & \quart{3}{3}{4}{1} \bigstrut\\
+      2 & BDBJ\_25\_w\_iP(25) &    1.02  &  0.05 & \quart{3}{8}{4}{1} \bigstrut\\
+      \hline  3 & BDBJ\_25\_w\_iP(50) &    1.05  &  0.03 & \quart{6}{5}{9}{1} \bigstrut\\
+      3 & BDBJ\_25\_iP(25) &    1.05  &  0.02 & \quart{8}{3}{9}{1} \bigstrut\\
+      3 &    BDBJ\_25\_w &    1.05  &  0.03 & \quart{6}{5}{9}{1} \bigstrut\\
+      3 & BDBJ\_25\_iP(50) &    1.05  &  0.03 & \quart{6}{5}{9}{1} \bigstrut\\
+      3 & BDBJ\_25\_iP(75) &    1.06  &  0.02 & \quart{8}{3}{11}{1} \bigstrut\\
+      3 &      BDBJ\_25 &    1.06  &  0.07 & \quart{3}{11}{11}{1} \bigstrut\\
+      3 & BDBJ\_50\_w\_iP(75) &    1.05  &  0.22 & \quart{6}{36}{9}{1} \bigstrut\\
+      \hline  4 &    BDBJ\_50\_w &    1.24  &  0.33 & \quart{13}{54}{40}{1} \bigstrut\\
+      4 & BDBJ\_50\_w\_iP(25) &    1.46  &  0.07 & \quart{70}{11}{77}{1} \bigstrut\\
+      4 & BDBJ\_50\_w\_iP(50) &    1.45  &  0.5 & \quart{0}{81}{75}{1} \bigstrut\\
+      4 & BDBJ\_50\_iP(75) &    1.46  &  0.41 & \quart{14}{67}{77}{1} \bigstrut\\
+      4 &      BDBJ\_50 &    1.46  &  0.22 & \quart{42}{36}{77}{1} \bigstrut\\
+      4 & BDBJ\_50\_iP(50) &    1.46  &  0.03 & \quart{75}{5}{77}{1} \bigstrut\\
+      4 &    BDBJ\_75\_w &    1.45  &  0.45 & \quart{13}{73}{75}{1} \bigstrut\\
+      4 & BDBJ\_50\_iP(25) &    1.48  &  0.07 & \quart{72}{11}{80}{1} \bigstrut\\
+      4 & BDBJ\_75\_w\_iP(75) &    1.45  &  0.48 & \quart{11}{79}{75}{1} \bigstrut\\
+      \hline  5 & BDBJ\_75\_w\_iP(50) &    1.53  &  0.12 & \quart{78}{20}{88}{1} \bigstrut\\
+      5 & BDBJ\_75\_iP(25) &    1.54  &  0.49 & \quart{16}{80}{90}{1} \bigstrut\\
+      5 & BDBJ\_75\_w\_iP(25) &    1.54  &  0.07 & \quart{88}{11}{90}{1} \bigstrut\\
+      5 &      BDBJ\_75 &    1.55  &  0.05 & \quart{86}{9}{91}{1} \bigstrut\\
+      5 & BDBJ\_75\_iP(50) &    1.58  &  0.07 & \quart{86}{12}{96}{1} \bigstrut\\
+      5 & BDBJ\_75\_iP(75) &    1.58  &  0.52 & \quart{14}{85}{96}{1} \bigstrut\\
+      \hline \end{tabular}}}
+\subfloat[LLVM]{  
+  {\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+      \hline
+      \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \bigstrut\\\hline
+      1 & LLVM\_baseline &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      \hline  2 & LLVM\_25\_w\_iP(75) &    1.02  &  0.0 & \quart{16}{0}{16}{0} \bigstrut\\
+      2 & LLVM\_25\_w\_iP(50) &    1.02  &  0.01 & \quart{16}{8}{16}{0} \bigstrut\\
+      2 & LLVM\_25\_w\_iP(25) &    1.03  &  0.01 & \quart{16}{8}{24}{0} \bigstrut\\
+      2 & LLVM\_25\_iP(25) &    1.03  &  0.01 & \quart{16}{8}{24}{0} \bigstrut\\
+      2 &      LLVM\_25 &    1.03  &  0.01 & \quart{16}{8}{24}{0} \bigstrut\\
+      2 &    LLVM\_25\_w &    1.03  &  0.01 & \quart{16}{8}{24}{0} \bigstrut\\
+      2 & LLVM\_25\_iP(50) &    1.03  &  0.0 & \quart{24}{0}{24}{0} \bigstrut\\
+      2 & LLVM\_25\_iP(75) &    1.03  &  0.0 & \quart{24}{0}{24}{0} \bigstrut\\
+      \hline  3 & LLVM\_50\_w\_iP(50) &    1.06  &  0.01 & \quart{41}{8}{49}{0} \bigstrut\\
+      3 &    LLVM\_50\_w &    1.06  &  0.01 & \quart{41}{8}{49}{0} \bigstrut\\
+      3 & LLVM\_50\_w\_iP(75) &    1.06  &  0.02 & \quart{41}{17}{49}{0} \bigstrut\\
+      3 & LLVM\_50\_iP(75) &    1.06  &  0.01 & \quart{49}{9}{49}{0} \bigstrut\\
+      3 & LLVM\_50\_iP(25) &    1.07  &  0.01 & \quart{49}{9}{58}{0} \bigstrut\\
+      3 & LLVM\_50\_w\_iP(25) &    1.07  &  0.01 & \quart{49}{9}{58}{0} \bigstrut\\
+      3 &      LLVM\_50 &    1.07  &  0.01 & \quart{58}{8}{58}{0} \bigstrut\\
+      3 & LLVM\_50\_iP(50) &    1.08  &  0.01 & \quart{58}{8}{66}{0} \bigstrut\\
+      3 & LLVM\_75\_w\_iP(75) &    1.08  &  0.01 & \quart{66}{8}{66}{0} \bigstrut\\
+      3 &    LLVM\_75\_w &    1.08  &  0.02 & \quart{58}{16}{66}{0} \bigstrut\\
+      \hline  4 & LLVM\_75\_w\_iP(50) &    1.09  &  0.02 & \quart{74}{17}{74}{0} \bigstrut\\
+      4 & LLVM\_75\_w\_iP(25) &    1.1  &  0.02 & \quart{66}{17}{83}{0} \bigstrut\\
+      4 & LLVM\_75\_iP(75) &    1.1  &  0.02 & \quart{74}{17}{83}{0} \bigstrut\\
+      4 &      LLVM\_75 &    1.1  &  0.02 & \quart{74}{17}{83}{0} \bigstrut\\
+      4 & LLVM\_75\_iP(50) &    1.11  &  0.04 & \quart{66}{33}{91}{0} \bigstrut\\
+      4 & LLVM\_75\_iP(25) &    1.12  &  0.01 & \quart{91}{8}{99}{0} \bigstrut\\
+      \hline \end{tabular}}}
+\end{table}  
+
+\begin{table}
+
+\subfloat[SQL]{  
+  {\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+      \hline
+      \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \bigstrut\\\hline
+      1 & SQL\_baseline &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      1 & SQL\_25\_w\_iP(75) &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      1 & SQL\_25\_w\_iP(25) &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      1 & SQL\_25\_w\_iP(50) &    1.0  &  0.01 & \quart{0}{19}{0}{0} \bigstrut\\
+      1 & SQL\_25\_iP(75) &    1.0  &  0.01 & \quart{0}{19}{0}{0} \bigstrut\\
+      1 &       SQL\_25 &    1.0  &  0.01 & \quart{0}{19}{0}{0} \bigstrut\\
+      1 & SQL\_25\_iP(25) &    1.0  &  0.01 & \quart{0}{19}{0}{0} \bigstrut\\
+      1 &     SQL\_25\_w &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      1 & SQL\_25\_iP(50) &    1.0  &  0.01 & \quart{0}{19}{0}{0} \bigstrut\\
+      1 & SQL\_50\_w\_iP(75) &    1.01  &  0.01 & \quart{0}{19}{19}{0} \bigstrut\\
+      1 & SQL\_50\_w\_iP(50) &    1.01  &  0.0 & \quart{19}{0}{19}{0} \bigstrut\\
+      1 &     SQL\_50\_w &    1.01  &  0.01 & \quart{0}{19}{19}{0} \bigstrut\\
+      1 &       SQL\_50 &    1.01  &  0.0 & \quart{19}{0}{19}{0} \bigstrut\\
+      1 & SQL\_50\_iP(50) &    1.01  &  0.0 & \quart{19}{0}{19}{0} \bigstrut\\
+      1 & SQL\_50\_iP(75) &    1.01  &  0.0 & \quart{19}{0}{19}{0} \bigstrut\\
+      1 & SQL\_50\_w\_iP(25) &    1.01  &  0.01 & \quart{19}{20}{19}{0} \bigstrut\\
+      1 & SQL\_50\_iP(25) &    1.01  &  0.0 & \quart{19}{0}{19}{0} \bigstrut\\
+      1 &     SQL\_75\_w &    1.01  &  0.01 & \quart{19}{20}{19}{0} \bigstrut\\
+      1 & SQL\_75\_w\_iP(75) &    1.02  &  0.01 & \quart{19}{20}{39}{0} \bigstrut\\
+      1 & SQL\_75\_w\_iP(50) &    1.02  &  0.01 & \quart{39}{20}{39}{0} \bigstrut\\
+      1 &       SQL\_75 &    1.03  &  0.0 & \quart{59}{0}{59}{0} \bigstrut\\
+      1 & SQL\_75\_iP(50) &    1.03  &  0.01 & \quart{39}{20}{59}{0} \bigstrut\\
+      1 & SQL\_75\_iP(25) &    1.03  &  0.01 & \quart{59}{20}{59}{0} \bigstrut\\
+      1 & SQL\_75\_w\_iP(25) &    1.03  &  0.01 & \quart{59}{20}{59}{0} \bigstrut\\
+      1 & SQL\_75\_iP(75) &    1.04  &  0.02 & \quart{59}{40}{79}{0} \bigstrut\\
+      \hline \end{tabular}}}
+\subfloat[X264]{  
+  {\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+      \hline
+      \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \bigstrut\\\hline
+      1 & X264\_baseline &    1.0  &  0.0 & \quart{0}{0}{0}{0} \bigstrut\\
+      \hline  2 &    X264\_25\_w &    1.06  &  0.02 & \quart{7}{3}{8}{0} \bigstrut\\
+      2 & X264\_25\_w\_iP(75) &    1.07  &  0.02 & \quart{8}{3}{10}{0} \bigstrut\\
+      2 & X264\_25\_iP(50) &    1.07  &  0.01 & \quart{10}{1}{10}{0} \bigstrut\\
+      2 &      X264\_25 &    1.08  &  0.06 & \quart{8}{9}{11}{0} \bigstrut\\
+      2 & X264\_25\_iP(75) &    1.09  &  0.02 & \quart{10}{3}{13}{0} \bigstrut\\
+      2 & X264\_25\_w\_iP(50) &    1.09  &  0.1 & \quart{11}{15}{13}{0} \bigstrut\\
+      2 &    X264\_50\_w &    1.1  &  0.08 & \quart{13}{11}{14}{0} \bigstrut\\
+      2 & X264\_25\_w\_iP(25) &    1.12  &  0.05 & \quart{11}{8}{17}{0} \bigstrut\\
+      2 & X264\_25\_iP(25) &    1.11  &  0.12 & \quart{8}{18}{16}{0} \bigstrut\\
+      \hline  3 &    X264\_75\_w &    1.23  &  0.29 & \quart{24}{43}{33}{0} \bigstrut\\
+      3 & X264\_50\_w\_iP(75) &    1.23  &  0.03 & \quart{33}{5}{33}{0} \bigstrut\\
+      3 & X264\_50\_w\_iP(25) &    1.25  &  0.33 & \quart{29}{48}{36}{0} \bigstrut\\
+      3 & X264\_50\_iP(50) &    1.29  &  0.28 & \quart{38}{41}{42}{0} \bigstrut\\
+      3 & X264\_50\_iP(25) &    1.29  &  0.32 & \quart{30}{47}{42}{0} \bigstrut\\
+      \hline  4 & X264\_50\_iP(75) &    1.48  &  0.07 & \quart{67}{10}{70}{0} \bigstrut\\
+      4 &      X264\_50 &    1.5  &  0.06 & \quart{66}{8}{73}{0} \bigstrut\\
+      4 & X264\_50\_w\_iP(50) &    1.5  &  0.32 & \quart{32}{47}{73}{0} \bigstrut\\
+      \hline  5 & X264\_75\_iP(75) &    1.56  &  0.09 & \quart{80}{14}{82}{0} \bigstrut\\
+      5 & X264\_75\_w\_iP(50) &    1.56  &  0.1 & \quart{79}{15}{82}{0} \bigstrut\\
+      5 & X264\_75\_iP(25) &    1.63  &  0.04 & \quart{89}{6}{92}{0} \bigstrut\\
+      5 &      X264\_75 &    1.64  &  0.11 & \quart{80}{17}{94}{0} \bigstrut\\
+      5 & X264\_75\_w\_iP(25) &    1.63  &  0.15 & \quart{74}{23}{92}{0} \bigstrut\\
+      5 & X264\_75\_iP(50) &    1.65  &  0.04 & \quart{91}{6}{95}{0} \bigstrut\\
+      5 & X264\_75\_w\_iP(75) &    1.66  &  0.14 & \quart{79}{20}{97}{0} \bigstrut\\
+      \hline \end{tabular}}}
+\end{table}  
+\end{document}

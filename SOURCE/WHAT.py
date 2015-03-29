@@ -57,7 +57,7 @@ class vertex():
     elif method == 'best':
       return sorted(self.rows, key=lambda F: F.cells[-2])[0].cells[:-2]
     elif method == 'any':
-      return any(self.rows, 1).cells[:-2]
+      return any(self.rows).cells[:-2]
 
 
 class treatments():
