@@ -6,12 +6,11 @@ import sys
 # Update PYTHONPATH
 HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystats/'  # PySTAT
+pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
 from Prediction import *
-from Planning import *
 from _imports import *
 from abcd import _Abcd
 from cliffsDelta import cliffs
@@ -26,6 +25,7 @@ from dEvol import tuner
 from WHAT import treatments as treatments2
 from os import walk
 from demos import cmd
+from histplot import histplot
 
 
 class run():
@@ -107,7 +107,7 @@ class run():
             extent=self.extent,
             far=False,
             smote=True,
-            resample=True,
+            resample=False,
             infoPrune=self.infoPrune,
             Prune=self.Prune).main()
       else:
@@ -118,7 +118,7 @@ class run():
                 self._n],
             far=False,
             smote=True,
-            resample=True,
+            resample=False,
             extent=self.extent,
             infoPrune=self.infoPrune,
             Prune=self.Prune).main()
@@ -127,7 +127,6 @@ class run():
                         tunings=self.tunedParams,
                         smoteit=True)
 
-#       set_trace()
       self.out_pred.append(_Abcd(before=actual, after=before))
       delta = cliffs(lst1=Bugs(predTest), lst2=after).delta()
       self.out.append(delta)
@@ -149,18 +148,77 @@ class run():
     self.out_pred.insert(0, self.dataName)
     print(self.out)
 
+  def before_after(self):
+    bef, aft = [], []
+    for _ in xrange(self.reps):
+      predRows = []
+      train_DF = createTbl(self.train[self._n], isBin=True)
+      test_df = createTbl(self.test[self._n], isBin=True)
+      actual = Bugs(test_df)
+      before = self.pred(train_DF, test_df,
+                         tunings=self.tunedParams,
+                         smoteit=True)
+
+      for predicted, row in zip(before, test_df._rows):
+        tmp = row.cells
+        tmp[-2] = predicted
+        if predicted > 0:
+          predRows.append(tmp)
+
+      predTest = clone(test_df, rows=predRows)
+
+      if predRows:
+        newTab = treatments2(
+            train=self.train[self._n],
+            test=self.test[self._n],
+            test_df=predTest,
+            extent=self.extent,
+            far=False,
+            smote=True,
+            resample=False,
+            infoPrune=self.infoPrune,
+            Prune=self.Prune).main()
+      else:
+        newTab = treatments2(
+            train=self.train[
+                self._n],
+            test=self.test[
+                self._n],
+            far=False,
+            smote=True,
+            resample=False,
+            extent=self.extent,
+            infoPrune=self.infoPrune,
+            Prune=self.Prune).main()
+
+      after = self.pred(train_DF, newTab,
+                        tunings=self.tunedParams,
+                        smoteit=True)
+
+      bef.append(sum(before))
+      aft.append(sum(after))
+    return bef, aft
+
 
 def _test(file):
-  """
-  Baselining
-  """
-  R = run(
-      dataName=file,
-      extent=0.00,
-      reps=12,
-      fSelect=False,
-      Prune=False,
-      infoPrune=None).go()
+  files = {}
+  for name in ['ivy',
+               'ant', 'camel',
+               'jedit', 'poi', 'log4j',
+               'lucene', 'pbeans', 'velocity',
+               'xalan', 'xerces']:
+    """
+    Histograms
+    """
+    files.update({name: run(
+        dataName=name,
+        extent=0.75,
+        reps=5,
+        fSelect=True,
+        Prune=False,
+        infoPrune=0.75).before_after()})
+  histplot(files, name='Histogram')
+
 
 #   """
 #   Mutation without Feature Selection
@@ -352,4 +410,5 @@ def _test(file):
 #       infoPrune=0.75).go()
 
 if __name__ == '__main__':
-  eval(cmd())
+  _test('ant')
+#   eval(cmd())

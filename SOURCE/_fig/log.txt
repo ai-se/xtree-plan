@@ -1,0 +1,85 @@
+## ant
+Gain =  0.59
+Gain =  0.74
+Gain =  0.68
+Gain =  0.79
+Gain =  0.74
+Gain =  1.01
+Gain =  0.96
+Gain =  1.14
+Gain =  0.92
+Gain =  0.95
+
+## camel
+Gain =  0.25
+Gain =  0.25
+Gain =  0.21
+Gain =  0.18
+Gain =  0.19
+Gain =  0.22
+Gain =  0.23
+Gain =  0.21
+Gain =  0.18
+Gain =  0.22
+
+## forrest
+Gain =  0.67
+Gain =  1.00
+Gain =  0.67
+Gain =  0.67
+Gain =  0.50
+Gain =  0.29
+Gain =  0.67
+Gain =  0.29
+Gain =  0.67
+Gain =  0.67
+
+## ivy
+Gain =  0.11
+Gain =  0.11
+Gain =  0.10
+Gain =  0.11
+Gain =  0.10
+Gain =  0.08
+Gain =  0.09
+Gain =  0.12
+Gain =  0.14
+Gain =  0.10
+
+## jedit
+Gain =  0.01
+Gain =  0.00
+Gain =  0.01
+Gain =  0.01
+Gain =  0.01
+Gain =  0.01
+Gain =  0.00
+Gain =  0.00
+Gain =  0.01
+Gain =  0.01
+
+## log4j
+Gain =  2.95
+Gain =  2.44
+Gain =  2.44
+Gain =  2.41
+Gain =  2.48
+Gain =  2.55
+Gain =  2.31
+Gain =  2.44
+Gain =  2.16
+Gain =  2.59
+
+## lucene
+Gain =  0.78
+Gain =  0.76
+Gain =  0.77
+Gain =  1.19
+Gain =  0.79
+Gain =  0.78
+Gain =  0.82
+Gain =  0.71
+Gain =  0.77
+Gain =  0.82
+
+## pbeans

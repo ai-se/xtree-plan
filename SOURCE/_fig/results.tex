@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{colortbl} % not sure if needed
+\usepackage[table]{xcolor} % not sure if needed
+%%%% needed %%%
+\usepackage{picture}
+\newcommand{\quart}[4]{\begin{picture}(100,6)%1
+  {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+\begin{document}
+  
+  
+  {\scriptsize \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
+      \arrayrulecolor{darkgray}
+      \rowcolor[gray]{.9}  rank & treatment & median & IQR & \\
+      1 &          ivy &    -2316.00  &  31.50 & \quart{0}{0}{0}{0} \\
+      1 &       lucene &    -2028.00  &  13.24 & \quart{0}{0}{0}{0} \\
+      1 &          poi &    -1479.00  &  21.68 & \quart{0}{0}{0}{0} \\
+      1 &       pbeans &    -1176.00  &  31.58 & \quart{0}{0}{0}{0} \\
+      1 &        log4j &    -580.00  &  15.78 & \quart{0}{0}{0}{0} \\
+      1 &        camel &    -417.00  &  7.20 & \quart{0}{0}{0}{0} \\
+      1 &       xerces &    -171.00  &  22.59 & \quart{0}{0}{0}{0} \\
+      1 &      forrest &    0.00  &  114.29 & \quart{0}{0}{0}{0} \\
+      \hline  2 &        xalan &    74.00  &  19.25 & \quart{0}{0}{0}{0} \\
+      2 &        jedit &    -106.00  &  11.78 & \quart{0}{0}{0}{0} \\
+      2 &     velocity &    426.00  &  23.30 & \quart{0}{0}{0}{0} \\
+      \hline  3 &      synapse &    14.29  &  1126.00 & \quart{0}{0}{0}{0} \\
+      \hline  4 &          ant &    21.74  &  1578.00 & \quart{0}{0}{0}{0} \\
+    \end{tabular}}
+    
+  \end{document}
+  

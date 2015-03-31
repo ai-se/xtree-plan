@@ -1,0 +1,588 @@
+\documentclass{article}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{times}
+\usepackage{booktabs}
+\usepackage{bigstrut}
+\usepackage[table]{xcolor}
+\usepackage{picture}
+\newcommand{\quart}[4]{\begin{picture}(100,6)
+{\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+\begin{document}
+\title{\LARGE\textbf{Results: Mutation Extents, Feature Weighting and 
+Information Pruning}}
+\date{}
+\maketitle
+\subsection*{Legend}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Label} & \textbf{Comment}\bigstrut\\\hline
+\_0.25, ... & Mutation Extent of 0.25\bigstrut\\\hline
+\_0.25+w, ... & Mutation 0.25 and Feature Weighting\bigstrut\\\hline
+\_0.25+w+iP(x), ... & Mutation 0.25, Feature Weighting,\bigstrut\\
+& Information Prune (top x\% chosen) \bigstrut\\\hline
+\end{tabular}
+
+\subsection*{ant}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\centering
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 &     ant\_Base &    0.08  &  0.08 & \quart{0}{12}{4}{146} 
+  \bigstrut\\
+  1 & ant\_0.25\_iP(25\%) &    0.09  &  0.08 & \quart{1}{12}{6}{146} \bigstrut\\
+  1 & ant\_0.25\_w\_iP(25\%) &    0.1  &  0.06 & \quart{1}{9}{7}{146} 
+  \bigstrut\\
+\hline  2 & ant\_0.5\_iP(25\%) &    0.13  &  0.08 & \quart{4}{12}{12}{146} 
+\bigstrut\\
+  2 & ant\_0.5\_w\_iP(25\%) &    0.15  &  0.06 & \quart{9}{9}{15}{146} 
+  \bigstrut\\
+\hline  3 & ant\_0.25\_iP(50\%) &    0.18  &  0.11 & \quart{13}{17}{19}{146} 
+\bigstrut\\
+  3 & ant\_0.25\_w\_iP(50\%) &    0.2  &  0.09 & \quart{13}{14}{23}{146} 
+  \bigstrut\\
+  3 & ant\_0.75\_w\_iP(25\%) &    0.22  &  0.13 & \quart{15}{20}{26}{146} 
+  \bigstrut\\
+  3 & ant\_0.75\_iP(25\%) &    0.25  &  0.17 & \quart{9}{26}{30}{146} 
+  \bigstrut\\
+\hline  4 &   ant\_0.25\_w &    0.26  &  0.08 & \quart{30}{13}{32}{146} 
+\bigstrut\\
+  4 & ant\_0.25\_iP(75\%) &    0.27  &  0.04 & \quart{29}{6}{33}{146} 
+  \bigstrut\\
+  4 &     ant\_0.25 &    0.28  &  0.09 & \quart{29}{14}{35}{146} \bigstrut\\
+  4 & ant\_0.5\_iP(50\%) &    0.3  &  0.16 & \quart{30}{25}{38}{146} \bigstrut\\
+  4 & ant\_0.25\_w\_iP(75\%) &    0.31  &  0.1 & \quart{27}{16}{39}{146} 
+  \bigstrut\\
+  4 & ant\_0.5\_w\_iP(50\%) &    0.32  &  0.21 & \quart{21}{32}{41}{146} 
+  \bigstrut\\
+\hline  5 & ant\_0.75\_w\_iP(50\%) &    0.4  &  0.21 & \quart{35}{32}{53}{146} 
+\bigstrut\\
+  5 & ant\_0.75\_iP(50\%) &    0.41  &  0.2 & \quart{35}{31}{55}{146} 
+  \bigstrut\\
+  5 &      ant\_0.5 &    0.41  &  0.15 & \quart{47}{23}{55}{146} \bigstrut\\
+  5 & ant\_0.5\_w\_iP(75\%) &    0.43  &  0.17 & \quart{47}{26}{58}{146} 
+  \bigstrut\\
+  5 &    ant\_0.5\_w &    0.43  &  0.2 & \quart{43}{30}{58}{146} \bigstrut\\
+  5 & ant\_0.5\_iP(75\%) &    0.43  &  0.07 & \quart{55}{11}{58}{146} 
+  \bigstrut\\
+\hline  6 & ant\_0.75\_w\_iP(75\%) &    0.55  &  0.16 & \quart{61}{25}{76}{146} 
+\bigstrut\\
+  6 &     ant\_0.75 &    0.56  &  0.14 & \quart{78}{21}{78}{146} \bigstrut\\
+  6 &   ant\_0.75\_w &    0.57  &  0.15 & \quart{76}{23}{79}{146} \bigstrut\\
+  6 & ant\_0.75\_iP(75\%) &    0.6  &  0.16 & \quart{73}{25}{84}{146} 
+  \bigstrut\\
+\hline \end{tabular}}
+\subsection*{camel}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 &   camel\_Base &    0.13  &  0.07 & \quart{0}{12}{9}{170} \bigstrut\\
+  1 & camel\_0.25\_iP(25\%) &    0.15  &  0.09 & \quart{9}{16}{12}{170} 
+  \bigstrut\\
+\hline  2 & camel\_0.25\_w\_iP(50\%) &    0.19  &  0.04 & 
+\quart{14}{8}{20}{170} \bigstrut\\
+  2 & camel\_0.25\_w\_iP(25\%) &    0.21  &  0.08 & \quart{12}{15}{24}{170} 
+  \bigstrut\\
+  2 & camel\_0.25\_iP(50\%) &    0.2  &  0.1 & \quart{18}{19}{22}{170} 
+  \bigstrut\\
+  2 & camel\_0.5\_w\_iP(25\%) &    0.23  &  0.08 & \quart{22}{15}{27}{170} 
+  \bigstrut\\
+\hline  3 & camel\_0.75\_w\_iP(25\%) &    0.24  &  0.11 & 
+\quart{22}{20}{29}{170} \bigstrut\\
+  3 & camel\_0.75\_iP(50\%) &    0.26  &  0.1 & \quart{27}{19}{33}{170} 
+  \bigstrut\\
+  3 & camel\_0.5\_iP(25\%) &    0.27  &  0.07 & \quart{27}{13}{35}{170} 
+  \bigstrut\\
+  3 & camel\_0.25\_iP(75\%) &    0.28  &  0.07 & \quart{33}{13}{37}{170} 
+  \bigstrut\\
+  3 & camel\_0.75\_iP(25\%) &    0.28  &  0.09 & \quart{29}{17}{37}{170} 
+  \bigstrut\\
+  3 & camel\_0.5\_iP(50\%) &    0.28  &  0.09 & \quart{35}{16}{37}{170} 
+  \bigstrut\\
+  3 & camel\_0.5\_w\_iP(50\%) &    0.3  &  0.09 & \quart{29}{17}{40}{170} 
+  \bigstrut\\
+  3 & camel\_0.25\_w\_iP(75\%) &    0.31  &  0.08 & \quart{31}{15}{42}{170} 
+  \bigstrut\\
+  3 & camel\_0.75\_w\_iP(50\%) &    0.31  &  0.16 & \quart{22}{29}{42}{170} 
+  \bigstrut\\
+  3 & camel\_0.25\_w &    0.34  &  0.08 & \quart{40}{15}{48}{170} \bigstrut\\
+\hline  4 &   camel\_0.25 &    0.35  &  0.1 & \quart{44}{18}{49}{170} 
+\bigstrut\\
+  4 & camel\_0.5\_w\_iP(75\%) &    0.37  &  0.18 & \quart{40}{34}{53}{170} 
+  \bigstrut\\
+  4 & camel\_0.5\_iP(75\%) &    0.36  &  0.05 & \quart{48}{9}{51}{170} 
+  \bigstrut\\
+\hline  5 & camel\_0.75\_iP(75\%) &    0.43  &  0.2 & \quart{48}{37}{64}{170} 
+\bigstrut\\
+  5 &    camel\_0.5 &    0.47  &  0.09 & \quart{62}{17}{72}{170} \bigstrut\\
+  5 &  camel\_0.5\_w &    0.47  &  0.12 & \quart{55}{22}{72}{170} \bigstrut\\
+  5 & camel\_0.75\_w &    0.49  &  0.14 & \quart{62}{26}{75}{170} \bigstrut\\
+  5 & camel\_0.75\_w\_iP(75\%) &    0.51  &  0.13 & \quart{66}{24}{79}{170} 
+  \bigstrut\\
+  5 &   camel\_0.75 &    0.53  &  0.16 & \quart{70}{29}{83}{170} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{ivy}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 & ivy\_0.5\_iP(25\%) &    0.15  &  0.22 & \quart{0}{47}{13}{197} \bigstrut\\
+  1 & ivy\_0.25\_w\_iP(25\%) &    0.16  &  0.15 & \quart{8}{33}{15}{197} 
+  \bigstrut\\
+  1 & ivy\_0.75\_iP(25\%) &    0.18  &  0.17 & \quart{8}{37}{19}{197} 
+  \bigstrut\\
+  1 & ivy\_0.5\_w\_iP(25\%) &    0.18  &  0.1 & \quart{13}{21}{19}{197} 
+  \bigstrut\\
+  1 &     ivy\_Base &    0.21  &  0.2 & \quart{6}{43}{26}{197} \bigstrut\\
+  1 & ivy\_0.75\_w\_iP(25\%) &    0.22  &  0.15 & \quart{8}{33}{28}{197} 
+  \bigstrut\\
+\hline  2 & ivy\_0.25\_w\_iP(50\%) &    0.25  &  0.08 & \quart{23}{18}{34}{197} 
+\bigstrut\\
+  2 &   ivy\_0.25\_w &    0.26  &  0.11 & \quart{26}{23}{36}{197} \bigstrut\\
+  2 & ivy\_0.25\_iP(50\%) &    0.25  &  0.14 & \quart{26}{30}{34}{197} 
+  \bigstrut\\
+  2 & ivy\_0.25\_iP(75\%) &    0.27  &  0.19 & \quart{26}{41}{39}{197} 
+  \bigstrut\\
+  2 & ivy\_0.25\_iP(25\%) &    0.27  &  0.19 & \quart{10}{42}{39}{197} 
+  \bigstrut\\
+  2 & ivy\_0.25\_w\_iP(75\%) &    0.3  &  0.2 & \quart{26}{43}{45}{197} 
+  \bigstrut\\
+  2 &     ivy\_0.25 &    0.28  &  0.15 & \quart{30}{33}{41}{197} \bigstrut\\
+  2 & ivy\_0.5\_iP(50\%) &    0.31  &  0.25 & \quart{32}{54}{47}{197} 
+  \bigstrut\\
+  2 & ivy\_0.5\_w\_iP(50\%) &    0.33  &  0.15 & \quart{28}{32}{52}{197} 
+  \bigstrut\\
+\hline  3 &      ivy\_0.5 &    0.36  &  0.15 & \quart{45}{33}{58}{197} 
+\bigstrut\\
+  3 & ivy\_0.75\_w\_iP(50\%) &    0.37  &  0.16 & \quart{49}{35}{60}{197} 
+  \bigstrut\\
+  3 & ivy\_0.5\_w\_iP(75\%) &    0.37  &  0.1 & \quart{52}{21}{60}{197} 
+  \bigstrut\\
+  3 & ivy\_0.75\_iP(50\%) &    0.38  &  0.14 & \quart{52}{30}{63}{197} 
+  \bigstrut\\
+  3 & ivy\_0.5\_iP(75\%) &    0.39  &  0.08 & \quart{56}{17}{65}{197} 
+  \bigstrut\\
+  3 & ivy\_0.75\_iP(75\%) &    0.42  &  0.05 & \quart{65}{11}{71}{197} 
+  \bigstrut\\
+  3 &    ivy\_0.5\_w &    0.41  &  0.14 & \quart{49}{31}{69}{197} \bigstrut\\
+\hline  4 & ivy\_0.75\_w\_iP(75\%) &    0.48  &  0.08 & \quart{78}{17}{84}{197} 
+\bigstrut\\
+  4 &     ivy\_0.75 &    0.49  &  0.07 & \quart{76}{15}{86}{197} \bigstrut\\
+  4 &   ivy\_0.75\_w &    0.53  &  0.1 & \quart{78}{21}{95}{197} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{jedit}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 &   jedit\_Base &    0.08  &  0.11 & \quart{0}{15}{5}{137} \bigstrut\\
+\hline  2 & jedit\_0.25\_w\_iP(25\%) &    0.2  &  0.11 & 
+\quart{15}{16}{22}{137} \bigstrut\\
+  2 & jedit\_0.25\_iP(25\%) &    0.21  &  0.14 & \quart{11}{20}{24}{137} 
+  \bigstrut\\
+  2 & jedit\_0.5\_w\_iP(25\%) &    0.23  &  0.1 & \quart{14}{14}{27}{137} 
+  \bigstrut\\
+  2 & jedit\_0.5\_iP(25\%) &    0.22  &  0.1 & \quart{18}{14}{25}{137} 
+  \bigstrut\\
+\hline  3 & jedit\_0.25\_iP(50\%) &    0.25  &  0.06 & \quart{21}{8}{29}{137} 
+\bigstrut\\
+  3 & jedit\_0.75\_iP(25\%) &    0.23  &  0.06 & \quart{25}{9}{27}{137} 
+  \bigstrut\\
+  3 & jedit\_0.25\_w\_iP(50\%) &    0.24  &  0.06 & \quart{25}{9}{28}{137} 
+  \bigstrut\\
+  3 & jedit\_0.75\_w\_iP(25\%) &    0.24  &  0.08 & \quart{27}{11}{28}{137} 
+  \bigstrut\\
+\hline  4 & jedit\_0.25\_w\_iP(75\%) &    0.3  &  0.11 & 
+\quart{31}{16}{37}{137} \bigstrut\\
+  4 & jedit\_0.25\_w &    0.3  &  0.11 & \quart{31}{16}{37}{137} \bigstrut\\
+  4 & jedit\_0.25\_iP(75\%) &    0.32  &  0.12 & \quart{31}{17}{39}{137} 
+  \bigstrut\\
+\hline  5 &   jedit\_0.25 &    0.35  &  0.05 & \quart{41}{7}{44}{137} 
+\bigstrut\\
+  5 & jedit\_0.5\_iP(50\%) &    0.38  &  0.06 & \quart{44}{8}{48}{137} 
+  \bigstrut\\
+\hline  6 &    jedit\_0.5 &    0.4  &  0.15 & \quart{44}{21}{51}{137} 
+\bigstrut\\
+  6 & jedit\_0.5\_w\_iP(50\%) &    0.4  &  0.07 & \quart{47}{10}{51}{137} 
+  \bigstrut\\
+  6 & jedit\_0.5\_iP(75\%) &    0.43  &  0.15 & \quart{48}{21}{55}{137} 
+  \bigstrut\\
+  6 & jedit\_0.5\_w\_iP(75\%) &    0.44  &  0.04 & \quart{54}{5}{57}{137} 
+  \bigstrut\\
+  6 &  jedit\_0.5\_w &    0.46  &  0.1 & \quart{54}{14}{59}{137} \bigstrut\\
+\hline  7 & jedit\_0.75\_iP(50\%) &    0.51  &  0.09 & \quart{62}{13}{67}{137} 
+\bigstrut\\
+  7 & jedit\_0.75\_w\_iP(50\%) &    0.52  &  0.09 & \quart{62}{13}{68}{137} 
+  \bigstrut\\
+  7 &   jedit\_0.75 &    0.53  &  0.19 & \quart{58}{27}{69}{137} \bigstrut\\
+  7 & jedit\_0.75\_iP(75\%) &    0.54  &  0.16 & \quart{55}{23}{71}{137} 
+  \bigstrut\\
+\hline  8 & jedit\_0.75\_w\_iP(75\%) &    0.61  &  0.14 & 
+\quart{72}{20}{81}{137} \bigstrut\\
+  8 & jedit\_0.75\_w &    0.69  &  0.15 & \quart{78}{21}{92}{137} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{log4j}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 &   log4j\_Base &    0.08  &  0.04 & \quart{0}{8}{8}{199} \bigstrut\\
+\hline  2 & log4j\_0.25\_w\_iP(25\%) &    0.17  &  0.06 & 
+\quart{20}{13}{27}{199} \bigstrut\\
+  2 & log4j\_0.25\_iP(25\%) &    0.18  &  0.07 & \quart{24}{15}{29}{199} 
+  \bigstrut\\
+\hline  3 & log4j\_0.25\_w\_iP(75\%) &    0.22  &  0.12 & 
+\quart{31}{25}{37}{199} \bigstrut\\
+  3 & log4j\_0.25\_w\_iP(50\%) &    0.22  &  0.08 & \quart{33}{16}{37}{199} 
+  \bigstrut\\
+  3 & log4j\_0.5\_iP(25\%) &    0.23  &  0.07 & \quart{33}{14}{39}{199} 
+  \bigstrut\\
+  3 &   log4j\_0.25 &    0.24  &  0.1 & \quart{33}{21}{41}{199} \bigstrut\\
+\hline  4 & log4j\_0.25\_iP(75\%) &    0.25  &  0.06 & \quart{37}{12}{43}{199} 
+\bigstrut\\
+  4 & log4j\_0.75\_w\_iP(25\%) &    0.25  &  0.1 & \quart{39}{21}{43}{199} 
+  \bigstrut\\
+  4 & log4j\_0.5\_w\_iP(25\%) &    0.25  &  0.08 & \quart{37}{17}{43}{199} 
+  \bigstrut\\
+  4 & log4j\_0.75\_iP(25\%) &    0.27  &  0.14 & \quart{29}{29}{47}{199} 
+  \bigstrut\\
+  4 & log4j\_0.5\_iP(50\%) &    0.28  &  0.07 & \quart{41}{15}{49}{199} 
+  \bigstrut\\
+  4 & log4j\_0.25\_w &    0.28  &  0.1 & \quart{37}{21}{49}{199} \bigstrut\\
+  4 & log4j\_0.5\_w\_iP(75\%) &    0.27  &  0.18 & \quart{33}{37}{47}{199} 
+  \bigstrut\\
+  4 & log4j\_0.25\_iP(50\%) &    0.28  &  0.1 & \quart{47}{21}{49}{199} 
+  \bigstrut\\
+\hline  5 & log4j\_0.5\_iP(75\%) &    0.31  &  0.14 & \quart{49}{30}{56}{199} 
+\bigstrut\\
+  5 & log4j\_0.75\_iP(75\%) &    0.31  &  0.1 & \quart{41}{21}{56}{199} 
+  \bigstrut\\
+  5 & log4j\_0.5\_w\_iP(50\%) &    0.33  &  0.04 & \quart{54}{8}{60}{199} 
+  \bigstrut\\
+  5 &  log4j\_0.5\_w &    0.34  &  0.2 & \quart{41}{42}{62}{199} \bigstrut\\
+  5 & log4j\_0.75\_w\_iP(50\%) &    0.34  &  0.22 & \quart{37}{46}{62}{199} 
+  \bigstrut\\
+\hline  6 &    log4j\_0.5 &    0.37  &  0.12 & \quart{49}{25}{68}{199} 
+\bigstrut\\
+  6 &   log4j\_0.75 &    0.36  &  0.22 & \quart{54}{45}{66}{199} \bigstrut\\
+  6 & log4j\_0.75\_w &    0.37  &  0.13 & \quart{60}{27}{68}{199} \bigstrut\\
+  6 & log4j\_0.75\_w\_iP(75\%) &    0.38  &  0.24 & \quart{49}{50}{70}{199} 
+  \bigstrut\\
+  6 & log4j\_0.75\_iP(50\%) &    0.44  &  0.14 & \quart{56}{29}{83}{199} 
+  \bigstrut\\
+\hline \end{tabular}}
+\subsection*{lucene}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 &  lucene\_Base &    0.07  &  0.08 & \quart{0}{17}{6}{204} \bigstrut\\
+  1 & lucene\_0.25\_w\_iP(25\%) &    0.07  &  0.03 & \quart{2}{6}{6}{204} 
+  \bigstrut\\
+  1 & lucene\_0.25\_iP(25\%) &    0.09  &  0.02 & \quart{8}{4}{10}{204} 
+  \bigstrut\\
+\hline  2 & lucene\_0.5\_iP(25\%) &    0.11  &  0.04 & \quart{12}{9}{14}{204} 
+\bigstrut\\
+  2 & lucene\_0.25\_iP(50\%) &    0.11  &  0.05 & \quart{10}{11}{14}{204} 
+  \bigstrut\\
+  2 & lucene\_0.25\_w\_iP(50\%) &    0.12  &  0.07 & \quart{12}{15}{17}{204} 
+  \bigstrut\\
+  2 & lucene\_0.5\_w\_iP(25\%) &    0.13  &  0.02 & \quart{17}{4}{19}{204} 
+  \bigstrut\\
+\hline  3 &  lucene\_0.25 &    0.15  &  0.1 & \quart{14}{22}{23}{204} 
+\bigstrut\\
+  3 & lucene\_0.25\_w\_iP(75\%) &    0.14  &  0.05 & \quart{19}{10}{21}{204} 
+  \bigstrut\\
+  3 & lucene\_0.75\_iP(25\%) &    0.16  &  0.09 & \quart{17}{19}{25}{204} 
+  \bigstrut\\
+  3 & lucene\_0.75\_w\_iP(25\%) &    0.16  &  0.08 & \quart{19}{17}{25}{204} 
+  \bigstrut\\
+  3 & lucene\_0.25\_iP(75\%) &    0.17  &  0.07 & \quart{21}{15}{27}{204} 
+  \bigstrut\\
+\hline  4 & lucene\_0.5\_iP(50\%) &    0.2  &  0.08 & \quart{25}{17}{34}{204} 
+\bigstrut\\
+  4 & lucene\_0.25\_w &    0.21  &  0.06 & \quart{25}{13}{36}{204} \bigstrut\\
+\hline  5 & lucene\_0.5\_iP(75\%) &    0.22  &  0.08 & \quart{31}{17}{38}{204} 
+\bigstrut\\
+  5 & lucene\_0.5\_w &    0.24  &  0.1 & \quart{27}{21}{42}{204} \bigstrut\\
+  5 & lucene\_0.5\_w\_iP(50\%) &    0.24  &  0.09 & \quart{31}{20}{42}{204} 
+  \bigstrut\\
+\hline  6 & lucene\_0.5\_w\_iP(75\%) &    0.25  &  0.06 & 
+\quart{36}{12}{44}{204} \bigstrut\\
+  6 & lucene\_0.75\_w\_iP(50\%) &    0.25  &  0.08 & \quart{42}{17}{44}{204} 
+  \bigstrut\\
+  6 &   lucene\_0.5 &    0.26  &  0.1 & \quart{40}{21}{46}{204} \bigstrut\\
+  6 & lucene\_0.75\_iP(50\%) &    0.26  &  0.09 & \quart{44}{19}{46}{204} 
+  \bigstrut\\
+  6 & lucene\_0.75\_w\_iP(75\%) &    0.28  &  0.15 & \quart{40}{32}{51}{204} 
+  \bigstrut\\
+\hline  7 & lucene\_0.75\_iP(75\%) &    0.32  &  0.2 & \quart{40}{42}{59}{204} 
+\bigstrut\\
+  7 &  lucene\_0.75 &    0.34  &  0.11 & \quart{55}{23}{63}{204} \bigstrut\\
+  7 & lucene\_0.75\_w &    0.39  &  0.15 & \quart{68}{31}{74}{204} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{pbeans}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 & pbeans\_0.25\_iP(25\%) &    0.0  &  0.6 & \quart{0}{59}{0}{99} \bigstrut\\
+  1 & pbeans\_0.25\_w\_iP(50\%) &    0.33  &  0.4 & \quart{19}{40}{32}{99} 
+  \bigstrut\\
+  1 & pbeans\_0.25\_w\_iP(75\%) &    0.5  &  0.5 & \quart{0}{49}{49}{99} 
+  \bigstrut\\
+\hline  2 & pbeans\_0.5\_iP(25\%) &    0.5  &  0.8 & \quart{0}{79}{49}{99} 
+\bigstrut\\
+  2 & pbeans\_0.75\_iP(50\%) &    0.5  &  0.8 & \quart{0}{79}{49}{99} 
+  \bigstrut\\
+  2 & pbeans\_0.25\_w &    0.6  &  0.62 & \quart{37}{62}{59}{99} \bigstrut\\
+  2 & pbeans\_0.25\_w\_iP(25\%) &    0.6  &  0.75 & \quart{0}{74}{59}{99} 
+  \bigstrut\\
+  2 &  pbeans\_0.25 &    0.67  &  0.68 & \quart{19}{68}{66}{99} \bigstrut\\
+  2 &   pbeans\_0.5 &    0.67  &  0.6 & \quart{19}{60}{66}{99} \bigstrut\\
+  2 &  pbeans\_Base &    0.6  &  0.17 & \quart{49}{17}{59}{99} \bigstrut\\
+  2 & pbeans\_0.75\_w\_iP(25\%) &    0.6  &  0.47 & \quart{32}{47}{59}{99} 
+  \bigstrut\\
+  2 & pbeans\_0.75\_w\_iP(75\%) &    0.6  &  0.25 & \quart{49}{25}{59}{99} 
+  \bigstrut\\
+  2 & pbeans\_0.25\_iP(50\%) &    0.6  &  0.8 & \quart{0}{79}{59}{99} 
+  \bigstrut\\
+  2 & pbeans\_0.5\_iP(50\%) &    0.75  &  0.47 & \quart{32}{47}{74}{99} 
+  \bigstrut\\
+  2 & pbeans\_0.25\_iP(75\%) &    0.67  &  1.0 & \quart{0}{99}{66}{99} 
+  \bigstrut\\
+  2 & pbeans\_0.5\_w\_iP(50\%) &    0.67  &  0.8 & \quart{0}{79}{66}{99} 
+  \bigstrut\\
+\hline  3 & pbeans\_0.75\_w\_iP(50\%) &    0.75  &  0.4 & 
+\quart{59}{40}{74}{99} \bigstrut\\
+  3 & pbeans\_0.5\_w &    0.8  &  0.4 & \quart{59}{40}{79}{99} \bigstrut\\
+  3 & pbeans\_0.5\_iP(75\%) &    0.8  &  0.23 & \quart{59}{23}{79}{99} 
+  \bigstrut\\
+  3 & pbeans\_0.75\_iP(25\%) &    0.8  &  0.3 & \quart{49}{30}{79}{99} 
+  \bigstrut\\
+  3 &  pbeans\_0.75 &    0.8  &  0.4 & \quart{59}{40}{79}{99} \bigstrut\\
+  3 & pbeans\_0.5\_w\_iP(75\%) &    0.8  &  0.8 & \quart{19}{80}{79}{99} 
+  \bigstrut\\
+  3 & pbeans\_0.75\_iP(75\%) &    0.8  &  0.33 & \quart{66}{33}{79}{99} 
+  \bigstrut\\
+  3 & pbeans\_0.5\_w\_iP(25\%) &    0.88  &  0.4 & \quart{59}{40}{87}{99} 
+  \bigstrut\\
+\hline  4 & pbeans\_0.75\_w &    0.92  &  0.2 & \quart{79}{20}{91}{99} 
+\bigstrut\\
+\hline \end{tabular}}
+\subsection*{poi}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 & poi\_0.25\_w\_iP(25\%) &    0.12  &  0.04 & \quart{3}{6}{4}{144} 
+  \bigstrut\\
+  1 & poi\_0.25\_w\_iP(50\%) &    0.14  &  0.09 & \quart{1}{14}{7}{144} 
+  \bigstrut\\
+\hline  2 &     poi\_Base &    0.18  &  0.16 & \quart{1}{25}{14}{144} 
+\bigstrut\\
+  2 & poi\_0.75\_w\_iP(25\%) &    0.19  &  0.13 & \quart{6}{20}{15}{144} 
+  \bigstrut\\
+  2 & poi\_0.25\_iP(50\%) &    0.2  &  0.26 & \quart{11}{41}{17}{144} 
+  \bigstrut\\
+  2 & poi\_0.5\_w\_iP(25\%) &    0.21  &  0.17 & \quart{3}{27}{19}{144} 
+  \bigstrut\\
+  2 & poi\_0.25\_iP(25\%) &    0.23  &  0.17 & \quart{0}{26}{22}{144} 
+  \bigstrut\\
+\hline  3 & poi\_0.5\_iP(25\%) &    0.23  &  0.13 & \quart{7}{21}{22}{144} 
+\bigstrut\\
+  3 & poi\_0.75\_iP(50\%) &    0.26  &  0.25 & \quart{14}{39}{26}{144} 
+  \bigstrut\\
+  3 &   poi\_0.25\_w &    0.28  &  0.14 & \quart{20}{22}{30}{144} \bigstrut\\
+  3 & poi\_0.5\_w\_iP(50\%) &    0.28  &  0.1 & \quart{17}{16}{30}{144} 
+  \bigstrut\\
+  3 & poi\_0.75\_w\_iP(50\%) &    0.28  &  0.16 & \quart{23}{26}{30}{144} 
+  \bigstrut\\
+  3 & poi\_0.25\_iP(75\%) &    0.28  &  0.07 & \quart{28}{11}{30}{144} 
+  \bigstrut\\
+  3 & poi\_0.75\_iP(25\%) &    0.28  &  0.15 & \quart{25}{24}{30}{144} 
+  \bigstrut\\
+  3 & poi\_0.5\_iP(50\%) &    0.28  &  0.17 & \quart{23}{27}{30}{144} 
+  \bigstrut\\
+  3 &     poi\_0.25 &    0.32  &  0.26 & \quart{17}{41}{36}{144} \bigstrut\\
+  3 & poi\_0.5\_w\_iP(75\%) &    0.3  &  0.21 & \quart{23}{34}{33}{144} 
+  \bigstrut\\
+  3 & poi\_0.25\_w\_iP(75\%) &    0.32  &  0.17 & \quart{20}{27}{36}{144} 
+  \bigstrut\\
+\hline  4 & poi\_0.75\_w\_iP(75\%) &    0.35  &  0.26 & \quart{25}{41}{41}{144} 
+\bigstrut\\
+  4 & poi\_0.75\_iP(75\%) &    0.35  &  0.29 & \quart{22}{46}{41}{144} 
+  \bigstrut\\
+  4 & poi\_0.5\_iP(75\%) &    0.41  &  0.12 & \quart{38}{19}{50}{144} 
+  \bigstrut\\
+  4 &    poi\_0.5\_w &    0.44  &  0.14 & \quart{50}{23}{55}{144} \bigstrut\\
+  4 &      poi\_0.5 &    0.52  &  0.21 & \quart{41}{33}{68}{144} \bigstrut\\
+\hline  5 &   poi\_0.75\_w &    0.53  &  0.23 & \quart{50}{37}{69}{144} 
+\bigstrut\\
+  5 &     poi\_0.75 &    0.6  &  0.29 & \quart{53}{46}{80}{144} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{velocity}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 & velocity\_Base &    0.01  &  0.01 & \quart{0}{1}{0}{164} \bigstrut\\
+  1 & velocity\_0.25\_iP(25\%) &    0.03  &  0.03 & \quart{0}{4}{3}{164} 
+  \bigstrut\\
+  1 & velocity\_0.75\_iP(25\%) &    0.04  &  0.06 & \quart{0}{9}{4}{164} 
+  \bigstrut\\
+  1 & velocity\_0.25\_w\_iP(25\%) &    0.03  &  0.04 & \quart{1}{7}{3}{164} 
+  \bigstrut\\
+  1 & velocity\_0.5\_iP(25\%) &    0.03  &  0.04 & \quart{1}{7}{3}{164} 
+  \bigstrut\\
+  1 & velocity\_0.5\_w\_iP(25\%) &    0.04  &  0.05 & \quart{0}{8}{4}{164} 
+  \bigstrut\\
+  1 & velocity\_0.75\_w\_iP(25\%) &    0.08  &  0.06 & \quart{4}{10}{11}{164} 
+  \bigstrut\\
+\hline  2 & velocity\_0.25\_w\_iP(50\%) &    0.12  &  0.12 & 
+\quart{9}{20}{18}{164} \bigstrut\\
+  2 & velocity\_0.25\_iP(50\%) &    0.16  &  0.15 & \quart{4}{25}{24}{164} 
+  \bigstrut\\
+\hline  3 & velocity\_0.25\_iP(75\%) &    0.15  &  0.05 & 
+\quart{21}{8}{23}{164} \bigstrut\\
+  3 & velocity\_0.25 &    0.16  &  0.04 & \quart{23}{6}{24}{164} \bigstrut\\
+  3 & velocity\_0.5\_iP(50\%) &    0.16  &  0.12 & \quart{18}{20}{24}{164} 
+  \bigstrut\\
+  3 & velocity\_0.25\_w\_iP(75\%) &    0.16  &  0.06 & \quart{24}{10}{24}{164} 
+  \bigstrut\\
+  3 & velocity\_0.5\_w\_iP(50\%) &    0.19  &  0.15 & \quart{14}{25}{29}{164} 
+  \bigstrut\\
+\hline  4 & velocity\_0.75\_w\_iP(50\%) &    0.21  &  0.06 & 
+\quart{26}{10}{33}{164} \bigstrut\\
+  4 & velocity\_0.25\_w &    0.21  &  0.06 & \quart{28}{10}{33}{164} \bigstrut\\
+  4 & velocity\_0.5\_w\_iP(75\%) &    0.21  &  0.06 & \quart{29}{10}{33}{164} 
+  \bigstrut\\
+  4 & velocity\_0.75\_iP(50\%) &    0.24  &  0.13 & \quart{23}{21}{38}{164} 
+  \bigstrut\\
+\hline  5 & velocity\_0.5\_iP(75\%) &    0.28  &  0.06 & 
+\quart{41}{10}{44}{164} \bigstrut\\
+  5 & velocity\_0.75\_iP(75\%) &    0.28  &  0.16 & \quart{41}{27}{44}{164} 
+  \bigstrut\\
+  5 & velocity\_0.5\_w &    0.31  &  0.17 & \quart{39}{29}{49}{164} \bigstrut\\
+  5 & velocity\_0.75\_w\_iP(75\%) &    0.32  &  0.11 & \quart{43}{18}{51}{164} 
+  \bigstrut\\
+  5 & velocity\_0.5 &    0.38  &  0.26 & \quart{33}{43}{61}{164} \bigstrut\\
+\hline  6 & velocity\_0.75\_w &    0.49  &  0.1 & \quart{74}{17}{79}{164} 
+\bigstrut\\
+  6 & velocity\_0.75 &    0.53  &  0.19 & \quart{68}{31}{86}{164} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{xalan}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 & xalan\_0.25\_iP(25\%) &    0.11  &  0.03 & \quart{2}{7}{4}{206} 
+  \bigstrut\\
+  1 &   xalan\_Base &    0.12  &  0.04 & \quart{0}{9}{6}{206} \bigstrut\\
+  1 & xalan\_0.25\_w\_iP(25\%) &    0.13  &  0.04 & \quart{2}{9}{9}{206} 
+  \bigstrut\\
+\hline  2 & xalan\_0.5\_iP(25\%) &    0.13  &  0.03 & \quart{6}{7}{9}{206} 
+\bigstrut\\
+  2 & xalan\_0.25\_w\_iP(50\%) &    0.14  &  0.08 & \quart{4}{18}{11}{206} 
+  \bigstrut\\
+  2 & xalan\_0.75\_w\_iP(25\%) &    0.16  &  0.08 & \quart{2}{18}{15}{206} 
+  \bigstrut\\
+  2 & xalan\_0.5\_iP(50\%) &    0.15  &  0.15 & \quart{9}{34}{13}{206} 
+  \bigstrut\\
+  2 & xalan\_0.25\_iP(50\%) &    0.16  &  0.07 & \quart{9}{15}{15}{206} 
+  \bigstrut\\
+  2 & xalan\_0.5\_w\_iP(25\%) &    0.16  &  0.09 & \quart{4}{20}{15}{206} 
+  \bigstrut\\
+  2 & xalan\_0.5\_w\_iP(50\%) &    0.18  &  0.14 & \quart{6}{32}{20}{206} 
+  \bigstrut\\
+  2 & xalan\_0.75\_iP(25\%) &    0.17  &  0.07 & \quart{4}{16}{18}{206} 
+  \bigstrut\\
+  2 & xalan\_0.25\_iP(75\%) &    0.17  &  0.05 & \quart{15}{12}{18}{206} 
+  \bigstrut\\
+  2 & xalan\_0.25\_w &    0.18  &  0.04 & \quart{18}{9}{20}{206} \bigstrut\\
+\hline  3 & xalan\_0.25\_w\_iP(75\%) &    0.2  &  0.1 & \quart{18}{22}{24}{206} 
+\bigstrut\\
+\hline  4 &   xalan\_0.25 &    0.22  &  0.1 & \quart{20}{23}{29}{206} 
+\bigstrut\\
+  4 & xalan\_0.75\_iP(50\%) &    0.22  &  0.15 & \quart{22}{34}{29}{206} 
+  \bigstrut\\
+  4 & xalan\_0.75\_w\_iP(50\%) &    0.24  &  0.14 & \quart{22}{32}{34}{206} 
+  \bigstrut\\
+  4 & xalan\_0.5\_w\_iP(75\%) &    0.24  &  0.12 & \quart{22}{27}{34}{206} 
+  \bigstrut\\
+  4 & xalan\_0.5\_iP(75\%) &    0.28  &  0.09 & \quart{29}{20}{43}{206} 
+  \bigstrut\\
+  4 & xalan\_0.75\_iP(75\%) &    0.28  &  0.1 & \quart{31}{23}{43}{206} 
+  \bigstrut\\
+  4 &  xalan\_0.5\_w &    0.3  &  0.07 & \quart{40}{16}{47}{206} \bigstrut\\
+\hline  5 & xalan\_0.75\_w\_iP(75\%) &    0.32  &  0.13 & 
+\quart{43}{29}{52}{206} \bigstrut\\
+  5 &    xalan\_0.5 &    0.32  &  0.13 & \quart{40}{30}{52}{206} \bigstrut\\
+  5 &   xalan\_0.75 &    0.4  &  0.26 & \quart{40}{59}{70}{206} \bigstrut\\
+  5 & xalan\_0.75\_w &    0.43  &  0.11 & \quart{70}{25}{77}{206} \bigstrut\\
+\hline \end{tabular}}
+\subsection*{xerces}
+
+{\scriptsize \begin{tabular}{|l@{~~~}|l@{~~~}|r@{~~~}|r@{~~~}|c|}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & 
+\bigstrut\\\hline
+  1 &  xerces\_Base &    0.07  &  0.07 & \quart{0}{10}{5}{144} \bigstrut\\
+\hline  2 & xerces\_0.25\_iP(25\%) &    0.13  &  0.11 & \quart{10}{16}{14}{144} 
+\bigstrut\\
+  2 & xerces\_0.25\_w\_iP(25\%) &    0.16  &  0.1 & \quart{14}{15}{19}{144} 
+  \bigstrut\\
+\hline  3 & xerces\_0.25\_w\_iP(50\%) &    0.21  &  0.14 & 
+\quart{19}{21}{26}{144} \bigstrut\\
+  3 & xerces\_0.5\_iP(25\%) &    0.19  &  0.09 & \quart{19}{13}{23}{144} 
+  \bigstrut\\
+  3 & xerces\_0.25\_iP(50\%) &    0.21  &  0.13 & \quart{14}{20}{26}{144} 
+  \bigstrut\\
+  3 & xerces\_0.5\_w\_iP(25\%) &    0.22  &  0.14 & \quart{22}{21}{28}{144} 
+  \bigstrut\\
+  3 & xerces\_0.25\_iP(75\%) &    0.26  &  0.13 & \quart{26}{20}{34}{144} 
+  \bigstrut\\
+  3 & xerces\_0.75\_w\_iP(25\%) &    0.26  &  0.12 & \quart{22}{18}{34}{144} 
+  \bigstrut\\
+\hline  4 & xerces\_0.5\_w\_iP(50\%) &    0.28  &  0.14 & 
+\quart{35}{21}{37}{144} \bigstrut\\
+  4 & xerces\_0.75\_iP(50\%) &    0.28  &  0.21 & \quart{34}{31}{37}{144} 
+  \bigstrut\\
+  4 & xerces\_0.25\_w &    0.28  &  0.1 & \quart{37}{15}{37}{144} \bigstrut\\
+  4 &  xerces\_0.25 &    0.3  &  0.16 & \quart{34}{24}{40}{144} \bigstrut\\
+  4 & xerces\_0.25\_w\_iP(75\%) &    0.32  &  0.16 & \quart{31}{24}{43}{144} 
+  \bigstrut\\
+  4 & xerces\_0.75\_iP(25\%) &    0.33  &  0.14 & \quart{31}{21}{44}{144} 
+  \bigstrut\\
+  4 & xerces\_0.5\_iP(50\%) &    0.34  &  0.08 & \quart{40}{12}{46}{144} 
+  \bigstrut\\
+  4 & xerces\_0.75\_w\_iP(50\%) &    0.35  &  0.09 & \quart{43}{13}{47}{144} 
+  \bigstrut\\
+  4 & xerces\_0.5\_w\_iP(75\%) &    0.38  &  0.17 & \quart{37}{25}{52}{144} 
+  \bigstrut\\
+\hline  5 &   xerces\_0.5 &    0.4  &  0.1 & \quart{52}{15}{55}{144} \bigstrut\\
+  5 & xerces\_0.5\_iP(75\%) &    0.43  &  0.2 & \quart{53}{30}{59}{144} 
+  \bigstrut\\
+  5 & xerces\_0.5\_w &    0.44  &  0.14 & \quart{58}{21}{61}{144} \bigstrut\\
+  5 & xerces\_0.75\_w\_iP(75\%) &    0.46  &  0.26 & \quart{55}{39}{64}{144} 
+  \bigstrut\\
+  5 & xerces\_0.75\_iP(75\%) &    0.46  &  0.09 & \quart{58}{13}{64}{144} 
+  \bigstrut\\
+\hline  6 & xerces\_0.75\_w &    0.54  &  0.13 & \quart{68}{20}{76}{144} 
+\bigstrut\\
+  6 &  xerces\_0.75 &    0.59  &  0.17 & \quart{74}{25}{83}{144} \bigstrut\\
+\hline \end{tabular}}
+
+    \end{document}

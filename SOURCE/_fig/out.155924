@@ -1,0 +1,47 @@
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n2c3-2>
+Subject: Job 155924: <#! /bin/bash;#BSUB -W 6000;#BSUB -n 4 ;#BSUB -o ./out.%J ;#BSUB -e ./err.%J;for VAR in ant, camel, forrest, ivy, jedit, pbeans, log4j, synapse, velocity, xalan, xerces ;do;  tcsh save $VAR;done > Done
+
+Job <#! /bin/bash;#BSUB -W 6000;#BSUB -n 4 ;#BSUB -o ./out.%J ;#BSUB -e ./err.%J;for VAR in ant, camel, forrest, ivy, jedit, pbeans, log4j, synapse, velocity, xalan, xerces ;do;  tcsh save $VAR;done > was submitted from host <login05> by user <rkrish11> in cluster <henry2>.
+Job was executed on host(s) <4*n2c3-2>, in queue <long>, as user <rkrish11> in cluster <henry2>.
+</home/rkrish11> was used as the home directory.
+</home/rkrish11/git/Transfer-learning/SOURCE> was used as the working directory.
+Started at Mon Mar 16 11:46:09 2015
+Results reported at Mon Mar 16 11:59:43 2015
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#! /bin/bash
+#BSUB -W 6000
+#BSUB -n 4 
+#BSUB -o ./out.%J 
+#BSUB -e ./err.%J
+for VAR in ant, camel, forrest, ivy, jedit, pbeans, log4j, synapse, velocity, xalan, xerces 
+do
+  tcsh save $VAR
+done 
+
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time   :    452.23 sec.
+    Max Memory :       102 MB
+    Max Swap   :       784 MB
+
+    Max Processes  :         5
+    Max Threads    :         6
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <./err.155924> for stderr output of this job.
+

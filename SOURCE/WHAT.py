@@ -151,10 +151,11 @@ class treatments():
 
   def fWeight(self, criterion='Variance'):
     lbs = W(use=criterion).weights(self.train_df)
-    sortedLbs = sorted([l / max(lbs[0]) for l in lbs[0]], reverse=True)
+    sortedLbs = sorted(
+        [l / max(lbs[0]) if max(lbs[0]) else 0 for l in lbs[0]], reverse=True)
     indx = int(self.infoPrune * len(sortedLbs)) - 1 if self.Prune else -1
     cutoff = sortedLbs[indx]
-    L = [l / max(lbs[0]) for l in lbs[0]]
+    L = [l / max(lbs[0]) if max(lbs[0]) else 0 for l in lbs[0]]
     return [0 if l < cutoff else l for l in L] if self.Prune else L
 
   def mutate(self, me, others):
