@@ -174,8 +174,6 @@ class run():
             test_df=predTest,
             extent=self.extent,
             far=False,
-            smote=True,
-            resample=False,
             infoPrune=self.infoPrune,
             Prune=self.Prune).main()
       else:
@@ -185,8 +183,6 @@ class run():
             test=self.test[
                 self._n],
             far=False,
-            smote=True,
-            resample=False,
             extent=self.extent,
             infoPrune=self.infoPrune,
             Prune=self.Prune).main()

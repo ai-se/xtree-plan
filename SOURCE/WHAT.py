@@ -68,13 +68,11 @@ class treatments():
           test,
           bin=False,
           far=True,
-          method='any',
+          method='mean',
           train_df=None,
           test_df=None,
           fSelect=True,
           Prune=True,
-          smote=False,
-          resample=False,
           infoPrune=0.5,
           extent=0.75):
     self.test, self.train = test, train
@@ -87,20 +85,10 @@ class treatments():
     self.bin = bin
     self.new_Tab = []
     self.train_df = train_df if train_df \
-        else createTbl(
-            self.train,
-            isBin=True,
-            bugThres=1,
-            _smote=smote,
-            duplicate=resample)
+        else createTbl(self.train, isBin=True, bugThres=1)
 
     self.test_df = test_df if test_df \
-        else createTbl(
-            self.test,
-            isBin=True,
-            bugThres=1,
-            _smote=smote,
-            duplicate=resample)
+        else createTbl(self.test, isBin=True, bugThres=1)
 
   def clusterer(self):
     IDs = list(set([f.cells[-1] for f in self.train_df._rows]))
@@ -115,8 +103,9 @@ class treatments():
     pdistVect = []
 #    set_trace()
     for ind, n in enumerate(two):
-      pdistVect.append(
-          [ind, euclidean(one.representative(method=self.method), n.representative(method=self.method))])
+      pdistVect.append([ind,
+                        euclidean(one.representative(method=self.method),
+                                  n.representative(method=self.method))])
     indices = sorted(pdistVect, key=lambda F: F[1], reverse=self.far)
     return [two[n[0]] for n in indices]
 
@@ -181,19 +170,47 @@ class treatments():
     two = one234(others.rows)
     if self.bin:
       if self.fSelect:
-        return [new(my, good, self.extent, f=f)
-                for f, my, good in zip(opt.f, me[:-2], others.representative(method=self.method))]
+        return [
+            new(
+                my,
+                good,
+                self.extent,
+                f=f) for f,
+            my,
+            good in zip(
+                opt.f,
+                me[
+                    :-2],
+                others.representative(
+                    method=self.method))]
       else:
-        return [new(my, good, self.extent)
-                for f, my, good in zip(opt.f, me[:-2], others.representative(method=self.method))]
+        return [
+            new(
+                my,
+                good,
+                self.extent) for f,
+            my,
+            good in zip(
+                opt.f,
+                me[
+                    :-2],
+                others.representative(
+                    method=self.method))]
 
     else:
       if self.fSelect:
-        return [my + self.extent * f * (good - my)
-                for f, my, good in zip(opt.f, me[:-2], others.representative(method=self.method))]
+        return [my +
+                self.extent *
+                f *
+                (good -
+                 my) for f, my, good in zip(opt.f, me[:-
+                                                      2], others.representative(method=self.method))]
       else:
-        return [my + self.extent * (good - my)
-                for f, my, good in zip(opt.f, me[:-2], others.representative(method=self.method))]
+        return [my + self.extent * (good - my) for f,
+                my,
+                good in zip(opt.f,
+                            me[:-2],
+                            others.representative(method=self.method))]
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
