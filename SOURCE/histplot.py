@@ -42,7 +42,7 @@ def histplot(dict, name='untitled', ext='.jpg'):
   # add some text for labels, title and axes ticks
   ax.set_ylabel('Bugs')
   ax.set_xticks(ind + width)
-  ax.set_xticklabels(tuple([l for l in dict]))
+  ax.set_xticklabels(tuple([l[:3] for l in dict]))
 
   ax.legend((rects1[0], rects2[0]), ('Before', 'After'))
 

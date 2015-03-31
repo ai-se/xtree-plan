@@ -170,47 +170,19 @@ class treatments():
     two = one234(others.rows)
     if self.bin:
       if self.fSelect:
-        return [
-            new(
-                my,
-                good,
-                self.extent,
-                f=f) for f,
-            my,
-            good in zip(
-                opt.f,
-                me[
-                    :-2],
-                others.representative(
-                    method=self.method))]
+        return [new(my, good, self.extent, f=f) for f, my, good in zip(
+                opt.f, me[:-2], others.representative(method=self.method))]
       else:
-        return [
-            new(
-                my,
-                good,
-                self.extent) for f,
-            my,
-            good in zip(
-                opt.f,
-                me[
-                    :-2],
-                others.representative(
-                    method=self.method))]
+        return [new(my, good, self.extent) for f, my, good in zip(
+                opt.f, me[:-2], others.representative(method=self.method))]
 
     else:
       if self.fSelect:
-        return [my +
-                self.extent *
-                f *
-                (good -
-                 my) for f, my, good in zip(opt.f, me[:-
-                                                      2], others.representative(method=self.method))]
+        return [my + self.extent * f * (good - my) for f, my, good in zip(
+            opt.f, me[:-2], others.representative(method=self.method))]
       else:
-        return [my + self.extent * (good - my) for f,
-                my,
-                good in zip(opt.f,
-                            me[:-2],
-                            others.representative(method=self.method))]
+        return [my + self.extent * (good - my) for f, my, good in zip(
+            opt.f, me[:-2], others.representative(method=self.method))]
 
   def main(self):
     hyperPlanes = self.getHyperplanes()
