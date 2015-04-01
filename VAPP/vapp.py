@@ -211,8 +211,6 @@ class fileHandler():
               extent=ext,
               fSelect=fSel,
               far=False,
-              smote=False,
-              resample=False,
               infoPrune=_info,
               method='best',
               Prune=_prune).main()
@@ -254,8 +252,6 @@ class fileHandler():
               extent=ext,
               fSelect=fSel,
               far=False,
-              smote=False,
-              resample=False,
               infoPrune=_info,
               method=method,
               Prune=_prune).main()
@@ -383,63 +379,65 @@ def _test(name='Apache'):
 
 def _testPlot(name='Apache'):
   Accuracy = []
-  fileHandler().preamble()
+#  fileHandler().preamble()
   figname = fileHandler().figname
-  for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-    print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
-    before, baseline = fileHandler().mainraw(
-        name=name,
-        ext=0,
-        _prune=False,
-        _info=1,
-        fSel=False)
+#   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+#     print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
+  before, baseline = fileHandler().mainraw(
+      name=name,
+      ext=0,
+      _prune=False,
+      _info=1,
+      fSel=False)
 
-    _, best1 = fileHandler().mainraw(
-        name=name,
-        method='mean',
-        ext=0.75,
-        _prune=True,
-        _info=0.25,
-        fSel=False)
+  _, best1 = fileHandler().mainraw(
+      name=name,
+      method='mean',
+      ext=0.75,
+      _prune=True,
+      _info=0.25,
+      fSel=False)
 
-    _, best2 = fileHandler().mainraw(
-        name=name,
-        ext=0.75,
-        method='median',
-        _prune=True,
-        _info=0.25,
-        fSel=False)
+  _, best2 = fileHandler().mainraw(
+      name=name,
+      ext=0.75,
+      method='median',
+      _prune=True,
+      _info=0.25,
+      fSel=False)
 
-    _, best3 = fileHandler().mainraw(
-        name=name,
-        ext=0.75,
-        method='any',
-        _prune=True,
-        _info=0.25,
-        fSel=False)
+  _, best3 = fileHandler().mainraw(
+      name=name,
+      ext=0.75,
+      method='any',
+      _prune=True,
+      _info=0.25,
+      fSel=False)
 
-    _, best4 = fileHandler().mainraw(
-        name=name,
-        ext=0.75,
-        method='best',
-        _prune=True,
-        _info=0.25,
-        fSel=False)
-
-    overlayCurve([best1[0], 'mean'],
-                 [best2[0], 'median'],
-                 [best3[0], 'random'],
-                 [best4[0], 'best'],
-                 [baseline[0], 'baseline'],
-                 fname=name,
-                 ext='.jpg',
-                 textbox=False,
-                 string=None)
-    print(
-        "\\subfloat[][]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
-        (name + '.jpg'))
-    print(r"\end{figure}")
-  print(r"\end{document}")
+  _, best4 = fileHandler().mainraw(
+      name=name,
+      ext=0.75,
+      method='best',
+      _prune=True,
+      _info=0.25,
+      fSel=False)
+  print("Baseline,mean,median,any,best")
+  for b, me, md, an, be in zip(baseline[0], best1[0], best2[0], best3[0], best4[0]):
+    print("%0.2f,%0.2f,%0.2f,%0.2f,%0.2f" % (b, me, md, an, be))
+#     overlayCurve([best1[0], 'mean'],
+#                  [best2[0], 'median'],
+#                  [best3[0], 'random'],
+#                  [best4[0], 'best'],
+#                  [baseline[0], 'baseline'],
+#                  fname=name,
+#                  ext='.jpg',
+#                  textbox=False,
+#                  string=None)
+#     print(
+#         "\\subfloat[][]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
+#         (name + '.jpg'))
+#     print(r"\end{figure}")
+#   print(r"\end{document}")
 
 if __name__ == '__main__':
   _testPlot()
