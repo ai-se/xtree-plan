@@ -156,14 +156,14 @@ def CART(train, test, tunings=None, smoteit=True, duplicate=True):
     train = SMOTE(train, atleast=50, atmost=101, resample=duplicate)
 
   if not tunings:
-    clf = DecisionTreeClassifier(criterion='entropy',)
+    clf = DecisionTreeClassifier(criterion='entropy', random_state=1)
   else:
     clf = DecisionTreeClassifier(max_depth=int(tunings[0]),
                                  min_samples_split=int(tunings[1]),
                                  min_samples_leaf=int(tunings[2]),
                                  max_features=float(tunings[3] / 100),
                                  max_leaf_nodes=int(tunings[4]),
-                                 criterion='entropy')
+                                 criterion='entropy', random_state=1)
   train_DF = formatData(train)
   test_DF = formatData(test)
   features = train_DF.columns[:-2]

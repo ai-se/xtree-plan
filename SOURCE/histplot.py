@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 # a bar plot with errorbars
 from numpy import median
+from numpy import array
 from numpy import std
 from numpy import arange
 import matplotlib.pyplot as plt
+from pdb import set_trace
 
 
 def histplot(dict, name='untitled', ext='.jpg'):
   N = len(dict)
-  bMedians = [median(dict[l][0]) for l in dict]
-  bStd = [std(dict[l][0]) for l in dict]
-
+  bMedians = array([median(dict[l][0]) for l in dict])
+  lEb = array([sorted(dict[l][0])[int(0.25 * len(dict[l][0]))] for l in dict])
+  hEb = array([sorted(dict[l][0])[int(0.75 * len(dict[l][0]))] for l in dict])
+  bStd = (bMedians - lEb, hEb - bMedians)
   ind = arange(N)  # the x locations for the groups
   width = 0.35       # the width of the bars
 
@@ -26,8 +29,10 @@ def histplot(dict, name='untitled', ext='.jpg'):
       yerr=bStd,
       ecolor='k')
 
-  aMedians = [median(dict[l][1]) for l in dict]
-  aStd = [std(dict[l][1]) for l in dict]
+  aMedians = array([median(dict[l][1]) for l in dict])
+  lEa = array([sorted(dict[l][1])[int(0.25 * len(dict[l][1]))] for l in dict])
+  hEa = array([sorted(dict[l][1])[int(0.75 * len(dict[l][1]))] for l in dict])
+  aStd = (aMedians - lEa, hEa - aMedians)
   rects2 = ax.bar(
       ind + width,
       aMedians,

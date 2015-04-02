@@ -21,7 +21,7 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 WHAT = '../SOURCE/'
 sys.path.extend([axe, pystat, cwd, WHAT])
-
+from table import clone
 from sk import rdivDemo
 from sk import scottknott
 from smote import SMOTE
@@ -170,13 +170,81 @@ class fileHandler():
       b = str(int(ext * 100))
       c = "_iP(%s)" % (str(int(_info * 100))) if _prune else ""
       suffix = '_%s%s%s' % (b, a, c)
-      A = " Feature Weighting" if fSel else ""
+      A = ", Feature Weighting" if fSel else ""
       B = ", %s Information Pruning" % (
           str(int(_info * 100)) + r"\%") if _prune else ""
-      comment = "Mutation Probability = %.2f,%s%s" % (ext, A, B)
+      comment = "Mutation Probability = %.2f%s%s" % (ext, A, B)
       return suffix, comment
     else:
       return "_baseline", "Baseline"
+
+  def planner(self, train, test, fSel, ext, _prune, _info):
+    train_df = formatData(train)
+    test_df = formatData(test)
+    actual = test_df[
+        test_df.columns[-2]].astype('float32').tolist()
+    before = predictor(train=train_df, test=test_df).CART()
+#           set_trace()
+    newTab = WHAT(
+        train=None,
+        test=None,
+        train_df=train,
+        bin=True,
+        test_df=test,
+        extent=ext,
+        fSelect=fSel,
+        far=False,
+        infoPrune=_info,
+        method='best',
+        Prune=_prune).main()
+    newTab_df = formatData(newTab)
+    after = predictor(train=train_df, test=newTab_df).CART()
+    return actual, before, after
+
+  def kFoldCrossVal(self, train, fSel, ext, _prune, _info, test=None, k=5):
+    acc, md, auc = [], [], []
+    from random import shuffle
+    if not test:
+      rows = train._rows
+    else:
+      rows = train._rows + test._rows
+#     set_trace()
+    # Training, Validation data
+    from sklearn.cross_validation import KFold
+    kf = KFold(len(rows), n_folds=k)
+    for trnI, tesI in kf:
+      train, test = clone(train, rows=[
+          rows[i].cells for i in trnI]), clone(train, rows=[
+              rows[i].cells for i in tesI])
+      train_df = formatData(train)
+      test_df = formatData(test)
+      actual = test_df[
+          test_df.columns[-2]].astype('float32').tolist()
+      before = predictor(train=train_df, test=test_df).CART()
+      actual, before, after = self.planner(
+          train, test, fSel, ext, _prune, _info)
+      md.append(median(before) / median(after))
+      auc.append(sum(before) / sum(after))
+      acc.extend(
+          [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
+    return acc, auc, md
+
+  def crossval(self, name='Apache', k=5, fSel=True,
+               ext=0.5, _prune=False, _info=0.25, method='best'):
+
+    cv_acc = [name]
+    cv_md = [name]
+    cv_auc = [name]
+    for _ in xrange(k):
+      data = self.explorer(name)
+      train = createTbl([data[0][0] + '/' + data[0][1][1]], isBin=False)
+      test = createTbl([data[0][0] + '/' + data[0][1][0]], isBin=False)
+      a, b, c = self.kFoldCrossVal(
+          train, fSel, ext, _prune, _info, test=test, k=5)
+      cv_acc.extend(a)
+      cv_auc.extend(b)
+      cv_md.extend(c)
+    return cv_acc, cv_auc, cv_md
 
   def main(self, name='Apache', reps=10, fSel=True,
            ext=0.5, _prune=False, _info=0.25):
@@ -185,6 +253,10 @@ class fileHandler():
     out_auc = []
     out_md = []
     out_acc = []
+
+    cv_auc = []
+    cv_md = []
+    cv_acc = []
     for _ in xrange(reps):
       data = self.explorer(name)
 
@@ -196,26 +268,13 @@ class fileHandler():
           #           set_trace()
           train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
           test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
-          train_df = formatData(train)
-          test_df = formatData(test)
-          actual = test_df[
-              test_df.columns[-2]].astype('float32').tolist()
-          before = predictor(train=train_df, test=test_df).CART()
-#           set_trace()
-          newTab = WHAT(
-              train=[d[0] + '/' + d[1][1]],
-              test=[d[0] + '/' + d[1][0]],
-              train_df=train,
-              bin=True,
-              test_df=test,
-              extent=ext,
-              fSelect=fSel,
-              far=False,
-              infoPrune=_info,
-              method='best',
-              Prune=_prune).main()
-          newTab_df = formatData(newTab)
-          after = predictor(train=train_df, test=newTab_df).CART()
+#           if reps % 2 == 0:
+#             a, b, c = self.kFoldCrossVal(train, fSel, ext, _prune, _info, k=5)
+#             cv_acc.extend(a)
+#             cv_md.extend(c)
+#             cv_auc.extend(b)
+          actual, before, after = self.planner(
+              train, test, fSel, ext, _prune, _info)
           cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
           out_auc.append(sum(before) / sum(after))
           out_md.append(median(before) / median(after))
@@ -224,6 +283,10 @@ class fileHandler():
     out_auc.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
     out_md.insert(0, name + self.figname(fSel, ext, _prune, _info)[0])
     out_acc.insert(0, name)
+
+    cv_auc.insert(0, name + ', crossval')
+    cv_md.insert(0, name + ', crossval')
+    cv_acc.insert(0, name + ', crossval')
     return out_acc, out_auc, out_md
     #----------- DEGUB ----------------
 #     set_trace()
@@ -357,12 +420,14 @@ def _test(name='Apache'):
 
   for fSel in [True, False]:
     for ext in [0.25, 0.5, 0.75]:
-      Gain.append(fileHandler().main(
+      md, cv = fileHandler().main(
           name=name,
           ext=ext,
           _prune=False,
           _info=1,
-          fSel=fSel)[2])
+          fSel=fSel)[2:3]
+      medianDelta.append(md)
+
   for _info in [0.25, 0.5, 0.75]:
     for fSel in [True, False]:
       for ext in [0.25, 0.5, 0.75]:
@@ -375,6 +440,37 @@ def _test(name='Apache'):
 
   for g in Gain:
     print(g)
+
+
+def _doCrossVal():
+  cv_acc = []
+  cv_auc = []
+  cv_md = []
+
+  for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+    a, b, c = fileHandler().crossval(name, k=5)
+    cv_acc.append(a)
+    cv_auc.append(b)
+    cv_md.append(c)
+  print(r"""\documentclass{article}
+  \usepackage{colortbl}
+  \usepackage{fullpage}
+  \usepackage[table]{xcolor}
+  \usepackage{picture}
+  \newcommand{\quart}[4]{\begin{picture}(100,6)
+  {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+  \begin{document}
+  """)
+  print(r"\subsubsection*{Accuracy}")
+  rdivDemo(cv_acc, isLatex=True)
+  print(r"\end{tabular}")
+  print(r"\subsubsection*{Area Under Curve}")
+  rdivDemo(cv_auc, isLatex=True)
+  print(r"\end{tabular}")
+  print(r"\subsubsection*{Median Spread}")
+  rdivDemo(cv_md, isLatex=True)
+  print(r'''\end{tabular}
+  \end{document}''')
 
 
 def _testPlot(name='Apache'):
@@ -440,4 +536,4 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  _testPlot()
+  _doCrossVal()

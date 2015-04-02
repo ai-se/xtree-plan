@@ -196,25 +196,26 @@ class run():
     return bef, aft
 
 
-def _test(file):
+def _histplot(file):
   files = {}
-  for name in ['ivy',
-               'ant', 'camel',
+  for name in ['ant', 'camel', 'ivy',
                'jedit', 'poi', 'log4j',
                'lucene', 'pbeans', 'velocity',
-               'xalan', 'xerces']:
+               'xalan', 'forrest']:
     """
     Histograms
     """
     files.update({name: run(
         dataName=name,
         extent=0.75,
-        reps=5,
+        reps=10,
         fSelect=True,
         Prune=False,
         infoPrune=0.75).before_after()})
+#   set_trace()
   histplot(files, name='Histogram')
 
+#  def _testQuartiles(file):
 
 #   """
 #   Mutation without Feature Selection
@@ -406,5 +407,5 @@ def _test(file):
 #       infoPrune=0.75).go()
 
 if __name__ == '__main__':
-  _test('ant')
+  _histplot('ant')
 #   eval(cmd())
