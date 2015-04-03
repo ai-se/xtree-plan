@@ -232,9 +232,9 @@ class fileHandler():
   def crossval(self, name='Apache', k=5, fSel=True,
                ext=0.5, _prune=False, _info=0.25, method='best'):
 
-    cv_acc = [name]
-    cv_md = [name]
-    cv_auc = [name]
+    cv_acc = [name + self.figname(fSel, ext, _prune, _info)[0]]
+    cv_md = [name + self.figname(fSel, ext, _prune, _info)[0]]
+    cv_auc = [name + self.figname(fSel, ext, _prune, _info)[0]]
     for _ in xrange(k):
       data = self.explorer(name)
       train = createTbl([data[0][0] + '/' + data[0][1][1]], isBin=False)
@@ -404,39 +404,57 @@ def overlayCurve(
   plt.close()
 
 
-def _test(name='Apache'):
+def _test(name='Apache', doWhat='Accuracy'):
   Accuracy = []
 #   preamble1()
 #   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
   Gain = []
   medianDelta = []
 
-  Gain.append(fileHandler().main(
-      name=name,
-      ext=0,
-      _prune=False,
-      _info=1,
-      fSel=False)[2])
+  a, b, c = fileHandler().crossval(name, k=5,
+                                   name=name,
+                                   ext=0,
+                                   _prune=False,
+                                   _info=1,
+                                   fSel=False)
+  if doWhat == 'Accuracy':
+    print(a)
+  elif doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
 
   for fSel in [True, False]:
     for ext in [0.25, 0.5, 0.75]:
-      md, cv = fileHandler().main(
-          name=name,
-          ext=ext,
-          _prune=False,
-          _info=1,
-          fSel=fSel)[2:3]
-      medianDelta.append(md)
+      a, b, c = fileHandler().crossval(name, k=5,
+                                       name=name,
+                                       ext=ext,
+                                       _prune=False,
+                                       _info=1,
+                                       fSel=fSel)
+      if doWhat == 'Accuracy':
+        print(a)
+      elif doWhat == 'AUC':
+        print(b)
+      elif doWhat == 'Median':
+        print(c)
 
   for _info in [0.25, 0.5, 0.75]:
     for fSel in [True, False]:
       for ext in [0.25, 0.5, 0.75]:
-        Gain.append(fileHandler().main(
-            name=name,
-            ext=ext,
-            _prune=True,
-            _info=_info,
-            fSel=fSel)[2])
+        fileHandler().crossval(name, k=5,
+                               name=name,
+                               ext=ext,
+                               _prune=True,
+                               _info=_info,
+                               fSel=fSel)
+
+      if doWhat == 'Accuracy':
+        print(a)
+      elif doWhat == 'AUC':
+        print(b)
+      elif doWhat == 'Median':
+        print(c)
 
   for g in Gain:
     print(g)
