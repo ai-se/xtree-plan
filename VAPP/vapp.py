@@ -260,7 +260,7 @@ class fileHandler():
       train = createTbl([data[0][0] + '/' + data[0][1][1]], isBin=False)
       test = createTbl([data[0][0] + '/' + data[0][1][0]], isBin=False)
       a, b, c = self.kFoldCrossVal(
-          train, fSel, ext, _prune, _info, test=test, k=5)
+          train, fSel, ext, _prune, _info, test=test, k=k)
       cv_acc.extend(a)
       cv_auc.extend(b)
       cv_md.extend(c)
@@ -440,14 +440,12 @@ def _test(name='Apache', doWhat='Accuracy'):
 
   for fSel in [True, False]:
     for ext in [0.25, 0.5, 0.75]:
-      a, b, c = fileHandler().crossval(name, k=5,
+      a, b, c = fileHandler().crossval(name, k=10,
                                        ext=ext,
                                        _prune=False,
                                        _info=1,
                                        fSel=fSel)
-      if doWhat == 'Accuracy':
-        print(a)
-      elif doWhat == 'AUC':
+      if doWhat == 'AUC':
         print(b)
       elif doWhat == 'Median':
         print(c)
@@ -455,19 +453,16 @@ def _test(name='Apache', doWhat='Accuracy'):
   for _info in [0.25, 0.5, 0.75]:
     for fSel in [True, False]:
       for ext in [0.25, 0.5, 0.75]:
-        a,b,c = fileHandler().crossval(name, k=5,
-                               ext=ext,
-                               _prune=True,
-                               _info=_info,
-                               fSel=fSel)
+        a, b, c = fileHandler().crossval(name, k=10,
+                                         ext=ext,
+                                         _prune=True,
+                                         _info=_info,
+                                         fSel=fSel)
 
-      if doWhat == 'Accuracy':
-        print(a)
-      elif doWhat == 'AUC':
+      if doWhat == 'AUC':
         print(b)
       elif doWhat == 'Median':
         print(c)
-
 
 
 def _doCrossVal():
@@ -564,4 +559,5 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  eval(cmd())
+  _test(name='Apache', doWhat='Median')
+#   eval(cmd())
