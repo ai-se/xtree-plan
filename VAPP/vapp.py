@@ -15,7 +15,6 @@ import pandas
 import sys
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.decomposition.tests.test_nmf import random_state
 # Update PYTHONPATH
 HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
@@ -242,15 +241,15 @@ class fileHandler():
       actual = test_df[
           test_df.columns[-2]].astype('float32').tolist()
       before = predictor(train=train_df, test=test_df).rforest()
-#       actual, before, after = self.planner(
-#           train, test, fSel, ext, _prune, _info)
-#       md.append(median(before) / median(after))
-#       auc.append(sum(before) / sum(after))
+      actual, before, after = self.planner(
+          train, test, fSel, ext, _prune, _info)
+      md.append(median(before) / median(after))
+      auc.append(sum(before) / sum(after))
       acc.extend(
           [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
     return acc, auc, md
 
-  def crossval(self, name='Apache', k=5, fSel=True,
+  def crossval(self, name, k=5, fSel=True,
                ext=0.5, _prune=False, _info=0.25, method='best'):
 
     cv_acc = [name + self.figname(fSel, ext, _prune, _info)[0]]
@@ -428,7 +427,6 @@ def _test(name='Apache', doWhat='Accuracy'):
   medianDelta = []
 
   a, b, c = fileHandler().crossval(name, k=5,
-                                   name=name,
                                    ext=0,
                                    _prune=False,
                                    _info=1,
@@ -443,7 +441,6 @@ def _test(name='Apache', doWhat='Accuracy'):
   for fSel in [True, False]:
     for ext in [0.25, 0.5, 0.75]:
       a, b, c = fileHandler().crossval(name, k=5,
-                                       name=name,
                                        ext=ext,
                                        _prune=False,
                                        _info=1,
@@ -458,8 +455,7 @@ def _test(name='Apache', doWhat='Accuracy'):
   for _info in [0.25, 0.5, 0.75]:
     for fSel in [True, False]:
       for ext in [0.25, 0.5, 0.75]:
-        fileHandler().crossval(name, k=5,
-                               name=name,
+        a,b,c = fileHandler().crossval(name, k=5,
                                ext=ext,
                                _prune=True,
                                _info=_info,
@@ -472,8 +468,6 @@ def _test(name='Apache', doWhat='Accuracy'):
       elif doWhat == 'Median':
         print(c)
 
-  for g in Gain:
-    print(g)
 
 
 def _doCrossVal():
@@ -570,4 +564,4 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  _test()
+  eval(cmd())
