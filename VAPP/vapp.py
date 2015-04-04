@@ -250,9 +250,13 @@ class fileHandler():
     rows = data._rows
     shuffle(rows)
     sqe = chunks(rows, int(len(rows) / k))
-    sqe = sqe[:-2] + [sqe[-2] + sqe[-1]]
+    if len(sqe) > k:
+      sqe = sqe[:-2] + [sqe[-2] + sqe[-1]]
     for indx in xrange(k):
-      testRows = sqe.pop(indx)
+      try:
+        testRows = sqe.pop(indx)
+      except:
+        set_trace()
       trainRows = self.flatten([s for s in sqe if not s == testRows])
       train, test = clone(data, rows=[
           i.cells for i in trainRows]), clone(data, rows=[
@@ -650,5 +654,5 @@ def _testPlot(name='Apache'):
 
 if __name__ == '__main__':
   #   _testPlot()
-  #   _test(name='Apache', doWhat='AUC')
-  eval(cmd())
+  _test('BDBC', 'Median')
+#   eval(cmd())
