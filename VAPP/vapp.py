@@ -14,6 +14,8 @@ from subprocess import PIPE
 import pandas
 import sys
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.decomposition.tests.test_nmf import random_state
 # Update PYTHONPATH
 HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
@@ -60,14 +62,33 @@ class predictor():
           resample=self.duplicate)
 
     if not self.tuning:
-      clf = DecisionTreeRegressor()
+      clf = DecisionTreeRegressor(random_state=1)
     else:
       clf = DecisionTreeRegressor(max_depth=int(self.tunings[0]),
                                   min_samples_split=int(self.tunings[1]),
                                   min_samples_leaf=int(self.tunings[2]),
                                   max_features=float(self.tunings[3] / 100),
                                   max_leaf_nodes=int(self.tunings[4]),
-                                  criterion='entropy')
+                                  criterion='entropy', random_state=1)
+    features = self.train.columns[:-2]
+    klass = self.train[self.train.columns[-2]]
+    # set_trace()
+    clf.fit(self.train[features].astype('float32'), klass.astype('float32'))
+    preds = clf.predict(
+        self.test[self.test.columns[:-2]].astype('float32')).tolist()
+    return preds
+
+  def rforest(self):
+    "  RF"
+    # Apply random forest Classifier to predict the number of bugs.
+    if not self.tuning:
+      clf = RandomForestRegressor(random_state=1)
+    else:
+      clf = RandomForestRegressor(n_estimators=int(tunings[0]),
+                                  max_features=tunings[1] / 100,
+                                  min_samples_leaf=int(tunings[2]),
+                                  min_samples_split=int(tunings[3]),
+                                  random_state=1)
     features = self.train.columns[:-2]
     klass = self.train[self.train.columns[-2]]
     # set_trace()
@@ -220,11 +241,11 @@ class fileHandler():
       test_df = formatData(test)
       actual = test_df[
           test_df.columns[-2]].astype('float32').tolist()
-      before = predictor(train=train_df, test=test_df).CART()
-      actual, before, after = self.planner(
-          train, test, fSel, ext, _prune, _info)
-      md.append(median(before) / median(after))
-      auc.append(sum(before) / sum(after))
+      before = predictor(train=train_df, test=test_df).rforest()
+#       actual, before, after = self.planner(
+#           train, test, fSel, ext, _prune, _info)
+#       md.append(median(before) / median(after))
+#       auc.append(sum(before) / sum(after))
       acc.extend(
           [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
     return acc, auc, md
@@ -268,11 +289,6 @@ class fileHandler():
           #           set_trace()
           train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
           test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
-#           if reps % 2 == 0:
-#             a, b, c = self.kFoldCrossVal(train, fSel, ext, _prune, _info, k=5)
-#             cv_acc.extend(a)
-#             cv_md.extend(c)
-#             cv_auc.extend(b)
           actual, before, after = self.planner(
               train, test, fSel, ext, _prune, _info)
           cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
@@ -466,29 +482,29 @@ def _doCrossVal():
   cv_md = []
 
   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-    a, b, c = fileHandler().crossval(name, k=5)
+    a, _, __ = fileHandler().crossval(name, k=5)
     cv_acc.append(a)
-    cv_auc.append(b)
-    cv_md.append(c)
-  print(r"""\documentclass{article}
-  \usepackage{colortbl}
-  \usepackage{fullpage}
-  \usepackage[table]{xcolor}
-  \usepackage{picture}
-  \newcommand{\quart}[4]{\begin{picture}(100,6)
-  {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
-  \begin{document}
-  """)
-  print(r"\subsubsection*{Accuracy}")
-  rdivDemo(cv_acc, isLatex=True)
-  print(r"\end{tabular}")
-  print(r"\subsubsection*{Area Under Curve}")
-  rdivDemo(cv_auc, isLatex=True)
-  print(r"\end{tabular}")
-  print(r"\subsubsection*{Median Spread}")
-  rdivDemo(cv_md, isLatex=True)
-  print(r'''\end{tabular}
-  \end{document}''')
+#     cv_auc.append(b)
+#     cv_md.append(c)
+#   print(r"""\documentclass{article}
+#   \usepackage{colortbl}
+#   \usepackage{fullpage}
+#   \usepackage[table]{xcolor}
+#   \usepackage{picture}
+#   \newcommand{\quart}[4]{\begin{picture}(100,6)
+# {\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+#   \begin{document}
+#   """)
+#   print(r"\subsubsection*{Accuracy}")
+  rdivDemo(cv_acc, isLatex=False)
+#   print(r"\end{tabular}")
+#   print(r"\subsubsection*{Area Under Curve}")
+#   rdivDemo(cv_auc, isLatex=True)
+#   print(r"\end{tabular}")
+#   print(r"\subsubsection*{Median Spread}")
+#   rdivDemo(cv_md, isLatex=True)
+#   print(r'''\end{tabular}
+#   \end{document}''')
 
 
 def _testPlot(name='Apache'):
@@ -554,4 +570,4 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  _doCrossVal()
+  _test()
