@@ -165,6 +165,14 @@ class fileHandler():
         datasets.append([dirpath, filenames])
     return datasets
 
+  def explorer2(self, name):
+    files = [filenames for (
+        dirpath,
+        dirnames,
+        filenames) in walk(self.dir)][0]
+    for f in files:
+      if name in f:
+        return [self.dir + f]
 #     return files, [self.file2pandas(dir + file) for file in files]
 
   def preamble(self):
@@ -186,24 +194,24 @@ class fileHandler():
 
   def figname(self, fSel, ext, _prune, _info):
     if ext:
-      a = '_w' if fSel else ""
+      a = '\_w' if fSel else ""
       b = str(int(ext * 100))
-      c = "_iP(%s)" % (str(int(_info * 100))) if _prune else ""
-      suffix = '_%s%s%s' % (b, a, c)
+      c = "\_iP(%s)" % (str(int(_info * 100))) if _prune else ""
+      suffix = '\_%s%s%s' % (b, a, c)
       A = ", Feature Weighting" if fSel else ""
       B = ", %s Information Pruning" % (
           str(int(_info * 100)) + r"\%") if _prune else ""
       comment = "Mutation Probability = %.2f%s%s" % (ext, A, B)
       return suffix, comment
     else:
-      return "_baseline", "Baseline"
+      return "\_baseline", "Baseline"
 
-  def planner(self, train, test, fSel, ext, _prune, _info):
+  def planner(self, train, test, fSel, ext, _prune, _info, method):
     train_df = formatData(train)
     test_df = formatData(test)
     actual = test_df[
         test_df.columns[-2]].astype('float32').tolist()
-    before = predictor(train=train_df, test=test_df).CART()
+    before = predictor(train=train_df, test=test_df).rforest()
 #           set_trace()
     newTab = WHAT(
         train=None,
@@ -215,56 +223,74 @@ class fileHandler():
         fSelect=fSel,
         far=False,
         infoPrune=_info,
-        method='best',
+        method=method,
         Prune=_prune).main()
     newTab_df = formatData(newTab)
-    after = predictor(train=train_df, test=newTab_df).CART()
+    after = predictor(train=train_df, test=newTab_df).rforest()
     return actual, before, after
 
-  def kFoldCrossVal(self, train, fSel, ext, _prune, _info, test=None, k=5):
+  def flatten(self, x):
+    """
+    Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
+    and returns a single list [a,b,c,d,e,f]
+    """
+    result = []
+    for el in x:
+      if hasattr(el, "__iter__") and not isinstance(el, basestring):
+        result.extend(self.flatten(el))
+      else:
+        result.append(el)
+    return result
+
+  def kFoldCrossVal(self, data, fSel, ext, _prune, _info, method, k=5):
     acc, md, auc = [], [], []
-    from random import shuffle
-    if not test:
-      rows = train._rows
-    else:
-      rows = train._rows + test._rows
-#     set_trace()
-    # Training, Validation data
-    from sklearn.cross_validation import KFold
-    kf = KFold(len(rows), n_folds=k)
-    for trnI, tesI in kf:
-      train, test = clone(train, rows=[
-          rows[i].cells for i in trnI]), clone(train, rows=[
-              rows[i].cells for i in tesI])
+    bef, aft = [], []
+    chunks = lambda l, n: [l[i:i + n] for i in range(0, len(l), int(n))]
+    from random import shuffle, sample
+    rows = data._rows
+    shuffle(rows)
+    sqe = chunks(rows, int(len(rows) / k))
+    sqe = sqe[:-2] + [sqe[-2] + sqe[-1]]
+    for indx in xrange(k):
+      testRows = sqe.pop(indx)
+      trainRows = self.flatten([s for s in sqe if not s == testRows])
+      train, test = clone(data, rows=[
+          i.cells for i in trainRows]), clone(data, rows=[
+              i.cells for i in testRows])
+
       train_df = formatData(train)
       test_df = formatData(test)
       actual = test_df[
           test_df.columns[-2]].astype('float32').tolist()
       before = predictor(train=train_df, test=test_df).rforest()
-      actual, before, after = self.planner(
-          train, test, fSel, ext, _prune, _info)
-      md.append(median(before) / median(after))
-      auc.append(sum(before) / sum(after))
+      _, __, after = self.planner(
+          train, test, fSel, ext, _prune, _info, method)
+      bef.extend(before)
+      aft.extend(after)
+      md.append((median(before) - median(after)) * 100 / median(before))
+      auc.append((sum(before) - sum(after)) * 100 / sum(before))
       acc.extend(
           [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-    return acc, auc, md
+      sqe.insert(k, testRows)
+    return acc, auc, md, bef, aft
 
   def crossval(self, name, k=5, fSel=True,
                ext=0.5, _prune=False, _info=0.25, method='best'):
-
+    before, after = [], []
     cv_acc = [name + self.figname(fSel, ext, _prune, _info)[0]]
     cv_md = [name + self.figname(fSel, ext, _prune, _info)[0]]
     cv_auc = [name + self.figname(fSel, ext, _prune, _info)[0]]
     for _ in xrange(k):
-      data = self.explorer(name)
-      train = createTbl([data[0][0] + '/' + data[0][1][1]], isBin=False)
-      test = createTbl([data[0][0] + '/' + data[0][1][0]], isBin=False)
-      a, b, c = self.kFoldCrossVal(
-          train, fSel, ext, _prune, _info, test=test, k=k)
+      proj = self.explorer2(name)
+      data = createTbl(proj, isBin=False)
+      a, b, c, bef, aft = self.kFoldCrossVal(
+          data, fSel, ext, _prune, _info, k=k, method=method)
       cv_acc.extend(a)
       cv_auc.extend(b)
       cv_md.extend(c)
-    return cv_acc, cv_auc, cv_md
+      before.extend(bef)
+      after.extend(aft)
+    return cv_acc, cv_auc, cv_md, before, after
 
   def main(self, name='Apache', reps=10, fSel=True,
            ext=0.5, _prune=False, _info=0.25):
@@ -422,15 +448,15 @@ def overlayCurve(
 def _test(name='Apache', doWhat='Accuracy'):
   Accuracy = []
 #   preamble1()
-#   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
   Gain = []
   medianDelta = []
-
-  a, b, c = fileHandler().crossval(name, k=5,
-                                   ext=0,
-                                   _prune=False,
-                                   _info=1,
-                                   fSel=False)
+#   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+  "Baseline"
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=False)
   if doWhat == 'Accuracy':
     print(a)
   elif doWhat == 'AUC':
@@ -438,31 +464,95 @@ def _test(name='Apache', doWhat='Accuracy'):
   elif doWhat == 'Median':
     print(c)
 
-  for fSel in [True, False]:
-    for ext in [0.25, 0.5, 0.75]:
-      a, b, c = fileHandler().crossval(name, k=10,
-                                       ext=ext,
-                                       _prune=False,
-                                       _info=1,
-                                       fSel=fSel)
-      if doWhat == 'AUC':
-        print(b)
-      elif doWhat == 'Median':
-        print(c)
+  "No Feature Weighting"
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.25,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=False)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.5,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=False)
 
-  for _info in [0.25, 0.5, 0.75]:
-    for fSel in [True, False]:
-      for ext in [0.25, 0.5, 0.75]:
-        a, b, c = fileHandler().crossval(name, k=10,
-                                         ext=ext,
-                                         _prune=True,
-                                         _info=_info,
-                                         fSel=fSel)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.75,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=False)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
 
-      if doWhat == 'AUC':
-        print(b)
-      elif doWhat == 'Median':
-        print(c)
+  "Feature Weighting"
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.25,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=True)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.5,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=True)
+
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.75,
+                                          _prune=False,
+                                          _info=1,
+                                          fSel=True)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+
+  "Info Prune (25%)"
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.25,
+                                          _prune=True,
+                                          _info=0.25,
+                                          fSel=True)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.5,
+                                          _prune=True,
+                                          _info=0.25,
+                                          fSel=True)
+
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
+  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+                                          ext=0.75,
+                                          _prune=True,
+                                          _info=0.25,
+                                          fSel=True)
+  if doWhat == 'AUC':
+    print(b)
+  elif doWhat == 'Median':
+    print(c)
 
 
 def _doCrossVal():
@@ -502,56 +592,56 @@ def _testPlot(name='Apache'):
   figname = fileHandler().figname
 #   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
 #     print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
-  before, baseline = fileHandler().mainraw(
-      name=name,
+  _, __, ___, before, baseline = fileHandler().crossval(
+      name=name, k=5,
       ext=0,
       _prune=False,
       _info=1,
       fSel=False)
 
-  _, best1 = fileHandler().mainraw(
-      name=name,
+  _, _, __, ___, best1 = fileHandler().crossval(
+      name=name, k=5,
       method='mean',
       ext=0.75,
       _prune=True,
       _info=0.25,
       fSel=False)
 
-  _, best2 = fileHandler().mainraw(
-      name=name,
+  _, _, __, ___, best2 = fileHandler().crossval(
+      name=name, k=5,
       ext=0.75,
       method='median',
       _prune=True,
       _info=0.25,
       fSel=False)
 
-  _, best3 = fileHandler().mainraw(
-      name=name,
+  _, _, __, ___, best3 = fileHandler().crossval(
+      name=name, k=5,
       ext=0.75,
       method='any',
       _prune=True,
       _info=0.25,
       fSel=False)
 
-  _, best4 = fileHandler().mainraw(
-      name=name,
+  _, _, __, ___, best4 = fileHandler().crossval(
+      name=name, k=5,
       ext=0.75,
       method='best',
       _prune=True,
       _info=0.25,
       fSel=False)
-  print("Baseline,mean,median,any,best")
-  for b, me, md, an, be in zip(baseline[0], best1[0], best2[0], best3[0], best4[0]):
-    print("%0.2f,%0.2f,%0.2f,%0.2f,%0.2f" % (b, me, md, an, be))
-#     overlayCurve([best1[0], 'mean'],
-#                  [best2[0], 'median'],
-#                  [best3[0], 'random'],
-#                  [best4[0], 'best'],
-#                  [baseline[0], 'baseline'],
-#                  fname=name,
-#                  ext='.jpg',
-#                  textbox=False,
-#                  string=None)
+#   print("Baseline,mean,median,any,best")
+#   for b, me, md, an, be in zip(baseline[0], best1[0], best2[0], best3[0], best4[0]):
+#   print("%0.2f,%0.2f,%0.2f,%0.2f,%0.2f" % (b, me, md, an, be))
+  overlayCurve([best1, 'mean'],
+               [best2, 'median'],
+               [best3, 'random'],
+               [best4, 'best'],
+               [baseline, 'baseline'],
+               fname=name,
+               ext='.jpg',
+               textbox=False,
+               string=None)
 #     print(
 #         "\\subfloat[][]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
 #         (name + '.jpg'))
@@ -559,5 +649,6 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  _test(name='Apache', doWhat='Median')
-#   eval(cmd())
+  #   _testPlot()
+  #   _test(name='Apache', doWhat='AUC')
+  eval(cmd())
