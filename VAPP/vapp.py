@@ -654,5 +654,5 @@ def _testPlot(name='Apache'):
 
 if __name__ == '__main__':
   #   _testPlot()
-  _test('BDBC', 'Median')
-#   eval(cmd())
+#  _test('BDBC', 'Median')
+   eval(cmd())
