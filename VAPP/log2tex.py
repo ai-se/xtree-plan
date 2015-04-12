@@ -1,8 +1,11 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
+
 from os import environ, getcwd
-import sys
+from os import walk
 from pdb import set_trace
+import sys
+
 
 # Update PYTHONPATH
 HOME = environ['HOME']
@@ -12,7 +15,6 @@ cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
 from sk import rdivDemo
-from os import walk
 
 
 class type1():
@@ -52,7 +54,7 @@ class type1():
     rdivDemo(lst, isLatex=True)
 
   def log2list(self):
-    dir = './log'
+    dir = './log/AUC/'
     self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
@@ -97,10 +99,10 @@ class type2():
 
   def list2sk(self, lst):
     print("\section*{}")
-    rdivDemo(lst, isLatex=True)
+    rdivDemo(lst, isLatex=False)
 
   def log2list(self):
-    dir = './log'
+    dir = './log/Accuracy/'
     self.printHeader()
     files = [filenames for (
         dirpath,
@@ -110,7 +112,7 @@ class type2():
         dirpath,
         dirnames,
         filenames) in walk(dir)][1:]
-#     set_trace()
+    set_trace()
     for project, folder in zip(files, dirs):
       lst = []
 #       set_trace()

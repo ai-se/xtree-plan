@@ -1,20 +1,34 @@
 #! /Users/rkrsn/miniconda/bin/python
-from __future__ import print_function
 from __future__ import division
+from __future__ import print_function
+
 from os import environ
 from os import getcwd
-from os import walk
 from os import system
+from os import walk
 from pdb import set_trace
-from random import uniform as rand
 from random import randint as randi
 from random import sample
-from subprocess import call
+from random import uniform as rand
 from subprocess import PIPE
-import pandas
+from subprocess import call
 import sys
-from sklearn.tree import DecisionTreeRegressor
+
+from numpy import median
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
+import pandas
+
+from Prediction import CART as cart
+from Prediction import formatData
+from WHAT import treatments as WHAT
+from cliffsDelta import cliffs
+from demos import cmd
+from methods1 import *
+from sk import rdivDemo
+from sk import scottknott
+from smote import SMOTE
+from table import clone
 # Update PYTHONPATH
 HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
@@ -22,17 +36,6 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 WHAT = '../SOURCE/'
 sys.path.extend([axe, pystat, cwd, WHAT])
-from table import clone
-from sk import rdivDemo
-from sk import scottknott
-from smote import SMOTE
-from methods1 import *
-from WHAT import treatments as WHAT
-from Prediction import formatData
-from Prediction import CART as cart
-from cliffsDelta import cliffs
-from demos import cmd
-from numpy import median
 
 
 class predictor():
@@ -242,7 +245,7 @@ class fileHandler():
         result.append(el)
     return result
 
-  def kFoldCrossVal(self, data, fSel, ext, _prune, _info, method, k=5):
+  def kFoldCrossVal(self, data, fSel, ext, _prune, _info, method, k=2):
     acc, md, auc = [], [], []
     bef, aft = [], []
     chunks = lambda l, n: [l[i:i + n] for i in range(0, len(l), int(n))]
@@ -278,13 +281,13 @@ class fileHandler():
       sqe.insert(k, testRows)
     return acc, auc, md, bef, aft
 
-  def crossval(self, name, k=5, fSel=True,
+  def crossval(self, name, k=2, fSel=True,
                ext=0.5, _prune=False, _info=0.25, method='best'):
     before, after = [], []
     cv_acc = [name + self.figname(fSel, ext, _prune, _info)[0]]
     cv_md = [name + self.figname(fSel, ext, _prune, _info)[0]]
     cv_auc = [name + self.figname(fSel, ext, _prune, _info)[0]]
-    for _ in xrange(k):
+    for _ in xrange(24):
       proj = self.explorer2(name)
       data = createTbl(proj, isBin=False)
       a, b, c, bef, aft = self.kFoldCrossVal(
@@ -456,7 +459,7 @@ def _test(name='Apache', doWhat='Accuracy'):
   medianDelta = []
 #   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
   "Baseline"
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0,
                                           _prune=False,
                                           _info=1,
@@ -469,7 +472,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(c)
 
   "No Feature Weighting"
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.25,
                                           _prune=False,
                                           _info=1,
@@ -478,7 +481,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.5,
                                           _prune=False,
                                           _info=1,
@@ -488,7 +491,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.75,
                                           _prune=False,
                                           _info=1,
@@ -499,7 +502,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(c)
 
   "Feature Weighting"
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.25,
                                           _prune=False,
                                           _info=1,
@@ -508,7 +511,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.5,
                                           _prune=False,
                                           _info=1,
@@ -518,7 +521,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.75,
                                           _prune=False,
                                           _info=1,
@@ -529,7 +532,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(c)
 
   "Info Prune (25%)"
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.25,
                                           _prune=True,
                                           _info=0.25,
@@ -538,7 +541,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.5,
                                           _prune=True,
                                           _info=0.25,
@@ -548,7 +551,7 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c, _, __ = fileHandler().crossval(name, k=5,
+  a, b, c, _, __ = fileHandler().crossval(name, k=2,
                                           ext=0.75,
                                           _prune=True,
                                           _info=0.25,
@@ -565,7 +568,7 @@ def _doCrossVal():
   cv_md = []
 
   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-    a, _, __ = fileHandler().crossval(name, k=5)
+    a, _, __ = fileHandler().crossval(name, k=2)
     cv_acc.append(a)
 #     cv_auc.append(b)
 #     cv_md.append(c)
@@ -597,14 +600,14 @@ def _testPlot(name='Apache'):
 #   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
 #     print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
   _, __, ___, before, baseline = fileHandler().crossval(
-      name=name, k=5,
+      name=name, k=2,
       ext=0,
       _prune=False,
       _info=1,
       fSel=False)
 
   _, _, __, ___, best1 = fileHandler().crossval(
-      name=name, k=5,
+      name=name, k=2,
       method='mean',
       ext=0.75,
       _prune=True,
@@ -612,7 +615,7 @@ def _testPlot(name='Apache'):
       fSel=False)
 
   _, _, __, ___, best2 = fileHandler().crossval(
-      name=name, k=5,
+      name=name, k=2,
       ext=0.75,
       method='median',
       _prune=True,
@@ -620,7 +623,7 @@ def _testPlot(name='Apache'):
       fSel=False)
 
   _, _, __, ___, best3 = fileHandler().crossval(
-      name=name, k=5,
+      name=name, k=2,
       ext=0.75,
       method='any',
       _prune=True,
@@ -628,7 +631,7 @@ def _testPlot(name='Apache'):
       fSel=False)
 
   _, _, __, ___, best4 = fileHandler().crossval(
-      name=name, k=5,
+      name=name, k=2,
       ext=0.75,
       method='best',
       _prune=True,
@@ -654,5 +657,5 @@ def _testPlot(name='Apache'):
 
 if __name__ == '__main__':
   #   _testPlot()
-#  _test('BDBC', 'Median')
-   eval(cmd())
+  #  _test('BDBC', 'Median')
+  eval(cmd())
