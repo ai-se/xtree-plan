@@ -10,6 +10,7 @@ from pdb import set_trace
 from random import randint as randi
 from random import sample
 from random import uniform as rand
+from random import shuffle
 from subprocess import PIPE
 from subprocess import call
 import sys
@@ -118,6 +119,7 @@ class fileHandler():
     header = rows[0].strip().split(',')  # Get the headers
     body = [[1 if r == 'Y' else 0 if r == 'N' else r for r in row.strip().split(',')]
             for row in rows[1:]]
+    shuffle(body)
     if save:
       "Format the headers by prefixing '$' and '<'"
       header = ['$' + h for h in header]
