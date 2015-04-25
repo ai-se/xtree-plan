@@ -312,7 +312,6 @@ class fileHandler():
     out_acc = [name]
     for _ in xrange(reps):
       data = self.explorer(name)
-
       # self.preamble()
       for d in data:
         #       print("\\subsection{%s}\n \\begin{figure}\n \\centering" %
@@ -324,8 +323,8 @@ class fileHandler():
           actual, before, after = self.planner(
               train, test, fSel, ext, _prune, _info, method='best')
           cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
-          out_auc.append((sum(before) - sum(after)) * 100 / sum(before))
-          out_md.append((median(before) - median(after)) * 100 / median(before))
+          out_auc.append(sum(after) / sum(before))
+          out_md.append(median(after)) / median(before))
           out_acc.extend(
               [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
     return out_acc, out_auc, out_md
@@ -345,7 +344,7 @@ class fileHandler():
           test_df = formatData(test)
           actual = test_df[
               test_df.columns[-2]].astype('float32').tolist()
-          before.append(predictor(train=train_df, test=test_df).CART())
+          before.append(predictor(train=train_df, test=test_df).rforest())
   #           set_trace()
           newTab = WHAT(
               train=[d[0] + '/' + d[1][1]],
@@ -360,7 +359,7 @@ class fileHandler():
               method=method,
               Prune=_prune).main()
           newTab_df = formatData(newTab)
-          after.append(predictor(train=train_df, test=newTab_df).CART())
+          after.append(predictor(train=train_df, test=newTab_df).rforest())
     return before, after
 
 
@@ -385,25 +384,28 @@ def postabmle():
 
 
 def overlayCurve(
-        w, x, y, z, base, fname=None, ext=None, textbox=False, string=None):
-  from numpy import linspace
+        # w, x, y, z, base, fname=None, ext=None, textbox=False, string=None):
+        x, y, base, fname=None, ext=None, textbox=False, string=None):
+  from numpy import linspace, cumsum
   import matplotlib.pyplot as plt
   import matplotlib.lines as mlines
+  from matplotlib.backends.backend_pdf import PdfPages
+  pp = PdfPages(fname + '.pdf')
 
   fname = 'Untitled' if not fname else fname
   ext = '.jpg' if not ext else ext
   fig = plt.figure()
   ax = fig.add_axes([0.1, 0.1, 0.6, 0.75])
-  wlim = linspace(1, len(w[0]), len(w[0]))
+#   wlim = linspace(1, len(w[0]), len(w[0]))
   xlim = linspace(1, len(x[0]), len(x[0]))
   ylim = linspace(1, len(y[0]), len(y[0]))
-  zlim = linspace(1, len(z[0]), len(z[0]))
+  blim = linspace(1, len(base[0]), len(base[0]))
   # plt.subplot(221)
-  ax.plot(xlim, sorted(w[0]), 'r')
-  ax.plot(ylim, sorted(x[0]), 'g')
-  ax.plot(xlim, sorted(y[0]), 'm')
-  ax.plot(ylim, sorted(z[0]), 'b')
-  ax.plot(zlim, sorted(base[0]), 'k')
+#   ax.plot(xlim, sorted(w[0]), 'r')
+  ax.plot(ylim, sorted(y[0]), 'b')
+  ax.plot(xlim, sorted(x[0]), 'r')
+#   ax.plot(ylim, sorted(z[0]), 'b')
+  ax.plot(blim, sorted(base[0]), 'k')
 
   # add a 'best fit' line
   ax.set_xlabel('Test Cases', size=18)
@@ -417,13 +419,13 @@ def overlayCurve(
   black_line = mlines.Line2D([], [], color='k', marker='*',
                              markersize=0, label='Baseline')
   blue_line = mlines.Line2D([], [], color='b', marker='*',
-                            markersize=0, label=z[1])
-  meg_line = mlines.Line2D([], [], color='m', marker='*',
-                           markersize=0, label=y[1])
-  green_line = mlines.Line2D([], [], color='g', marker='*',
-                             markersize=0, label=x[1])
+                            markersize=0, label='Best')
+#   meg_line = mlines.Line2D([], [], color='m', marker='*',
+#                            markersize=0, label=y[1])
+#   green_line = mlines.Line2D([], [], color='g', marker='*',
+#                              markersize=0, label=x[1])
   red_line = mlines.Line2D([], [], color='r', marker='*',
-                           markersize=0, label=w[1])
+                           markersize=0, label='Worst')
   plt.legend(
       bbox_to_anchor=(
           1.05,
@@ -432,17 +434,19 @@ def overlayCurve(
       borderaxespad=0.,
       handles=[black_line,
                red_line,
-               blue_line,
-               meg_line,
-               green_line,
+               blue_line
+               #                meg_line,
+               #                green_line,
                ])
   if textbox:
     "Textbox"
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     ax.text(0.05, 0.95, string, fontsize=14,
             verticalalignment='top', bbox=props)
-  plt.savefig('./_fig/' + fname + ext)
-  plt.close()
+  pp.savefig()
+  pp.close()
+#   plt.savefig('./_fig/' + fname + ext)
+#   plt.close()
 
 
 def _test(name='Apache', doWhat='Accuracy'):
@@ -452,11 +456,11 @@ def _test(name='Apache', doWhat='Accuracy'):
   medianDelta = []
 #   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
   "Baseline"
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=False)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0,
+                               _prune=False,
+                               _info=1,
+                               fSel=False)
   if doWhat == 'Accuracy':
     print(a)
   elif doWhat == 'AUC':
@@ -465,90 +469,90 @@ def _test(name='Apache', doWhat='Accuracy'):
     print(c)
 
   "No Feature Weighting"
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.25,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=False)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.25,
+                               _prune=False,
+                               _info=1,
+                               fSel=False)
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.5,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=False)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.5,
+                               _prune=False,
+                               _info=1,
+                               fSel=False)
 
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.75,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=False)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.75,
+                               _prune=False,
+                               _info=1,
+                               fSel=False)
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
 
   "Feature Weighting"
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.25,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=True)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.25,
+                               _prune=False,
+                               _info=1,
+                               fSel=True)
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.5,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=True)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.5,
+                               _prune=False,
+                               _info=1,
+                               fSel=True)
 
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.75,
-                                          _prune=False,
-                                          _info=1,
-                                          fSel=True)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.75,
+                               _prune=False,
+                               _info=1,
+                               fSel=True)
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
 
   "Info Prune (25%)"
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.25,
-                                          _prune=True,
-                                          _info=0.25,
-                                          fSel=True)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.25,
+                               _prune=True,
+                               _info=0.25,
+                               fSel=True)
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.5,
-                                          _prune=True,
-                                          _info=0.25,
-                                          fSel=True)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.5,
+                               _prune=True,
+                               _info=0.25,
+                               fSel=True)
 
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
     print(c)
-  a, b, c= fileHandler().main(name, reps=24,
-                                          ext=0.75,
-                                          _prune=True,
-                                          _info=0.25,
-                                          fSel=True)
+  a, b, c = fileHandler().main(name, reps=24,
+                               ext=0.75,
+                               _prune=True,
+                               _info=0.25,
+                               fSel=True)
   if doWhat == 'AUC':
     print(b)
   elif doWhat == 'Median':
@@ -590,58 +594,35 @@ def _testPlot(name='Apache'):
   Accuracy = []
 #  fileHandler().preamble()
   figname = fileHandler().figname
-#   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-#     print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
-  _, __, ___, before, baseline = fileHandler().crossval(
-      name=name, k=5,
-      ext=0,
-      _prune=False,
-      _info=1,
-      fSel=False)
+  for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+    #     print("\\subsection{%s}\n \\begin{figure}\n \\centering" % (name))
 
-  _, _, __, ___, best1 = fileHandler().crossval(
-      name=name, k=5,
-      method='mean',
-      ext=0.75,
-      _prune=True,
-      _info=0.25,
-      fSel=False)
-
-  _, _, __, ___, best2 = fileHandler().crossval(
-      name=name, k=5,
-      ext=0.75,
-      method='median',
-      _prune=True,
-      _info=0.25,
-      fSel=False)
-
-  _, _, __, ___, best3 = fileHandler().crossval(
-      name=name, k=5,
-      ext=0.75,
-      method='any',
-      _prune=True,
-      _info=0.25,
-      fSel=False)
-
-  _, _, __, ___, best4 = fileHandler().crossval(
-      name=name, k=5,
-      ext=0.75,
-      method='best',
-      _prune=True,
-      _info=0.25,
-      fSel=False)
-#   print("Baseline,mean,median,any,best")
-#   for b, me, md, an, be in zip(baseline[0], best1[0], best2[0], best3[0], best4[0]):
-#   print("%0.2f,%0.2f,%0.2f,%0.2f,%0.2f" % (b, me, md, an, be))
-  overlayCurve([best1, 'mean'],
-               [best2, 'median'],
-               [best3, 'random'],
-               [best4, 'best'],
-               [baseline, 'baseline'],
-               fname=name,
-               ext='.jpg',
-               textbox=False,
-               string=None)
+    bfr, base = fileHandler().mainraw(name, reps=1,
+                                      ext=0,
+                                      _prune=False,
+                                      _info=0.25,
+                                      fSel=False)
+    bfr, worse = fileHandler().mainraw(name, reps=1,
+                                       ext=0.25,
+                                       _prune=False,
+                                       _info=0.25,
+                                       fSel=True)
+    bfr, best = fileHandler().mainraw(name, reps=1,
+                                      ext=0.75,
+                                      _prune=True,
+                                      _info=0.25,
+                                      fSel=True)
+#     set_trace()
+  #    print("Baseline,mean,median,any,best")
+  #   for b, me, md, an, be in zip(baseline[0], best1[0], best2[0], best3[0], best4[0]):
+  #   print("%0.2f,%0.2f,%0.2f,%0.2f,%0.2f" % (b, me, md, an, be))
+    overlayCurve([worse[0], 'Worst'],
+                 [best[0], 'Best'],
+                 [base[0], 'Baseline'],
+                 fname=name,
+                 ext='.pdf',
+                 textbox=True,
+                 string=None)
 #     print(
 #         "\\subfloat[][]{\\includegraphics[width=0.5\\linewidth]{../_fig/%s}\\label{}}" %
 #         (name + '.jpg'))

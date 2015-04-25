@@ -54,7 +54,7 @@ class type1():
     rdivDemo(lst, isLatex=True)
 
   def log2list(self):
-    dir = './log/AUC/'
+    dir = './Normalogs/AUC/'
     self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
@@ -102,7 +102,7 @@ class type2():
     rdivDemo(lst, isLatex=False)
 
   def log2list(self):
-    dir = './log/Accuracy/'
+    dir = './Normalogs/Accuracy/'
     self.printHeader()
     files = [filenames for (
         dirpath,
