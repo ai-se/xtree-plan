@@ -32,7 +32,7 @@ class run():
 
   def __init__(
           self,
-          pred=CART,
+          pred=rforest,
           _smoteit=True,
           _n=-1,
           _tuneit=False,
@@ -72,19 +72,22 @@ class run():
         if name == self.dataName:
           return indx
 
-    return [
-        dat[0] for dat in withinClass(
-            data[
-                whereis()])], [
-        dat[1] for dat in withinClass(
-            data[
-                whereis()])]  # Train, Test
+    try:
+      return [
+          dat[0] for dat in withinClass(
+              data[
+                  whereis()])], [
+          dat[1] for dat in withinClass(
+              data[
+                  whereis()])]  # Train, Test
+    except:
+      set_trace()
 
   def go(self):
 
     for _ in xrange(self.reps):
       predRows = []
-      train_DF = createTbl(self.train[self._n], isBin=True)
+      train_DF = createTbl(self.train[self._n][-2:], isBin=True)
       test_df = createTbl(self.test[self._n], isBin=True)
       actual = Bugs(test_df)
       before = self.pred(train_DF, test_df,
@@ -101,7 +104,7 @@ class run():
 
       if predRows:
         newTab = treatments2(
-            train=self.train[self._n],
+            train=self.train[self._n][-2:],
             test=self.test[self._n],
             test_df=predTest,
             extent=self.extent,
@@ -113,7 +116,7 @@ class run():
       else:
         newTab = treatments2(
             train=self.train[
-                self._n],
+                self._n][-2:],
             test=self.test[
                 self._n],
             far=False,
@@ -198,20 +201,19 @@ class run():
 
 def _histplot(file):
   files = {}
-  for name in ['ant', 'camel', 'ivy',
-               'jedit', 'poi', 'log4j',
-               'lucene', 'pbeans', 'velocity',
-               'xalan', 'forrest']:
+  for name in ['ivy']:
     """
     Histograms
     """
+    print(name)
     files.update({name: run(
         dataName=name,
         extent=0.75,
-        reps=10,
-        fSelect=True,
+        reps=24,
+        _tuneit=True,
+        fSelect=False,
         Prune=False,
-        infoPrune=0.75).before_after()})
+        infoPrune=False).before_after()})
 #   set_trace()
   histplot(files, name='Histogram')
 

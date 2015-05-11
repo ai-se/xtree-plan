@@ -42,7 +42,12 @@ def newTable(tbl, headerLabel, Rows):
 
 
 def createTbl(
-        data, settings=None, _smote=False, isBin=False, bugThres=2, duplicate=False):
+    data,
+    settings=None,
+    _smote=False,
+    isBin=False,
+    bugThres=1,
+        duplicate=False):
   """
   kwargs:
   _smote = True/False : SMOTE input data (or not)

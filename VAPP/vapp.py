@@ -324,7 +324,7 @@ class fileHandler():
               train, test, fSel, ext, _prune, _info, method='best')
           cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
           out_auc.append(sum(after) / sum(before))
-          out_md.append(median(after)) / median(before))
+          out_md.append(median(after) / median(before))
           out_acc.extend(
               [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
     return out_acc, out_auc, out_md
@@ -365,7 +365,6 @@ class fileHandler():
 
 def preamble1():
   print(r"""\documentclass{article}
-    \usepackage{colortbl}
     \usepackage{fullpage}
     \usepackage{booktabs}
     \usepackage{bigstrut}
@@ -599,18 +598,20 @@ def _testPlot(name='Apache'):
 
     bfr, base = fileHandler().mainraw(name, reps=1,
                                       ext=0,
-                                      _prune=False,
-                                      _info=0.25,
+                                      _prune=True,
+                                      _info=0.5,
                                       fSel=False)
     bfr, worse = fileHandler().mainraw(name, reps=1,
-                                       ext=0.25,
-                                       _prune=False,
-                                       _info=0.25,
+                                       ext=0.75,
+                                       _prune=True,
+                                       _info=0.5,
+                                       method='mean',
                                        fSel=True)
     bfr, best = fileHandler().mainraw(name, reps=1,
                                       ext=0.75,
                                       _prune=True,
-                                      _info=0.25,
+                                      _info=0.5,
+                                      method='best',
                                       fSel=True)
 #     set_trace()
   #    print("Baseline,mean,median,any,best")
@@ -630,6 +631,6 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  #   _testPlot()
+  _testPlot()
   #  _test('BDBC', 'Median')
-  eval(cmd())
+#   eval(cmd())
