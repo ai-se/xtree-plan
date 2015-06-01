@@ -1,0 +1,27 @@
+@project jplflight
+@discrete rely 3 
+@discrete data 3
+@discrete cplx 3 
+@discrete time 3 
+@discrete stor 3 
+@discrete acap 3 
+@discrete pcap 3 
+@discrete apex 3 
+@discrete plex 3 
+@discrete ltex 3 
+@discrete pmat 3
+@discrete kloc 3
+@discrete tool 3
+@discrete sced 3
+@discrete prec 3
+@discrete flex 3
+@discrete resl 3
+@discrete team 3
+@discrete ruse 3
+@discrete docu 3
+@discrete pvol 3
+@discrete pcon 3
+@discrete aexp 3
+@discrete site 3
+@discrete etat 3
+@discrete pr 3

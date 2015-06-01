@@ -1,0 +1,15 @@
+@project jplflight
+@discrete ?rely 3 4 5
+@discrete ?data 2 3
+@discrete ?cplx 3 4 5 6
+@discrete ?time 3 4
+@discrete ?stor 3 4
+@discrete ?acap 3 4 5
+@discrete ?pcap 3 4 5
+@discrete ?apex 2 3 4 5
+@discrete ?plex 1 2 3 4
+@discrete ?ltex 1 2 3 4
+@discrete ?pmat 2 3
+@discrete ?kloc 7 418
+@discrete tool 2
+@discrete sced 3
