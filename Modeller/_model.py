@@ -1,3 +1,4 @@
+from pdb import set_trace
 
 # Generic Attribute class to implement in all models
 
@@ -122,11 +123,7 @@ class Xomo:
         "pr",
         "ruse",
         "team",
-        "pvol",
-        '-effort',
-        '-months',
-        '-defects',
-        '-risks']
+        "pvol"]
     # LOWs and UPs are defined in data/* files according to models
 
     for _n, n in enumerate(self.names):

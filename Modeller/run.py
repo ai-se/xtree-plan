@@ -34,11 +34,12 @@ class model:
       writer.writerow(data[0])  # Header
       for cells in data[1]:  # Body
         writer.writerow(cells)
+    return dir + name
 
   def genData(i):
     train = i.toCSV(xomod(N=100), name='Train.csv')
     test = i.toCSV(xomod(N=100), name='Test.csv')
-    set_trace()
+    return createTbl(train), test
 
 if __name__ == "__main__":
   model().genData()
