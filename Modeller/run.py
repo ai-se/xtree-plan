@@ -32,9 +32,9 @@ class model:
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      writer.writerow(data[0])  # Header
+      writer.writerow(data[0][:-3])  # Header
       for cells in data[1]:  # Body
-        writer.writerow(cells)
+        writer.writerow(cells[:-3])
     return dir + name
 
   def genData(i):
@@ -86,7 +86,29 @@ class model:
     defects = lambda x: c.defect_calc(restructure(x[1:-4]))
     risks = lambda x: c.risk_calc(restructure(x[1:-4]))
 
-    return defects
+    return effort
+
+
+def learner():
+  mdl = model()
+  train, test = mdl.genData()
+  before = predictor(train=train_df, test=test_df)
+#           set_trace()
+  newTab = WHAT(
+      train=None,
+      test=None,
+      train_df=train,
+      bin=False,
+      test_df=test,
+      extent=0.75,
+      fSelect=True,
+      far=False,
+      infoPrune=0.5,
+      method='best',
+      Prune=True).main()
+  newTab_df = formatData(newTab)
+  after = predictor(train=train_df, test=newTab_df).rforest()
+  return actual, before, after
 
 
 if __name__ == "__main__":
