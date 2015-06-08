@@ -179,6 +179,10 @@ def xomod(N=100):
   return head, body
 
 
+def howMuchEffort(x):
+  X = Xomo(model="all")
+  return X.c.xy2(x)[1]
+
 # def pom3d(N=50):
 #   p = Pom()
 #   p.trials(100, True)

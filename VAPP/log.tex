@@ -1,0 +1,88 @@
+\documentclass{article}
+\usepackage{colortbl}
+\usepackage{fullpage}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{picture}
+\newcommand{\quart}[4]{\begin{picture}(50,6)
+{\color{black}\put(#3,3){\circle*{4}}\put(#1,3){\line(1,0){#2}}}\end{picture}}
+\begin{document}
+\begin{figure}
+\begin{minipage}{0.5\linewidth}
+{\tiny \begin{tabular}{l@{~~~}l@{~~~}l@{~~~}l@{~~~}c}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 & Apache\_baseline &    0.0  &  0.0 & \quart{0}{0}{0}{1} \\
+\hline  2 & Apache\_25\_w &    5.09  &  3.01 & \quart{7}{6}{9}{1} \\
+\hline  3 &  Apache\_25 &    7.78  &  3.19 & \quart{13}{6}{14}{1} \\
+3 & Apache\_25\_w\_iP(25) &    8.32  &  2.7 & \quart{11}{5}{15}{1} \\
+\hline  4 & Apache\_50\_w &    11.48  &  4.16 & \quart{18}{8}{21}{1} \\
+\hline  5 &  Apache\_50 &    14.86  &  4.79 & \quart{25}{9}{27}{1} \\
+5 & Apache\_50\_w\_iP(25) &    15.47  &  3.82 & \quart{23}{8}{29}{1} \\
+\hline  6 & Apache\_75\_w &    18.02  &  5.09 & \quart{28}{9}{33}{1} \\
+\hline  7 &  Apache\_75 &    23.09  &  2.92 & \quart{40}{5}{43}{1} \\
+7 & Apache\_75\_w\_iP(25) &    24.53  &  4.66 & \quart{41}{8}{46}{1} \\
+\hline \end{tabular}}\end{minipage}
+\begin{minipage}{0.5\linewidth}
+{\tiny \begin{tabular}{l@{~~~}l@{~~~}l@{~~~}l@{~~~}c}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 & BDBJ\_baseline &    0.0  &  0.0 & \quart{0}{0}{0}{1} \\
+\hline  2 & BDBJ\_25\_w &    11.69  &  4.75 & \quart{9}{6}{13}{1} \\
+\hline  3 &    BDBJ\_25 &    13.7  &  3.78 & \quart{14}{4}{16}{1} \\
+3 & BDBJ\_25\_w\_iP(25) &    13.95  &  4.97 & \quart{14}{5}{16}{1} \\
+3 & BDBJ\_50\_w &    14.55  &  9.79 & \quart{12}{12}{17}{1} \\
+\hline  4 & BDBJ\_50\_w\_iP(25) &    25.17  &  8.61 & \quart{24}{10}{29}{1} \\
+4 &    BDBJ\_50 &    24.94  &  7.73 & \quart{24}{9}{29}{1} \\
+4 & BDBJ\_75\_w &    28.39  &  6.33 & \quart{29}{7}{33}{1} \\
+\hline  5 &    BDBJ\_75 &    39.36  &  13.18 & \quart{34}{15}{46}{1} \\
+5 & BDBJ\_75\_w\_iP(25) &    39.61  &  7.21 & \quart{40}{8}{46}{1} \\
+\hline \end{tabular}}\end{minipage}
+\begin{minipage}{0.5\linewidth}
+{\tiny \begin{tabular}{l@{~~~}l@{~~~}l@{~~~}l@{~~~}c}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 & BDBJ\_baseline &    0.0  &  0.0 & \quart{0}{0}{0}{1} \\
+\hline  2 & BDBJ\_25\_w &    10.21  &  5.52 & \quart{9}{6}{12}{1} \\
+\hline  3 & BDBJ\_25\_w\_iP(25) &    15.17  &  6.32 & \quart{12}{8}{18}{1} \\
+3 &    BDBJ\_25 &    15.63  &  4.82 & \quart{14}{5}{19}{1} \\
+\hline  4 & BDBJ\_50\_w &    20.14  &  7.82 & \quart{19}{9}{24}{1} \\
+\hline  5 & BDBJ\_75\_w &    25.17  &  8.81 & \quart{24}{11}{30}{1} \\
+5 & BDBJ\_50\_w\_iP(25) &    26.19  &  7.18 & \quart{29}{8}{31}{1} \\
+5 &    BDBJ\_50 &    26.88  &  8.27 & \quart{28}{10}{32}{1} \\
+\hline  6 &    BDBJ\_75 &    37.96  &  8.13 & \quart{40}{9}{46}{1} \\
+6 & BDBJ\_75\_w\_iP(25) &    38.57  &  7.07 & \quart{40}{9}{47}{1} \\
+\hline \end{tabular}}\end{minipage}
+\begin{minipage}{0.5\linewidth}
+{\tiny \begin{tabular}{l@{~~~}l@{~~~}l@{~~~}l@{~~~}c}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 & LLVM\_baseline &    0.0  &  0.0 & \quart{0}{0}{0}{5} \\
+\hline  2 & LLVM\_25\_w &    2.13  &  0.61 & \quart{9}{4}{12}{5} \\
+\hline  3 &    LLVM\_25 &    2.25  &  0.69 & \quart{11}{4}{13}{5} \\
+3 & LLVM\_25\_w\_iP(25) &    2.43  &  0.37 & \quart{12}{2}{14}{5} \\
+\hline  4 & LLVM\_50\_w &    4.37  &  1.94 & \quart{19}{11}{25}{5} \\
+\hline  5 & LLVM\_50\_w\_iP(25) &    4.75  &  1.03 & \quart{24}{6}{27}{5} \\
+5 &    LLVM\_50 &    4.86  &  0.86 & \quart{26}{5}{28}{5} \\
+\hline  6 & LLVM\_75\_w &    5.75  &  1.84 & \quart{28}{11}{33}{5} \\
+\hline  7 & LLVM\_75\_w\_iP(25) &    7.73  &  1.14 & \quart{41}{7}{44}{5} \\
+7 &    LLVM\_75 &    7.86  &  1.86 & \quart{39}{10}{45}{5} \\
+\hline \end{tabular}}\end{minipage}
+\begin{minipage}{0.5\linewidth}
+{\tiny \begin{tabular}{l@{~~~}l@{~~~}l@{~~~}l@{~~~}c}
+\hline
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 & X264\_baseline &    0.0  &  0.0 & \quart{0}{0}{0}{1} \\
+\hline  2 & X264\_25\_w &    6.76  &  1.98 & \quart{9}{4}{11}{1} \\
+\hline  3 &    X264\_25 &    9.24  &  1.65 & \quart{13}{3}{15}{1} \\
+3 & X264\_25\_w\_iP(25) &    9.74  &  2.19 & \quart{13}{4}{16}{1} \\
+\hline  4 & X264\_50\_w &    10.55  &  3.31 & \quart{16}{5}{17}{1} \\
+\hline  5 &    X264\_50 &    17.47  &  3.58 & \quart{24}{6}{28}{1} \\
+5 & X264\_50\_w\_iP(25) &    17.37  &  3.45 & \quart{25}{5}{28}{1} \\
+\hline  6 & X264\_75\_w &    19.64  &  2.46 & \quart{30}{4}{32}{1} \\
+\hline  7 & X264\_75\_w\_iP(25) &    26.76  &  3.57 & \quart{40}{6}{44}{1} \\
+7 &    X264\_75 &    28.43  &  3.86 & \quart{43}{6}{46}{1} \\
+\hline \end{tabular}}\end{minipage}
+\end{figure}
+\end{document}
+

@@ -8,6 +8,7 @@ from weights import weights as W
 from random import random as rand
 from random import choice as any
 from random import randint as randi
+from scatterPlot import scatterPlot
 import sys
 
 # Update PYTHONPATH
@@ -187,7 +188,9 @@ class treatments():
   def main(self):
     hyperPlanes = self.getHyperplanes()
     opt.f = self.fWeight()
+    aa = []
     for rows in self.test_df._rows:
+      aa.append(rows.cells[:-2])
       newRow = rows
 #       if rows.cells[-2] > 0:
       vertices = sorted(
@@ -201,6 +204,9 @@ class treatments():
       [good, bad] = sorted(vertices, key=lambda F: F.score())
       newRow.cells[:-2] = self.mutate(rows.cells, good)
       self.new_Tab.append(newRow)
+#     for gg, ff in zip(self.train_df._rows, self.test_df._rows):
+#       print([b - a for b, a in zip(gg.cells[:-2], ff.cells[:-2])])
+    scatterPlot(train=self.train_df, test=aa, delta=self.new_Tab).pcaProj()
 
     return clone(
         self.test_df, rows=[r.cells for r in self.new_Tab], discrete=True)

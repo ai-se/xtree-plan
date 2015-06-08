@@ -18,12 +18,12 @@ from methods1 import *
 import numpy as np
 import pandas as pd
 from pdb import set_trace
-from WHAT import treatments
-from _model import xomod
+from WHAT import treatments as WHAT
+from _model import xomod, howMuchEffort
 from _XOMO import *
 
 
-class model:
+class model():
 
   def __init__(i):
     pass
@@ -34,7 +34,11 @@ class model:
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
       writer.writerow(data[0][:-3])  # Header
       for cells in data[1]:  # Body
-        writer.writerow(cells[:-3])
+        indep = cells[:-4]
+        depen = howMuchEffort({h[1:]: el for h,
+                               el in zip(data[0][:-4], indep)})
+        body = indep + [depen]
+        writer.writerow(body)
     return dir + name
 
   def genData(i):
@@ -42,57 +46,29 @@ class model:
     test = i.toCSV(xomod(N=100), name='Test.csv')
     return createTbl([train]), createTbl([test])
 
-  def XOMO(i, x):
-    "XOMO"
-    m = Model('xomoall')
-    c = m.oo()
-    scaleFactors = c.scaleFactors
-    effortMultipliers = c.effortMultipliers
-    defectRemovers = c.defectRemovers
-    headers = scaleFactors + effortMultipliers + defectRemovers + ['kloc']
-    bounds = {h: (c.all[h].min, c.all[h].max)
-              for h in headers}
-    a = c.x()['b']
-    b = c.all['b'].y(a)
+#   def XOMO(i, x):
+#     "XOMO"
+#     return (restructure(x))
 
-    def restructure(x):
-      return {headers[i]: x[i] for i in xrange(len(headers))}
 
-    def sumSfs(x, out=0, reset=False):
-      for i in scaleFactors:
-        out += x[i]
-      return out
-
-    def prodEms(x, out=1, reset=False):
-      for i in effortMultipliers:
-        out *= x[i]  # changed_nave
-      return out
-
-    def Sum(x):
-      return sumSfs(restructure(x[1:-4]), reset=True)
-
-    def prod(x):
-      return c.prodEms(restructure(x[1:-4]), reset=True)
-
-    def exp(x):
-      return b + 0.01 * Sum(x)
-
-    effort = lambda x: c.effort_calc(restructure(x[1:-4]),
-                                     a=a, b=b, exp=exp(x),
-                                     sum=Sum(x), prod=prod(x))
-    months = lambda x: c.month_calc(restructure(x[1:-4]),
-                                    effort(x), sum=Sum(x),
-                                    prod=prod(x))
-    defects = lambda x: c.defect_calc(restructure(x[1:-4]))
-    risks = lambda x: c.risk_calc(restructure(x[1:-4]))
-
-    return effort
+def predictor(tbl):
+  rows = [r.cells for r in tbl._rows]
+  effort = []
+  for elem in rows[:1]:
+    for _ in xrange(10):
+      print(howMuchEffort({h.name[1:]: el for h,
+                           el in zip(tbl.headers[:-2], elem[:-2])}))
+#     effort += [howMuchEffort({h.name[1:]: el for h,
+#                               el in zip(tbl.headers[:-2], elem[:-2])})]
+    print(elem[-2], effort[-1])
+  set_trace()
+  return effort
 
 
 def learner():
   mdl = model()
   train, test = mdl.genData()
-  before = predictor(train=train_df, test=test_df)
+  before = predictor(tbl=train)
 #           set_trace()
   newTab = WHAT(
       train=None,
@@ -106,12 +82,11 @@ def learner():
       infoPrune=0.5,
       method='best',
       Prune=True).main()
-  newTab_df = formatData(newTab)
-  after = predictor(train=train_df, test=newTab_df).rforest()
-  return actual, before, after
+  after = predictor(tbl=newTab)
+  return before, after
 
 
 if __name__ == "__main__":
-  model().genData()
+  (before, after) = learner()
   #------- Debug --------
   set_trace()

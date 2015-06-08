@@ -453,100 +453,100 @@ def _test(name='Apache', doWhat='Accuracy'):
 #   preamble1()
   Gain = []
   medianDelta = []
-#   for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-  "Baseline"
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0,
-                               _prune=False,
-                               _info=1,
-                               fSel=False)
-  if doWhat == 'Accuracy':
-    print(a)
-  elif doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-
-  "No Feature Weighting"
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.25,
-                               _prune=False,
-                               _info=1,
-                               fSel=False)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.5,
-                               _prune=False,
-                               _info=1,
-                               fSel=False)
-
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.75,
-                               _prune=False,
-                               _info=1,
-                               fSel=False)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-
-  "Feature Weighting"
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.25,
-                               _prune=False,
-                               _info=1,
-                               fSel=True)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.5,
-                               _prune=False,
-                               _info=1,
-                               fSel=True)
-
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.75,
-                               _prune=False,
-                               _info=1,
-                               fSel=True)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-
-  "Info Prune (25%)"
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.25,
-                               _prune=True,
-                               _info=0.25,
-                               fSel=True)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.5,
-                               _prune=True,
-                               _info=0.25,
-                               fSel=True)
-
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
+# for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
+#   "Baseline"
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=False)
+#   if doWhat == 'Accuracy':
+#     print(a)
+#   elif doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#
+#   "No Feature Weighting"
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.25,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=False)
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.5,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=False)
+#
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.75,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=False)
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#
+#   "Feature Weighting"
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.25,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=True)
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.5,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=True)
+#
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.75,
+#                                _prune=False,
+#                                _info=1,
+#                                fSel=True)
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#
+#   "Info Prune (25%)"
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.25,
+#                                _prune=True,
+#                                _info=0.25,
+#                                fSel=True)
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
+#   a, b, c = fileHandler().main(name, reps=24,
+#                                ext=0.5,
+#                                _prune=True,
+#                                _info=0.25,
+#                                fSel=True)
+#
+#   if doWhat == 'AUC':
+#     print(b)
+#   elif doWhat == 'Median':
+#     print(c)
   a, b, c = fileHandler().main(name, reps=24,
                                ext=0.75,
                                _prune=True,
@@ -631,6 +631,7 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  _testPlot()
+  #   _testPlot()
   #  _test('BDBC', 'Median')
+  _test(name='BDBJ', doWhat='AUC')
 #   eval(cmd())
