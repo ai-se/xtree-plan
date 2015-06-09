@@ -179,9 +179,9 @@ def xomod(N=100):
   return head, body
 
 
-def howMuchEffort(x):
+def howMuchEffort(row):
   X = Xomo(model="all")
-  return X.c.xy2(x)[1]
+  return X.c.xys(x=row)[-1]
 
 # def pom3d(N=50):
 #   p = Pom()

@@ -1,6 +1,5 @@
 import sys
 import pdb
-from pdb import set_trace
 sys.dont_write_bytecode = True
 
 
@@ -780,12 +779,12 @@ class Cocomo(Model):
 
   def sumSfs(o, x, out=0, reset=False):
     for i in o.scaleFactors:
-      out += x[i]
+      out += o.all[i].y(x[i], reset)
     return out
 
   def prodEms(o, x, out=1, reset=False):
     for i in o.effortMultipliers:
-      out *= x[i]  # changed_nave
+      out *= o.all[i].y(x[i], reset)  # changed_nave
     return out
 
   def xy(o, verbose=False):
@@ -801,20 +800,13 @@ class Cocomo(Model):
       o.say(x, a, b, kloc, sum, prod, exp, effort)
     return x, effort
 
-  def xy2(o, x, verbose=False):
-    a = x["b"]  # a little tricky... "a" is the x of "b"
+  def b(o, a):
     b = o.all["b"].y(a, reset=True)
-    kloc = x["kloc"]
-    sum = o.sumSfs(x, reset=True)
-    prod = o.prodEms(x, reset=True)
-    exp = b + 0.01 * sum
-    effort = a * abs(x["kloc"]) ** exp * prod
-    if verbose:
-      o.say(x, a, b, kloc, sum, prod, exp, effort)
-    return x, effort
+    return b
 
-  def xys(o, verbose=False, olist=False):
-    x = o.x()
+  def xys(o, x=None, verbose=False, olist=True):
+    if not x:
+      x = o.x()
     a = x["b"]
     b = o.all["b"].y(a, reset=True)
     kloc = x["kloc"]
