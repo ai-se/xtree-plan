@@ -1,5 +1,5 @@
 from pdb import set_trace
-
+from pom3 import pom3_builder
 # Generic Attribute class to implement in all models
 
 
@@ -19,47 +19,57 @@ class Attr:
     return s
 
 # POM3 support
-# import os,sys,inspect
-# cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe()))[0],"_POM3")))
-# if cmd_subfolder not in sys.path:
-#     sys.path.insert(0, cmd_subfolder)
-#
-# from _POM3 import *
-#
-# class Pom:
-#     def __init__(self):
-#         self.collection = {}
-#         self.names = ["Culture", "Criticality", "CriticalityModifier",
-#                       "InitialKnown", "InterDependency", "Dynamism",
-#                       "Size", "Plan", "TeamSize"]
-#         LOWS = [0.1, 0.82, 2,  0.40, 1,   1,  0, 0, 1]
-#         UPS  = [0.9, 1.20, 10, 0.70, 100, 50, 4, 5, 44]
-#         for _n,n in enumerate(self.names):
-#             self.collection[n] = Attr(n)
-#             self.collection[n].update(LOWS[_n],UPS[_n])
-#
-#     def update(self,fea,cond,thresh):
-#         ind = self.names.index(fea)
-#         if cond:
-#             self.collection[fea].update(self.collection[fea].low,
-#                                         thresh)
-#         else:
-#             self.collection[fea].update(thresh,
-#                                         self.collection[fea].up)
-#
-#     def trials(self,N,verbose=False):
-#         inp = []
-#         import random
-#         for _ in range(N):
-#             t = []
-#             for n in self.names:
-#                 t.append(round(random.uniform(self.collection[n].low,
-#                                               self.collection[n].up),2))
-#             inp.append(t)
-#
-# import _POM3
-#         header,rows = pom3_builder.pom3_csvmaker(self.names,inp,verbose)
-#         return header,rows
+import os
+import sys
+import inspect
+cmd_subfolder = os.path.realpath(
+    os.path.abspath(
+        os.path.join(
+            os.path.split(
+                inspect.getfile(
+                    inspect.currentframe()))[0],
+            "_POM3")))
+if cmd_subfolder not in sys.path:
+  sys.path.insert(0, cmd_subfolder)
+
+from _POM3 import *
+
+
+class Pom:
+
+  def __init__(self):
+    self.collection = {}
+    self.names = ["Culture", "Criticality", "CriticalityModifier",
+                  "InitialKnown", "InterDependency", "Dynamism",
+                  "Size", "Plan", "TeamSize"]
+    LOWS = [0.1, 0.82, 2, 0.40, 1, 1, 0, 0, 1]
+    UPS = [0.9, 1.20, 10, 0.70, 100, 50, 4, 5, 44]
+    for _n, n in enumerate(self.names):
+      self.collection[n] = Attr(n)
+      self.collection[n].update(LOWS[_n], UPS[_n])
+
+  def update(self, fea, cond, thresh):
+    ind = self.names.index(fea)
+    if cond:
+      self.collection[fea].update(self.collection[fea].low,
+                                  thresh)
+    else:
+      self.collection[fea].update(thresh,
+                                  self.collection[fea].up)
+
+  def trials(self, N, verbose=False):
+    inp = []
+    import random
+    for _ in range(N):
+      t = []
+      for n in self.names:
+        t.append(round(random.uniform(self.collection[n].low,
+                                      self.collection[n].up), 2))
+      inp.append(t)
+
+    import _POM3
+    header, rows = pom3_builder.pom3_csvmaker(self.names, inp, verbose)
+    return header, rows
 
 # XOMO support
 import os
@@ -183,11 +193,12 @@ def howMuchEffort(row):
   X = Xomo(model="all")
   return X.c.xys(x=row)[-1]
 
-# def pom3d(N=50):
-#   p = Pom()
-#   p.trials(100, True)
+
+def pom3d(N=50):
+  p = Pom()
+  return p.trials(100, verbose=False)
 
 
 if __name__ == "__main__":
-  #   pom3d()
-  xomod()
+  pom3d()
+#   xomod()

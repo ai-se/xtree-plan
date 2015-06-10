@@ -120,7 +120,7 @@ class pom3:
     # return [cost, score, completion, idle]
     return [cost, completion, idle]
 
-
-#  Test Code
-p3 = pom3()
-print p3.simulate([0.20, 1.26, 8, 0.95, 100, 10, 2, 5, 20])
+if __name__ == '__main__':
+  #  Test Code
+  p3 = pom3()
+  print p3.simulate([0.20, 1.26, 8, 0.95, 100, 10, 2, 5, 20])

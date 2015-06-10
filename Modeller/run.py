@@ -23,6 +23,8 @@ from _model import xomod, howMuchEffort
 from _XOMO import *
 from numpy import sum, array
 from sk import rdivDemo
+from pom3.pom3 import pom3
+import random
 
 
 class XOMO():
@@ -31,7 +33,7 @@ class XOMO():
     i.header = Xomo(model="all").names
     pass
 
-  def toCSV(i, data, dir='Data/', name=None):
+  def toCSV(i, data, dir='Data/XOMO/', name=None):
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -53,29 +55,47 @@ class XOMO():
     return howMuchEffort(row)
 
 
+class POM3():
+
+  def __init__(p3):
+    p3.indep = ["Culture", "Criticality", "CriticalityModifier",
+                "InitialKnown", "InterDependency", "Dynamism",
+                "Size", "Plan", "TeamSize"]
+    p3.depen = ['-cost', '+completion', '-idle']
+
+  def toCSV(p3, data, dir='Data/POM3/', name=None):
+    with open(dir + name, 'w') as csvfile:
+      writer = csv.writer(csvfile, delimiter=',',
+                          quotechar='|', quoting=csv.QUOTE_MINIMAL)
+      writer.writerow(['$' + d for d in p3.indep] + [p3.depen[0]])  # Header
+      for cells in data[1]:  # Body
+        indep = cells[:-3]
+        depen = p3.model(indep)
+        body = indep + [depen]
+        writer.writerow(body)
+    return dir + name
+
+  def genData(p3):
+    train = p3.toCSV(pom3d(N=100), name='Train.csv')
+    test = p3.toCSV(pom3d(N=100), name='Test.csv')
+    return createTbl([train]), createTbl([test])
+
+  def model(p3, X):
+    try:
+      return pom3().simulate(X)[0]
+    except:
+      set_trace()
+
+
 def predictor(tbl):
   rows = [r.cells for r in tbl._rows]
   effort = []
   for elem in rows:
-    #     for _ in xrange(10):
-    #       print(XOMO().model(elem[:-2]))
-    try:
-      effort += [howMuchEffort({h.name: el for h,
-                                el in zip(tbl.headers[:-2],
-                                          elem[:-2])})]
-    except:
-      try:
-        effort += [howMuchEffort({h.name[1:]: el for h,
-                                  el in zip(tbl.headers[:-2],
-                                            elem[:-2])})]
-      except:
-        pass
-#     print(elem[-2], effort[-1])
+    effort += [pom3().simulate(elem[:-2])[0]]
   return effort
 
 
-def learner(lst=[], reps=24):
-  mdl = XOMO()
+def learner(mdl=POM3(), lst=[], reps=24):
   train, test = mdl.genData()
   before = array(predictor(tbl=train))
   for ext in [0, 0.25, 0.5, 0.75]:
@@ -102,8 +122,8 @@ def learner(lst=[], reps=24):
       lst.append(E)
   return lst
 
-
 if __name__ == "__main__":
+  random.seed(0)
   lst = learner(reps=10)
   try:
     rdivDemo(lst, isLatex=True)
