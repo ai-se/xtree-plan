@@ -24,7 +24,50 @@ from _XOMO import *
 from numpy import sum, array
 from sk import rdivDemo
 from pom3.pom3 import pom3
+from sklearn.ensemble import RandomForestRegressor
 import random
+
+
+def formatData(tbl, rows=None):
+  if not rows:
+    rows = [i.cells for i in tbl._rows]
+  headers = [i.name for i in tbl.headers[:-1]]
+  return pd.DataFrame(rows, columns=headers)
+
+
+class RandomForest():
+
+  def __init__(
+          self,
+          train=None,
+          test=None,
+          tuning=None,
+          smoteit=False,
+          duplicate=False):
+    self.train = train
+    self.test = test
+    self.tuning = tuning
+    self.smoteit = smoteit
+    self.duplicate = duplicate
+
+  def regress(self):
+    "  RF"
+    # Apply random forest Classifier to predict the number of bugs.
+    if not self.tuning:
+      clf = RandomForestRegressor(random_state=1)
+    else:
+      clf = RandomForestRegressor(n_estimators=int(tunings[0]),
+                                  max_features=tunings[1] / 100,
+                                  min_samples_leaf=int(tunings[2]),
+                                  min_samples_split=int(tunings[3]),
+                                  random_state=1)
+    features = self.train.columns[:-1]
+    klass = self.train[self.train.columns[-1]]
+    # set_trace()
+    clf.fit(self.train[features].astype('float32'), klass.astype('float32'))
+    preds = clf.predict(
+        self.test[self.test.columns[:-1]].astype('float32'))
+    return preds
 
 
 class XOMO():
@@ -87,11 +130,12 @@ class POM3():
       set_trace()
 
 
-def predictor(tbl):
-  rows = [r.cells for r in tbl._rows]
+def predictor(tbl=None, rows=None):
+  if not rows:
+    rows = [r.cells[:-2] for r in tbl._rows]
   effort = []
   for elem in rows:
-    effort += [pom3().simulate(elem[:-2])[0]]
+    effort += [pom3().simulate(elem)[0]]
   return effort
 
 
@@ -123,26 +167,47 @@ def learner(mdl=POM3(), lst=[], reps=24):
   return lst
 
 
-def dancer(mdl=POM3(), newRow=[], extent=0.1):
+def dancer(mdl=POM3(), newRows=[], extent=0.1, what='MSE'):
+  train1, _ = mdl.genData()
   train, _ = mdl.genData()
-  actual = array(predictor(tbl=train))
-  before = 
+
   def mutator(row):
     fact = lambda: random.choice([-1, 1])
     return [el * (1 + fact() * extent) for el in row]
 
-  oldRows = [r.cells[:-2] for r in train._rows]
+  trainRows = [r.cells[:-1] for r in train1._rows]
+  oldRows = [r.cells[:-1] for r in train._rows]
+  trainDF = formatData(tbl=train, rows=trainRows)
+  for row in oldRows[:-1]:
+    newRows.append(mutator(row))
+  testDF = formatData(tbl=train, rows=newRows)
+  actual = array(predictor(rows=newRows))
+  predicted = RandomForest(train=trainDF, test=testDF).regress()
 
-  for row in oldRows:
-    newRow.append(mutator(row))
+  MRE = (actual - predicted) / actual * 100
+  y = np.median(MRE, axis=0)
+  yhi, ylo = np.percentile(MRE, q=[75, 25], axis=0)
+
+  MSE = np.sqrt(sum((actual - predicted) ** 2)) / len(actual)
+  if what == 'MRE':
+    return y, yhi, ylo
+  elif what == 'MSE':
+    return MSE
+  # --------- DEBUG ---------
+#   set_trace()
 
 
 if __name__ == "__main__":
   random.seed(0)
-  lst = learner(reps=10)
-  try:
-    rdivDemo(lst, isLatex=True)
-  except:
-    set_trace()
-  #------- Debug --------
-  set_trace()
+  for ext in np.linspace(0, 0.2, 6):
+    d = dancer(extent=ext)
+    print(ext, d)
+
+#
+#   lst = learner(reps=10)
+#   try:
+#     rdivDemo(lst, isLatex=True)
+#   except:
+#     set_trace()
+# ------- Debug --------
+#   set_trace()
