@@ -122,6 +122,21 @@ def learner(mdl=POM3(), lst=[], reps=24):
       lst.append(E)
   return lst
 
+
+def dancer(mdl=POM3(), newRow=[], extent=0.1):
+  train, _ = mdl.genData()
+  actual = array(predictor(tbl=train))
+  before = 
+  def mutator(row):
+    fact = lambda: random.choice([-1, 1])
+    return [el * (1 + fact() * extent) for el in row]
+
+  oldRows = [r.cells[:-2] for r in train._rows]
+
+  for row in oldRows:
+    newRow.append(mutator(row))
+
+
 if __name__ == "__main__":
   random.seed(0)
   lst = learner(reps=10)
