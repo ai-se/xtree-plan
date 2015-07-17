@@ -14,6 +14,7 @@ import makeAmodel
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import smote
+from pdb import set_trace
 
 
 def explore(dir):
@@ -42,7 +43,12 @@ def newTable(tbl, headerLabel, Rows):
 
 
 def createTbl(
-        data, settings=None, _smote=False, isBin=False, bugThres=2, duplicate=False):
+    data,
+    settings=None,
+    _smote=False,
+    isBin=False,
+    bugThres=2,
+        duplicate=False):
   """
   kwargs:
   _smote = True/False : SMOTE input data (or not)
@@ -77,6 +83,7 @@ def createTbl(
 def test_createTbl():
   dir = '../Data/camel/camel-1.6.csv'
   newTbl = createTbl([dir], _smote=False)
+  set_trace()
   newTblSMOTE = createTbl([dir], _smote=True)
   print(len(newTbl._rows), len(newTblSMOTE._rows))
 

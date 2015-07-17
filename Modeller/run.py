@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 from pdb import set_trace
 from WHAT import treatments as WHAT
+from CROSSTREES import treatments as xtrees
 from _model import xomod, howMuchEffort
 from _XOMO import *
 from numpy import sum, array
@@ -37,7 +38,7 @@ class XOMO():
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      writer.writerow(['$' + d for d in i.header] + ['-effort'])  # Header
+      writer.writerow(['$' + d for d in i.header] + ['$>effort'])  # Header
       for cells in data[1]:  # Body
         indep = cells[:-4]
         depen = i.model(indep)
@@ -45,9 +46,9 @@ class XOMO():
         writer.writerow(body)
     return dir + name
 
-  def genData(i):
-    train = i.toCSV(xomod(N=100), name='Train.csv')
-    test = i.toCSV(xomod(N=100), name='Test.csv')
+  def genData(i, N=100):
+    train = i.toCSV(xomod(N), name='Train.csv')
+    test = i.toCSV(xomod(N), name='Test.csv')
     return createTbl([train]), createTbl([test])
 
   def model(i, X):
@@ -75,9 +76,9 @@ class POM3():
         writer.writerow(body)
     return dir + name
 
-  def genData(p3):
-    train = p3.toCSV(pom3d(N=100), name='Train.csv')
-    test = p3.toCSV(pom3d(N=100), name='Test.csv')
+  def genData(p3, N=100):
+    train = p3.toCSV(pom3d(N), name='Train.csv')
+    test = p3.toCSV(pom3d(N), name='Test.csv')
     return createTbl([train]), createTbl([test])
 
   def model(p3, X):
@@ -87,17 +88,20 @@ class POM3():
       set_trace()
 
 
-def predictor(tbl):
+def predictor(tbl, Model=XOMO):
   rows = [r.cells for r in tbl._rows]
-  effort = []
+  out = []
   for elem in rows:
-    effort += [pom3().simulate(elem[:-2])[0]]
-  return effort
+    if Model == XOMO:
+      out += [Model().model(elem[:-2])]
+    elif Model == POM3:
+      out += [Model().simulate(elem[:-2])[0]]
+  return out
 
 
-def learner(mdl=POM3(), lst=[], reps=24):
-  train, test = mdl.genData()
-  before = array(predictor(tbl=train))
+def learner(mdl=XOMO, lst=[], reps=24):
+  train, test = mdl().genData(N=1000)
+  before = array(predictor(Model=mdl, tbl=train))
   for ext in [0, 0.25, 0.5, 0.75]:
     for info, prune in zip([0.25, 0.5, 0.75, 1.00],
                            [True, True, True, False]):
@@ -105,37 +109,11 @@ def learner(mdl=POM3(), lst=[], reps=24):
 #       print(prefix)
       E = [prefix]
       for _ in xrange(reps):
-        newTab = WHAT(
-            train=None,
-            test=None,
-            train_df=train,
-            bin=False,
-            test_df=test,
-            extent=ext,
-            fSelect=True,
-            far=False,
-            infoPrune=info,
-            method='best',
-            Prune=prune).main()
+        newTab = xtrees(train=train, test=test, verbose=False).main()
         after = array(predictor(tbl=newTab))
         E.append(sum(after) / sum(before))
       lst.append(E)
   return lst
-
-
-def dancer(mdl=POM3(), newRow=[], extent=0.1):
-  train, _ = mdl.genData()
-  actual = array(predictor(tbl=train))
-  before = 
-  def mutator(row):
-    fact = lambda: random.choice([-1, 1])
-    return [el * (1 + fact() * extent) for el in row]
-
-  oldRows = [r.cells[:-2] for r in train._rows]
-
-  for row in oldRows:
-    newRow.append(mutator(row))
-
 
 if __name__ == "__main__":
   random.seed(0)
