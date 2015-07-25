@@ -13,19 +13,24 @@ pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
-from CROSSTREES import xtrees
-from Prediction import *
-from _imports import *
-from abcd import _Abcd
-from cliffsDelta import cliffs
-from dEvol import tuner
-from demos import cmd
-from methods1 import *
-from sk import rdivDemo
 import numpy as np
 import pandas as pd
 import csv
+
+from abcd import _Abcd
+from cliffsDelta import cliffs
+from _imports.dEvol import tuner
+from demos import cmd
+from sk import rdivDemo
 from numpy import sum
+
+from _imports import *
+from Prediction import rforest, Bugs
+from methods1 import *
+
+from Planner.CROSSTREES import xtrees
+from Planner.HOW import treatments as HOW
+from Planner.strawman import strawman
 
 
 def write2file(data, fname='Untitled', ext='.txt'):
@@ -38,8 +43,7 @@ def write2file(data, fname='Untitled', ext='.txt'):
 class run():
 
   def __init__(
-          self, pred=rforest, _smoteit=True, _n=-1
-          , _tuneit=False, dataName=None, reps=1):
+          self, pred=rforest, _smoteit=True, _n=-1, _tuneit=False, dataName=None, reps=1):
     self.pred = pred
     self.dataName = dataName
     self.out, self.out_pred = [self.dataName], []
@@ -48,12 +52,15 @@ class run():
     self.reps = reps
     self._n = _n
     self.tunedParams = None if not _tuneit \
-    else tuner(self.pred, self.train[_n])
-    self.headers = createTbl(self.train[self._n], isBin=False
-                             , bugThres=1).headers
+        else tuner(self.pred, self.train[_n])
+    self.headers = createTbl(
+        self.train[
+            self._n],
+        isBin=False,
+        bugThres=1).headers
 
   def categorize(self):
-    dir = './Jureczko'
+    dir = './Data/Jureczko'
     self.projects = [Name for _, Name, __ in walk(dir)][0]
     self.numData = len(self.projects)  # Number of data
     one, two = explore(dir)
@@ -78,6 +85,10 @@ class run():
   def go(self):
 
     for _ in xrange(self.reps):
+      out_xtrees = ['xtrees']
+      out_HOW = ['HOW']
+      out_basln = ['Base']
+      out_baslnFss = ['Base+FSS']
       predRows = []
       train_DF = createTbl(self.train[self._n], isBin=True)
       test_df = createTbl(self.test[self._n], isBin=True)
@@ -86,24 +97,32 @@ class run():
                          tunings=self.tunedParams,
                          smoteit=True)
 
-      predRows = [row.cells for predicted
-                  , row in zip(before, test_df._rows) if predicted > 0]
+      predRows = [row.cells for predicted,
+                  row in zip(actual, test_df._rows) if predicted > 0]
+
       predTest = clone(test_df, rows=predRows)
 
-      newTab = xtrees(train=self.train[self._n]
-                          , test_DF=predTest, bin=False).main()
+      "Apply Different Planners"
+      xTrees = xtrees(train=self.train[-1], test_DF=predTest, bin=True).main()
+      how = HOW(train=self.train[-1],
+                test=self.test[-1],
+                test_df=predTest).main()
+      baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
+      baselnFss = strawman(
+          train=self.train[-1], test=self.test[-1], prune=True).main()
 
-      after = self.pred(train_DF, newTab,
-                        tunings=self.tunedParams,
-                        smoteit=True)
+      after = lambda newTab: self.pred(train_DF, newTab,
+                                       tunings=self.tunedParams,
+                                       smoteit=True)
+      frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]) / \
+          sum([0 if b < 1 else 1 for b in actual])
 
-      self.out_pred.append(_Abcd(before=actual, after=before))
-      # set_trace()
-      delta = cliffs(lst2=Bugs(predTest), lst1=after).delta()
-      frac = sum([0 if a < 1 else 1 for a in after]) / \
-          sum([0 if b < 1 else 1 for b in before])
-      self.out.append(frac)
-    print(self.out)
+#       set_trace()
+      out_xtrees.append(frac(after(xTrees)))
+      out_HOW.append(frac(after(how)))
+      out_basln.append(frac(after(baseln)))
+      out_baslnFss.append(frac(after(baselnFss)))
+    print(out_xtrees, '\n', out_HOW, '\n', out_basln, '\n', out_baslnFss)
 
   def delta0(self, norm):
     before, after = open('before.txt'), open('after.txt')
@@ -160,7 +179,7 @@ class run():
 def _test(file='ant'):
   for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
     print('##', file)
-    R = run(dataName=file, reps=10).go()
+    R = run(dataName=file, reps=1).go()
 
 
 def deltaCSVwriter(type='Indv'):
@@ -222,8 +241,8 @@ def deltaTest():
 
 if __name__ == '__main__':
   _test()
-#deltaTest()
-#rdiv()
-#deltaCSVwriter(type='All')
-#deltaCSVwriter(type='Indv')
+# deltaTest()
+# rdiv()
+# deltaCSVwriter(type='All')
+# deltaCSVwriter(type='Indv')
 #  eval(cmd())

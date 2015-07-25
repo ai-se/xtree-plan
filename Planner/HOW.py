@@ -4,7 +4,6 @@ from __future__ import division
 from os import environ
 from os import getcwd
 from pdb import set_trace
-from weights import weights as W
 from random import uniform as rand
 from random import randint as randi
 import sys
@@ -14,27 +13,47 @@ HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
+sys.path.extend([axe, pystat, '../'])
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
+from _imports.weights import weights as W
 
 from Prediction import *
-from _imports import *
-# from abcd import _Abcd
+# from _imports.settingsWhere import o
 from cliffsDelta import *
-from contrastset import *
-# from dectree import *
 from hist import *
 from smote import *
-import makeAmodel as mam
+import _imports.makeAmodel as mam
 from methods1 import *
 import numpy as np
 import pandas as pd
 from counts import *
 # import sk
+
+
+class o:
+
+  def __init__(i, **d):
+    i.has().update(**d)
+
+  def has(i):
+    return i.__dict__
+
+  def update(i, **d):
+    i.has().update(d)
+    return i
+
+  def __repr__(i):
+    show = [':%s %s' % (k, i.has()[k])
+            for k in sorted(i.has().keys())
+            if k[0] is not "_"]
+    txt = ' '.join(show)
+    if len(txt) > 60:
+      show = map(lambda x: '\t' + x + '\n', show)
+    return '{' + ' '.join(show) + '}'
 
 
 def settings(**d):
@@ -75,7 +94,7 @@ class treatments():
           train_df=None,
           test_df=None,
           fSelect=True,
-          Prune=True,
+          Prune=False,
           infoPrune=0.5,
           extent=0.75):
     self.test, self.train = test, train

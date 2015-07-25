@@ -7,7 +7,7 @@ import sys
 cwd = getcwd()  # Current Directory
 axe = cwd + '/axe/'  # AXE
 pystat = cwd + '/pystats/'  # PySTAT
-where = cwd + '/_imports/'  # Where
+where = cwd + '/_imports/where2/'  # Where
 sys.path.extend([axe, pystat, cwd, where])
 
 from demos import *

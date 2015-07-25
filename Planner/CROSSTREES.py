@@ -20,7 +20,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from collections import Counter
 
-from Prediction import *
+# from Prediction import *
 from _imports import *
 from abcd import _Abcd
 from cliffsDelta import *
@@ -28,7 +28,7 @@ from cliffsDelta import *
 # from dectree import *
 from hist import *
 from smote import *
-import makeAmodel as mam
+import _imports.makeAmodel as mam
 from methods1 import *
 import numpy as np
 import pandas as pd
@@ -233,7 +233,11 @@ class xtrees():
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # Decision Tree
-    t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))
+    t = discreteNums(
+        self.train_DF,
+        map(
+            lambda x: x.cells,
+            self.train_DF._rows))
     myTree = tdiv(t)
 
     # Testing data
@@ -270,9 +274,9 @@ def _planningTest():
   one, two = explore(Dir)
   # Training data
   _ = xtrees(train=one[n],
-                 test=two[n],
-                 verbose=True,
-                 smoteit=False).main()
+             test=two[n],
+             verbose=True,
+             smoteit=False).main()
 
   # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
   set_trace()

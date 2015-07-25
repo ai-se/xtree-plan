@@ -1,11 +1,10 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
 from numpy import array, asarray, mean, median, percentile, size, sum
-from run import run
 from pdb import set_trace
 from methods1 import createTbl
 from Prediction import rforest
-from weights import weights as W
+from _imports.weights import weights as W
 from os import environ, getcwd
 import csv
 import sys
@@ -20,10 +19,11 @@ from table import clone
 
 def eDist(row1, row2):
   "Euclidean Distance"
-  return sum([(a * a - b * b)**0.5 for a, b in zip(row1[:-1], row2[:-1])])
+  return sum([(a * a - b * b) ** 0.5 for a, b in zip(row1[:-1], row2[:-1])])
 
 
 class node():
+
   """
   A data structure to hold all the rows in a cluster.
   Also return an exemplar: the centroid.
@@ -42,6 +42,7 @@ class node():
 
 
 class contrast():
+
   "Identify the nearest enviable node."
 
   def __init__(self, clusters):
@@ -60,6 +61,7 @@ class contrast():
 
 
 class patches():
+
   "Apply new patch."
 
   def __init__(
@@ -142,10 +144,9 @@ class patches():
 
 class strawman():
 
-  def __init__(self, name="ant"):
-    self.dir = './Jureczko'
-    self.name = name
-    self.E = [name + ' Baseline (Prune)']
+  def __init__(self, train, test, prune=False):
+    self.train, self.test = train, test
+    self.prune = prune
 
   def nodes(self, rowObject):
     clusters = set([r.cells[-1] for r in rowObject])
@@ -157,20 +158,14 @@ class strawman():
       yield node(cluster)
 
   def main(self):
-    train, test = run(dataName='ant').categorize()
-    train_DF = createTbl(train[-1], isBin=True)
-    test_DF = createTbl(test[-1], isBin=True)
+    train_DF = createTbl(self.train, isBin=True)
+    test_DF = createTbl(self.test, isBin=True)
     before = rforest(train=train_DF, test=test_DF)
-    for _ in xrange(1):
-      clstr = [c for c in self.nodes(train_DF._rows)]
-      newTbl = patches(train=train[-1],
-                       test=test[-1],
-                       clusters=clstr).deltasCSVWriter(name=self.name)
-#       after = rforest(train=train_DF, test=newTbl)
-#       self.E.append(sum(after) / sum(before))
-#     print(self.E)
-    # # -------- DEBUG --------
-    # set_trace()
+    clstr = [c for c in self.nodes(train_DF._rows)]
+    return patches(train=self.train,
+                   test=self.test,
+                   clusters=clstr,
+                   prune=self.prune).newTable()
 
 if __name__ == '__main__':
   for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:

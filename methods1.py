@@ -6,11 +6,12 @@ HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
+sys.path.extend([axe, pystat, './where2'])
 from dtree import *
 from table import *
-from where2 import *
-import makeAmodel
+# from w2 import *
+from _imports.w2 import where2, prepare, leaves
+from _imports.makeAmodel import makeAModel
 import matplotlib.mlab as mlab
 # import matplotlib.pyplot as plt
 import smote
@@ -55,13 +56,14 @@ def createTbl(
   _bugThres = int : Threshold for marking stuff as defective,
                     default = 1. Not defective => Bugs < 1
   """
-  makeaModel = makeAmodel.makeAModel()
+  makeaModel = makeAModel()
   _r = []
   for t in data:
     m = makeaModel.csv2py(t, _smote=_smote, duplicate=duplicate)
     _r += m._rows
   m._rows = _r
-  prepare(m, settings=None)  # Initialize all parameters for where2 to run
+  # Initialize all parameters for where2 to run
+  prepare(m, settings=None)
   tree = where2(m, m._rows)  # Decision tree using where2
   tbl = table(t)
 

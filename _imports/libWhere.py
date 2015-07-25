@@ -9,7 +9,7 @@
 from __future__ import division,print_function
 import  sys,random,math
 sys.dont_write_bytecode = True
-from settingsWhere import *
+from _imports.settingsWhere import *
 """
 
 ## Simple, low-level stuff
