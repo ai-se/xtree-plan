@@ -106,7 +106,7 @@ class store():
     return mean([r.cells[-2] for r in node.rows])
 
 
-class xtrees():
+class treatments():
 
   "Treatments"
 
@@ -164,7 +164,7 @@ class xtrees():
         seen(node.node.branch)
     return attr
 
-  def finder2(self, node, alpha=0.5, pos='far'):
+  def finder2(self, node, alpha=1, pos='far'):
     """
     finder2 is a more elegant version of finder that performs a search on
     the entire tree to find leaves which are better than a certain 'node'
@@ -263,10 +263,10 @@ def planningTest():
   Dir = 'Data/'
   one, two = explore(Dir)
   # Training data
-  _ = xtrees(train=one[n],
-             test=two[n],
-             verbose=True,
-             smoteit=False).main()
+  _ = treatments(train=one[n],
+                 test=two[n],
+                 verbose=True,
+                 smoteit=False).main()
 
   # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
   set_trace()

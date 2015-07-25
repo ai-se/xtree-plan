@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 from pdb import set_trace
 from WHAT import treatments as WHAT
-from CROSSTREES import xtrees
+from CROSSTREES import treatments as xtrees
 from _model import xomod, howMuchEffort
 from _XOMO import *
 from numpy import sum, array
@@ -29,7 +29,7 @@ import random
 
 
 class XOMO():
-  "XOMO"
+
   def __init__(i):
     i.header = Xomo(model="all").names
     pass
@@ -57,12 +57,12 @@ class XOMO():
 
 
 class POM3():
-  "POM3"
+
   def __init__(p3):
     p3.indep = ["Culture", "Criticality", "CriticalityModifier",
                 "InitialKnown", "InterDependency", "Dynamism",
                 "Size", "Plan", "TeamSize"]
-    p3.depen = ['$<cost', '$>completion', '$<idle']
+    p3.depen = ['-cost', '+completion', '-idle']
 
   def toCSV(p3, data, dir='Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
@@ -81,13 +81,9 @@ class POM3():
     test = p3.toCSV(pom3d(N), name='Test.csv')
     return createTbl([train]), createTbl([test])
 
-  def model(p3, X, continuous=False):
+  def model(p3, X):
     try:
-      if continuous:
-        num = [-1, 1, -1]
-        return np.sum([np.exp(n * i) for n, i in zip(num, pom3().simulate(X))])
-      else:
-        return pom3().simulate(X)[0]
+      return pom3().simulate(X)[0]
     except:
       set_trace()
 
@@ -99,20 +95,24 @@ def predictor(tbl, Model=XOMO):
     if Model == XOMO:
       out += [Model().model(elem[:-2])]
     elif Model == POM3:
-      out += [Model().model(elem[:-2])]
+      out += [Model().simulate(elem[:-2])[0]]
   return out
 
 
 def learner(mdl=XOMO, lst=[], reps=24):
-  train, test = mdl().genData(N=100)
+  train, test = mdl().genData(N=1000)
   before = array(predictor(Model=mdl, tbl=train))
-  E = [mdl.__doc__]
-  for _ in xrange(reps):
-    newTab = xtrees(train=train, test=test, verbose=False).main()
-    after = array(predictor(Model=mdl, tbl=newTab))
-    E.append(sum(after) / sum(before))
-    print(E)
-  lst.append(E)
+  for ext in [0, 0.25, 0.5, 0.75]:
+    for info, prune in zip([0.25, 0.5, 0.75, 1.00],
+                           [True, True, True, False]):
+      prefix = '        Base' if ext == 0 else 'F=%0.2f, B=%0.2f' % (ext, info)
+#       print(prefix)
+      E = [prefix]
+      for _ in xrange(reps):
+        newTab = xtrees(train=train, test=test, verbose=False).main()
+        after = array(predictor(tbl=newTab))
+        E.append(sum(after) / sum(before))
+      lst.append(E)
   return lst
 
 if __name__ == "__main__":
