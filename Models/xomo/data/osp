@@ -1,0 +1,23 @@
+@project osp1
+@discrete ?prec 1 2
+@discrete ?flex 2 5
+@discrete ?resl 1 3
+@discrete ?team 2 3
+@discrete ?pmat 1 2 3 4
+@discrete ?stor 3 4 5
+@discrete ?ruse 2 4
+@discrete ?docu 2 4
+@discrete ?acap 2 3
+@discrete ?pcon 2 3
+@discrete ?aexp 2 3
+@discrete ?ltex 2 3 4
+@discrete ?tool 2 3
+@discrete ?sced 1 2 3
+@discrete ?cplx 5 6
+@discrete ?kloc 75 125
+@discrete rely 5
+@discrete data 3
+@discrete pvol 2
+@discrete pcap 3
+@discrete plex 3
+@discrete site 3

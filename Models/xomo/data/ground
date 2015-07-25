@@ -1,0 +1,15 @@
+@project jplground
+@discrete ?rely 1 4
+@discrete ?data 2 3
+@discrete ?cplx 1 4
+@discrete ?time 3 4
+@discrete ?stor 3 4
+@discrete ?acap 3 5
+@discrete ?aexp 2 5
+@discrete ?pcap 3 5
+@discrete ?plex 1 4
+@discrete ?ltex 1 4
+@discrete ?pmat 2 3
+@discrete ?kloc 11 392
+@discrete tool 2
+@discrete sced 3
