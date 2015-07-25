@@ -9,7 +9,7 @@ cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 from dtree import *
 from table import *
-from _imports.where2 import *
+from where2 import *
 import makeAmodel
 import matplotlib.mlab as mlab
 # import matplotlib.pyplot as plt
