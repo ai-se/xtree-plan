@@ -1,5 +1,6 @@
 from pdb import set_trace
 from pom3 import pom3_builder
+import numpy as np
 # Generic Attribute class to implement in all models
 
 
@@ -189,9 +190,12 @@ def xomod(N=100):
   return head, body
 
 
-def howMuchEffort(row):
+def howMuchEffort(row, continuous=True):
   X = Xomo(model="all")
-  return X.c.xys(x=row)[-1]
+  if not continuous:
+    return X.c.xys(x=row)[-1]
+  else:
+    return np.sum([np.exp(-n) for n in X.c.xys(x=row)])
 
 
 def pom3d(N=50):
