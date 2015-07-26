@@ -3,7 +3,7 @@ from __future__ import print_function, division
 from numpy import array, asarray, mean, median, percentile, size, sum
 from pdb import set_trace
 from methods1 import createTbl
-from Prediction import rforest
+from Prediction import rforest, rforest2
 from _imports.weights import weights as W
 from os import environ, getcwd
 import csv
@@ -65,15 +65,19 @@ class patches():
   "Apply new patch."
 
   def __init__(
-          self, train, test, clusters, prune=False, B=0.33, verbose=False):
+          self, train, test, clusters, prune=False, B=0.33, verbose=False, bin=False):
     self.train = createTbl(train, isBin=True)
     self.test = createTbl(test, isBin=True)
-    self.pred = rforest(self.train, self.test, smoteit=True, duplicate=True)
     self.clusters = clusters
     self.Prune = prune
     self.B = B
     self.mask = self.fWeight()
     self.write = verbose
+    self.bin = bin
+    if bin:
+      self.pred = rforest2(self.train, self.test, smoteit=True, duplicate=True)
+    else:
+      self.pred = rforest(self.train, self.test, smoteit=True, duplicate=True)
 
   def min_max(self):
     allRows = array(
@@ -97,8 +101,12 @@ class patches():
     return array([0 if l < cutoff else l for l in L] if self.Prune else L)
 
   def delta0(self, node1, node2):
-    return array([el1 - el2 for el1, el2 in zip(node1.exemplar()
-                                                [:-1], node2.exemplar()[:-1])]) / self.min_max() * self.mask
+    if not self.bin:
+      return array([el1 - el2 for el1, el2 in zip(node1.exemplar()
+                                                  [:-1], node2.exemplar()[:-1])]) / self.min_max() * self.mask
+    else:
+      return array([el1 == el2 for el1, el2 in zip(node1.exemplar()
+                                                   [:-1], node2.exemplar()[:-1])])
 
   def delta(self, t):
     C = contrast(self.clusters)
@@ -107,11 +115,19 @@ class patches():
     return self.delta0(closest, better)
 
   def patchIt(self, t):
-    return (array(t.cells[:-2]) + self.delta(t)).tolist()
+    if not self.bin:
+      return (array(t.cells[:-2]) + self.delta(t)).tolist()
+    else:
+      return [1 - val if d and m > 0 else val for val, m,
+              d in zip(t.cells[:-2], self.mask, self.delta(t))]
 
   def newTable(self):
-    oldRows = [r for r, p in zip(self.test._rows, self.pred) if p > 0]
+    if not self.bin:
+      oldRows = [r for r, p in zip(self.test._rows, self.pred) if p > 0]
+    else:
+      oldRows = self.test._rows
     newRows = [self.patchIt(t) for t in oldRows]
+
     if self.write:
       self.deltasCSVWriter()
 
@@ -157,15 +173,27 @@ class strawman():
           cluster.append(row)
       yield node(cluster)
 
-  def main(self):
-    train_DF = createTbl(self.train, isBin=True)
-    test_DF = createTbl(self.test, isBin=True)
-    before = rforest(train=train_DF, test=test_DF)
-    clstr = [c for c in self.nodes(train_DF._rows)]
-    return patches(train=self.train,
-                   test=self.test,
-                   clusters=clstr,
-                   prune=self.prune).newTable()
+  def main(self, config=False):
+    if not config:
+      train_DF = createTbl(self.train, isBin=True)
+      test_DF = createTbl(self.test, isBin=True)
+      before = rforest(train=train_DF, test=test_DF)
+      clstr = [c for c in self.nodes(train_DF._rows)]
+      return patches(train=self.train,
+                     test=self.test,
+                     clusters=clstr,
+                     prune=self.prune).newTable()
+    else:
+      train_DF = createTbl(self.train, isBin=False)
+      test_DF = createTbl(self.test, isBin=False)
+      before = rforest2(train=train_DF, test=test_DF, regress=True)
+      clstr = [c for c in self.nodes(train_DF._rows)]
+      return patches(train=self.train,
+                     test=self.test,
+                     clusters=clstr,
+                     prune=self.prune,
+                     bin=True).newTable()
+
 
 if __name__ == '__main__':
   for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:

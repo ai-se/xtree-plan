@@ -62,10 +62,11 @@ class type1():
 
   def log2list(self):
     dir = './'
-    self.printHeader()
+#     self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
       if not file[-3:] == '.py':
+        print('\n## %s' % (file[:-4]))
         lst = []
         f = open(dir + '/' + file, 'r')
         for line in f:
@@ -73,7 +74,7 @@ class type1():
             lst.append(self.striplines(line[:-1]))
         if lst:
           self.list2sk(lst)
-    self.printFooter()
+#     self.printFooter()
 
 
 class type2():

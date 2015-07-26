@@ -13,7 +13,7 @@ cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 from random import choice, uniform as rand
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -124,6 +124,29 @@ def rforest(train, test, tunings=None, smoteit=True, duplicate=True):
                                  min_samples_leaf=int(tunings[2]),
                                  min_samples_split=int(tunings[3])
                                  )
+  train_DF = formatData(train)
+  test_DF = formatData(test)
+  features = train_DF.columns[:-2]
+  klass = train_DF[train_DF.columns[-2]]
+  # set_trace()
+  clf.fit(train_DF[features], klass)
+  preds = clf.predict(test_DF[test_DF.columns[:-2]])
+  return preds
+
+
+def rforest2(train, test, tunings=None, smoteit=True, duplicate=True):
+  "RF "
+  # Apply random forest Classifier to predict the number of bugs.
+  if smoteit:
+    train = SMOTE(train, atleast=50, atmost=101, resample=duplicate)
+  if not tunings:
+    clf = RandomForestRegressor(n_estimators=100, random_state=1)
+  else:
+    clf = RandomForestRegressor(n_estimators=int(tunings[0]),
+                                max_features=tunings[1] / 100,
+                                min_samples_leaf=int(tunings[2]),
+                                min_samples_split=int(tunings[3])
+                                )
   train_DF = formatData(train)
   test_DF = formatData(test)
   features = train_DF.columns[:-2]
