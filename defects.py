@@ -36,8 +36,22 @@ from Planner.strawman import strawman
 def write2file(data, fname='Untitled', ext='.txt'):
   with open(fname + ext, 'w') as fwrite:
     writer = csv.writer(fwrite, delimiter=',')
-    for b in data:
-      writer.writerow(b)
+    if not isinstance(data[0], list):
+      writer.writerow(data)
+    else:
+      for b in data:
+        writer.writerow(b)
+
+
+def genTable(tbl, rows):
+  header = [h.name for h in tbl.headers[:-1]]
+  with open('tmp.csv', 'w') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerow(header)
+    for el in rows:
+      writer.writerow(el[:-1])
+
+  return createTbl(['tmp.csv'])
 
 
 class run():
@@ -83,13 +97,13 @@ class run():
       set_trace()
 
   def go(self):
-
+    out_xtrees = ['xtrees']
+    out_HOW = ['HOW']
+    out_basln = ['Base']
+    out_baslnFss = ['Base+FSS']
     for _ in xrange(self.reps):
-      out_xtrees = ['xtrees']
-      out_HOW = ['HOW']
-      out_basln = ['Base']
-      out_baslnFss = ['Base+FSS']
       predRows = []
+      predRows1 = []
       train_DF = createTbl(self.train[self._n], isBin=True)
       test_df = createTbl(self.test[self._n], isBin=True)
       actual = np.array(Bugs(test_df))
@@ -97,13 +111,20 @@ class run():
                          tunings=self.tunedParams,
                          smoteit=True)
 
-      predRows = [row.cells for predicted,
-                  row in zip(actual, test_df._rows) if predicted > 0]
+      for predicted, row in zip(before, test_df._rows):
+        tmp = row.cells
+        tmp[-2] = predicted
+        if predicted > 0:
+          predRows.append(tmp)
 
-      predTest = clone(test_df, rows=predRows)
+      predRows1 = [row.cells for predicted,
+                   row in zip(before, test_df._rows) if predicted > 0]
+
+#       set_trace()
+      predTest = genTable(test_df, rows=predRows1)
 
       "Apply Different Planners"
-      xTrees = xtrees(train=self.train[-1], test_DF=predTest, bin=True).main()
+      xTrees = xtrees(train=self.train[-1], test_DF=predTest, bin=False).main()
       how = HOW(train=self.train[-1],
                 test=self.test[-1],
                 test_df=predTest).main()
@@ -114,8 +135,9 @@ class run():
       after = lambda newTab: self.pred(train_DF, newTab,
                                        tunings=self.tunedParams,
                                        smoteit=True)
-      frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]) / \
-          sum([0 if b < 1 else 1 for b in actual])
+#       frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]) / \
+#           sum([0 if b < 1 else 1 for b in before])
+      frac = lambda aft: sum(aft) / sum(before)
 
 #       set_trace()
       out_xtrees.append(frac(after(xTrees)))
@@ -123,6 +145,7 @@ class run():
       out_basln.append(frac(after(baseln)))
       out_baslnFss.append(frac(after(baselnFss)))
     print(out_xtrees, '\n', out_HOW, '\n', out_basln, '\n', out_baslnFss)
+    # ---------- Debug ----------
 
   def delta0(self, norm):
     before, after = open('before.txt'), open('after.txt')
@@ -179,7 +202,7 @@ class run():
 def _test(file='ant'):
   for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
     print('##', file)
-    R = run(dataName=file, reps=1).go()
+    R = run(dataName=file, reps=5).go()
 
 
 def deltaCSVwriter(type='Indv'):

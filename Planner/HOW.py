@@ -95,7 +95,7 @@ class treatments():
           test_df=None,
           fSelect=True,
           Prune=False,
-          infoPrune=0.5,
+          infoPrune=0.1,
           extent=0.75):
     self.test, self.train = test, train
     self.extent = extent
@@ -105,7 +105,7 @@ class treatments():
     self.far = far
     self.new_Tab = []
     self.train_df = train_df if train_df \
-        else createTbl(self.train, isBin=True, bugThres=1)
+        else createTbl(self.train, isBin=False, bugThres=1)
 
     self.test_df = test_df if test_df \
         else createTbl(self.test, isBin=True, bugThres=1)
