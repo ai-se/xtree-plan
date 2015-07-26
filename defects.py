@@ -96,9 +96,16 @@ class run():
     except:
       set_trace()
 
+  def logResults(self, *args):
+    with open('logs/' + self.dataName + '.log', 'w') as f:
+      for a in args:
+        print(a)
+        f.write(a)
+
   def go(self):
     out_xtrees = ['xtrees']
     out_HOW = ['HOW']
+    out_cart = ['CART']
     out_basln = ['Base']
     out_baslnFss = ['Base+FSS']
     for _ in xrange(self.reps):
@@ -124,10 +131,21 @@ class run():
       predTest = genTable(test_df, rows=predRows1)
 
       "Apply Different Planners"
-      xTrees = xtrees(train=self.train[-1], test_DF=predTest, bin=False).main()
+
+      xTrees = xtrees(train=self.train[-1],
+                      test_DF=predTest,
+                      bin=False,
+                      majority=True).main()
+
+      cart = xtrees(train=self.train[-1],
+                    test_DF=predTest,
+                    bin=False,
+                    majority=False).main()
+
       how = HOW(train=self.train[-1],
                 test=self.test[-1],
                 test_df=predTest).main()
+
       baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
       baselnFss = strawman(
           train=self.train[-1], test=self.test[-1], prune=True).main()
@@ -144,7 +162,7 @@ class run():
       out_HOW.append(frac(after(how)))
       out_basln.append(frac(after(baseln)))
       out_baslnFss.append(frac(after(baselnFss)))
-    print(out_xtrees, '\n', out_HOW, '\n', out_basln, '\n', out_baslnFss)
+    self.logResults(out_xtrees, out_HOW, out_basln, out_baslnFss)
     # ---------- Debug ----------
 
   def delta0(self, norm):
@@ -202,7 +220,7 @@ class run():
 def _test(file='ant'):
   for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
     print('##', file)
-    R = run(dataName=file, reps=5).go()
+    R = run(dataName=file, reps=1).go()
 
 
 def deltaCSVwriter(type='Indv'):

@@ -104,7 +104,7 @@ class xtrees():
   "Treatments"
 
   def __init__(self, train=None, test=None, test_DF=None,
-               verbose=True, smoteit=True, bin=False):
+               verbose=True, smoteit=True, bin=False, majority=False):
     self.train, self.test = train, test
     self.train_DF = createTbl(train, _smote=smoteit, isBin=bin)
     if not test_DF:
@@ -113,6 +113,7 @@ class xtrees():
       self.test_DF = test_DF
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
+    self.majority = majority
 
   def flatten(self, x):
     """
@@ -183,7 +184,7 @@ class xtrees():
     euclidDist = lambda a, b: ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
     midDist = lambda a, b: abs(sum(b) - sum(a)) / 2
     vals = []
-    current = store(node)  # Store current sample
+    current = store(node, majority=self.majority)  # Store current sample
     while node.lvl > -1:
       node = node.up  # Move to tree root
 
@@ -191,7 +192,7 @@ class xtrees():
     leaves = self.flatten([self.leaves(_k) for _k in node.kids])
 
     for leaf in leaves:
-      l = store(leaf)
+      l = store(leaf, majority=self.majority)
       for b in leaf.branch:
         dist = []
         if b[0] in [bb[0] for bb in current.node.branch]:

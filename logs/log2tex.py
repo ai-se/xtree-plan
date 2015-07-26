@@ -23,15 +23,19 @@ class type1():
   def striplines(self, line):
     #     set_trace()
     listedline = line.strip().split(',')  # split around the = sign
-    listedline[-2] = listedline[-2][:-2]
+    listedline[-1] = listedline[-1][:-1]
     listedline[0] = listedline[0][2:-1]
     self.projName = listedline[0][1:-1].strip().split('_')[0]
     name = ""
-    for l in listedline[:-25]:
+#     set_trace()
+    for l in listedline[0]:
       name += l
     lists = [name]
-    for ll in listedline[-25:-1]:
-      lists.append(float(ll))
+    for ll in listedline[1:]:
+      try:
+        lists.append(float(ll))
+      except:
+        set_trace()
     return lists
 
   def printHeader(self):
@@ -53,21 +57,22 @@ class type1():
     """)
 
   def list2sk(self, lst):
-    print("\subsection*{" + self.projName + "}")
-    rdivDemo(lst, isLatex=True)
+    #     print("\subsection*{" + self.projName + "}")
+    rdivDemo(lst, isLatex=False)
 
   def log2list(self):
-    dir = './log2/'
+    dir = './'
     self.printHeader()
     files = [filenames for (dirpath, dirnames, filenames) in walk(dir)][0]
     for file in files:
-      lst = []
-      f = open(dir + '/' + file, 'r')
-      for line in f:
-        if line:
-          lst.append(self.striplines(line[:-1]))
-      if lst:
-        self.list2sk(lst)
+      if not file[-3:] == '.py':
+        lst = []
+        f = open(dir + '/' + file, 'r')
+        for line in f:
+          if line:
+            lst.append(self.striplines(line[:-1]))
+        if lst:
+          self.list2sk(lst)
     self.printFooter()
 
 
