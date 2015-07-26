@@ -97,10 +97,8 @@ class run():
       set_trace()
 
   def logResults(self, *args):
-    with open('logs/' + self.dataName + '.log', 'w') as f:
-      for a in args:
-        print(a)
-        f.write(a)
+    for a in args:
+      print(a)
 
   def go(self):
     out_xtrees = ['xtrees']
@@ -218,9 +216,7 @@ class run():
 
 
 def _test(file='ant'):
-  for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
-    print('##', file)
-    R = run(dataName=file, reps=1).go()
+  R = run(dataName=file, reps=1).go()
 
 
 def deltaCSVwriter(type='Indv'):
