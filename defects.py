@@ -130,23 +130,23 @@ class run():
 
       "Apply Different Planners"
 
-      xTrees = xtrees(train=self.train[-1],
-                      test_DF=predTest,
-                      bin=False,
-                      majority=True).main()
+#       xTrees = xtrees(train=self.train[-1],
+#                       test_DF=predTest,
+#                       bin=False,
+#                       majority=True).main()
 
       cart = xtrees(train=self.train[-1],
                     test_DF=predTest,
                     bin=False,
                     majority=False).main()
 
-      how = HOW(train=self.train[-1],
-                test=self.test[-1],
-                test_df=predTest).main()
-
-      baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
-      baselnFss = strawman(
-          train=self.train[-1], test=self.test[-1], prune=True).main()
+#       how = HOW(train=self.train[-1],
+#                 test=self.test[-1],
+#                 test_df=predTest).main()
+#
+#       baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
+#       baselnFss = strawman(
+#           train=self.train[-1], test=self.test[-1], prune=True).main()
 
       after = lambda newTab: self.pred(train_DF, newTab,
                                        tunings=self.tunedParams,
@@ -156,13 +156,15 @@ class run():
       frac = lambda aft: sum(aft) / sum(before)
 
 #       set_trace()
-      out_xtrees.append(frac(after(xTrees)))
+#       out_xtrees.append(frac(after(xTrees)))
       out_cart.append(frac(after(cart)))
-      out_HOW.append(frac(after(how)))
-      out_basln.append(frac(after(baseln)))
-      out_baslnFss.append(frac(after(baselnFss)))
-    self.logResults(out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss)
-    return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
+#       out_HOW.append(frac(after(how)))
+#       out_basln.append(frac(after(baseln)))
+#       out_baslnFss.append(frac(after(baselnFss)))
+#     self.logResults(out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss)
+    self.logResults(out_cart)
+#     return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
+    return [out_cart]
     # ---------- Debug ----------
 
   def delta0(self, norm):

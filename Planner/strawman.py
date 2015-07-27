@@ -183,7 +183,7 @@ class strawman():
 
   def main(self, config=False):
     if not config:
-      train_DF = createTbl(self.train, isBin=True)
+      train_DF = createTbl(self.train, isBin=False)
       test_DF = createTbl(self.test, isBin=True)
       before = rforest(train=train_DF, test=test_DF)
       clstr = [c for c in self.nodes(train_DF._rows)]
