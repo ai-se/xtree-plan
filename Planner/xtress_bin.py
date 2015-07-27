@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from os import environ, getcwd
 from pdb import set_trace
-from random import uniform, randint
+from random import uniform, randint, shuffle
 import sys
 
 # Update PYTHONPATH
@@ -18,15 +18,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from Prediction import *
+from collections import Counter
+
 from _imports import *
 from abcd import _Abcd
 from cliffsDelta import *
-# from contrastset import *
-# from dectree import *
 from hist import *
 from smote import *
-import makeAmodel as mam
+import _imports.makeAmodel as mam
 from methods1 import *
 import numpy as np
 import pandas as pd
@@ -69,30 +68,54 @@ class deltas():
 
 class store():
 
-  def __init__(self, node):
+  def __init__(self, node, majority=False):
     self.node = node
     self.dist = 0
     self.DoC = 0
+    self.majority = majority
     self.score = self.scorer(node)
 
+  def minority(self, node):
+    unique = list(set([r.cells[-1] for r in node.rows]))
+    counts = len(unique) * [0]
+#     set_trace()
+    for n in xrange(len(unique)):
+      for d in [r.cells[-1] for r in node.rows]:
+        if unique[n] == d:
+          counts[n] += 1
+    return unique, counts
+
   def scorer(self, node):
-    return mean([r.cells[-2] for r in node.rows])
+    if self.majority:
+      unq, counts = self.minority(node)
+      id, maxel = 0, 0
+      for i, el in enumerate(counts):
+        if el > maxel:
+          maxel = el
+          id = i
+      return mean([r.cells[-2] for r in node.rows if r.cells[-1] == unq[id]])
+    else:
+      return mean([r.cells[-2] for r in node.rows])
 
 
-class treatments():
+class xtrees():
 
   "Treatments"
 
   def __init__(self, train=None, test=None, test_DF=None,
-               verbose=True, smoteit=True, bin=False):
+               verbose=True, smoteit=False, majority=False, bin=False):
     self.train, self.test = train, test
-    self.train_DF = createTbl(train, _smote=smoteit, isBin=False)
+    try:
+      self.train_DF = createTbl(train, _smote=smoteit, isBin=False)
+    except:
+      set_trace()
     if not test_DF:
       self.test_DF = createTbl(test, isBin=False)
     else:
       self.test_DF = test_DF
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
+    self.majority = majority
 
   def flatten(self, x):
     """
@@ -163,7 +186,7 @@ class treatments():
     euclidDist = lambda a, b: ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
     midDist = lambda a, b: abs(sum(b) - sum(a)) / 2
     vals = []
-    current = store(node)  # Store current sample
+    current = store(node, majority=self.majority)  # Store current sample
     while node.lvl > -1:
       node = node.up  # Move to tree root
 
@@ -171,7 +194,7 @@ class treatments():
     leaves = self.flatten([self.leaves(_k) for _k in node.kids])
 
     for leaf in leaves:
-      l = store(leaf)
+      l = store(leaf, majority=self.majority)
       for b in leaf.branch:
         dist = []
         if b[0] in [bb[0] for bb in current.node.branch]:
@@ -202,10 +225,10 @@ class treatments():
       return attr[unq[0]][-1]
 
   def getKey(self):
-    keys = {}
-    for i in xrange(len(self.test_DF.headers)):
-      keys.update({self.test_DF.headers[i].name[1:]: i})
-    return keys
+    try:
+      return {h.name[1:]: i for i, h in enumerate(self.test_DF.headers)}
+    except:
+      set_trace()
 
   def main(self):
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -213,7 +236,11 @@ class treatments():
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     # Decision Tree
-    t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))
+    t = discreteNums(
+        self.train_DF,
+        map(
+            lambda x: x.cells,
+            self.train_DF._rows))
     myTree = tdiv(t)
     # showTdiv(myTree)
     # set_trace()

@@ -56,8 +56,11 @@ class contrast():
     me = self.closest(testCase)
     others = [o for o in self.clusters if not me == o]
     betters = [f for f in others if f.exemplar()[-1] <= me.exemplar()[-1]]
-    return sorted([f for f in betters],
-                  key=lambda F: eDist(F.exemplar(), me.exemplar()))[0]
+    try:
+      return sorted([f for f in betters],
+                    key=lambda F: eDist(F.exemplar(), me.exemplar()))[0]
+    except:
+      return me
 
 
 class patches():
@@ -66,8 +69,13 @@ class patches():
 
   def __init__(
           self, train, test, clusters, prune=False, B=0.33, verbose=False, bin=False):
-    self.train = createTbl(train, isBin=True)
-    self.test = createTbl(test, isBin=True)
+    if bin:
+      self.train = createTbl(train, isBin=False)
+      self.test = createTbl(test, isBin=False)
+    else:
+      self.train = createTbl(train, isBin=True)
+      self.test = createTbl(test, isBin=True)
+
     self.clusters = clusters
     self.Prune = prune
     self.B = B
@@ -111,7 +119,7 @@ class patches():
   def delta(self, t):
     C = contrast(self.clusters)
     closest = C.closest(t)
-    better = C.envy(t, alpha=1)
+    better = C.envy(t, alpha=0.5)
     return self.delta0(closest, better)
 
   def patchIt(self, t):
@@ -186,7 +194,7 @@ class strawman():
     else:
       train_DF = createTbl(self.train, isBin=False)
       test_DF = createTbl(self.test, isBin=False)
-      before = rforest2(train=train_DF, test=test_DF, regress=True)
+      before = rforest2(train=train_DF, test=test_DF)
       clstr = [c for c in self.nodes(train_DF._rows)]
       return patches(train=self.train,
                      test=self.test,

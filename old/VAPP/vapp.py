@@ -20,7 +20,7 @@ HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
-WHAT = '../SOURCE/'
+WHAT = '/Users/rkrsn/git/Transfer-Learning/old/SOURCE'
 sys.path.extend([axe, pystat, cwd, WHAT])
 
 
@@ -105,7 +105,7 @@ class predictor():
 
 class fileHandler():
 
-  def __init__(self, dir='../CPM/'):
+  def __init__(self, dir='./Data/Seigmund/'):
     self.dir = dir
 
   def reformat(self, file, train_test=True, ttr=0.5, save=False):
@@ -132,14 +132,14 @@ class fileHandler():
           writer.writerow(b)
     elif train_test:
       # call(["mkdir", "./Data/" + file[:-7]], stdout=PIPE)
-      with open("./Data/" + file[:-7] + '/Train.csv', 'w+') as fwrite:
+      with open("./Data/Seigmund/tmp/" + file[:-7] + '/Train.csv', 'w+') as fwrite:
         writer = csv.writer(fwrite, delimiter=',')
         train = sample(body, int(ttr * len(body)))
         writer.writerow(header)
         for b in train:
           writer.writerow(b)
 
-      with open("./Data/" + file[:-7] + '/Test.csv', 'w+') as fwrite:
+      with open("./Data/Seigmund/tmp/" + file[:-7] + '/Test.csv', 'w+') as fwrite:
         writer = csv.writer(fwrite, delimiter=',')
         test = [b for b in body if not b in train]
         writer.writerow(header)
@@ -167,7 +167,7 @@ class fileHandler():
         self.reformat(f)
     datasets = []
     projects = {}
-    for (dirpath, dirnames, filenames) in walk(cwd + '/Data/'):
+    for (dirpath, dirnames, filenames) in walk(cwd + '/Data/Seigmund/tmp/%s/' % (name)):
       if name in dirpath:
         datasets.append([dirpath, filenames])
     return datasets
@@ -316,7 +316,7 @@ class fileHandler():
       for d in data:
         #       print("\\subsection{%s}\n \\begin{figure}\n \\centering" %
         #             (d[0].strip().split('/')[-1]))
-        if name == d[0].strip().split('/')[-1]:
+        if name == d[0].strip().split('/')[-2]:
           #           set_trace()
           train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
           test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
@@ -448,7 +448,7 @@ def overlayCurve(
 #   plt.close()
 
 
-def _test(name='Apache', doWhat='Accuracy'):
+def test(name='Apache', doWhat='AUC'):
   Accuracy = []
 #   preamble1()
   Gain = []
@@ -547,15 +547,12 @@ def _test(name='Apache', doWhat='Accuracy'):
 #     print(b)
 #   elif doWhat == 'Median':
 #     print(c)
-  a, b, c = fileHandler().main(name, reps=24,
-                               ext=0.75,
-                               _prune=True,
-                               _info=0.25,
-                               fSel=True)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
+  _, out, __ = fileHandler().main(name, reps=24,
+                                  ext=0.75,
+                                  _prune=True,
+                                  _info=0.25,
+                                  fSel=True)
+  return out[1:]
 
 
 def _doCrossVal():
@@ -631,7 +628,4 @@ def _testPlot(name='Apache'):
 #   print(r"\end{document}")
 
 if __name__ == '__main__':
-  #   _testPlot()
-  #  _test('BDBC', 'Median')
-  _test(name='BDBJ', doWhat='AUC')
-#   eval(cmd())
+  print(test(name='BDBJ', doWhat='AUC'))

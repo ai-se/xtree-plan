@@ -162,6 +162,7 @@ class run():
       out_basln.append(frac(after(baseln)))
       out_baslnFss.append(frac(after(baselnFss)))
     self.logResults(out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss)
+    return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
     # ---------- Debug ----------
 
   def delta0(self, norm):
@@ -217,7 +218,11 @@ class run():
 
 
 def _test(file='ant'):
-  R = run(dataName=file, reps=24).go()
+  for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
+    print('## %s\n```' % (file))
+    R = run(dataName=file, reps=16).go()
+    rdivDemo(R, isLatex=False)
+    print('```')
 
 
 def deltaCSVwriter(type='Indv'):
@@ -278,9 +283,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-  #   _test()
+  _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
   # deltaCSVwriter(type='Indv')
-  eval(cmd())
+#   eval(cmd())

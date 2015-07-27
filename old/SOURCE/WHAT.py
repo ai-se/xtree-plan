@@ -25,6 +25,28 @@ from scipy.spatial.distance import euclidean
 import pandas as pd
 
 
+class o:
+
+  def __init__(i, **d):
+    i.has().update(**d)
+
+  def has(i):
+    return i.__dict__
+
+  def update(i, **d):
+    i.has().update(d)
+    return i
+
+  def __repr__(i):
+    show = [':%s %s' % (k, i.has()[k])
+            for k in sorted(i.has().keys())
+            if k[0] is not "_"]
+    txt = ' '.join(show)
+    if len(txt) > 60:
+      show = map(lambda x: '\t' + x + '\n', show)
+    return '{' + ' '.join(show) + '}'
+
+
 def settings(**d):
   return o(
       name="WHAT",
@@ -206,7 +228,7 @@ class treatments():
       self.new_Tab.append(newRow)
 #     for gg, ff in zip(self.train_df._rows, self.test_df._rows):
 #       print([b - a for b, a in zip(gg.cells[:-2], ff.cells[:-2])])
-    scatterPlot(train=self.train_df, test=aa, delta=self.new_Tab).pcaProj()
+    # scatterPlot(train=self.train_df, test=aa, delta=self.new_Tab).pcaProj()
 
     return clone(
         self.test_df, rows=[r.cells for r in self.new_Tab], discrete=True)

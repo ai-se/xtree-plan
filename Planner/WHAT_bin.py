@@ -4,11 +4,8 @@ from __future__ import division
 from os import environ
 from os import getcwd
 from pdb import set_trace
-from weights import weights as W
-from random import random as rand
-from random import choice as any
+from random import uniform as rand
 from random import randint as randi
-from scatterPlot import scatterPlot
 import sys
 
 # Update PYTHONPATH
@@ -16,13 +13,47 @@ HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
+sys.path.extend([axe, pystat, '../'])
 
-from _imports import *
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from _imports.weights import weights as W
+
+from Prediction import *
+# from _imports.settingsWhere import o
+from cliffsDelta import *
+from hist import *
+from smote import *
+import _imports.makeAmodel as mam
 from methods1 import *
 import numpy as np
-from scipy.spatial.distance import euclidean
 import pandas as pd
+from counts import *
+# import sk
+
+
+class o:
+
+  def __init__(i, **d):
+    i.has().update(**d)
+
+  def has(i):
+    return i.__dict__
+
+  def update(i, **d):
+    i.has().update(d)
+    return i
+
+  def __repr__(i):
+    show = [':%s %s' % (k, i.has()[k])
+            for k in sorted(i.has().keys())
+            if k[0] is not "_"]
+    txt = ' '.join(show)
+    if len(txt) > 60:
+      show = map(lambda x: '\t' + x + '\n', show)
+    return '{' + ' '.join(show) + '}'
 
 
 def settings(**d):
@@ -69,7 +100,7 @@ class treatments():
           test,
           bin=False,
           far=True,
-          method='mean',
+          method='best',
           train_df=None,
           test_df=None,
           fSelect=True,
@@ -86,10 +117,10 @@ class treatments():
     self.bin = bin
     self.new_Tab = []
     self.train_df = train_df if train_df \
-        else createTbl(self.train, isBin=True, bugThres=1)
+        else createTbl(self.train, isBin=False, bugThres=1)
 
     self.test_df = test_df if test_df \
-        else createTbl(self.test, isBin=True, bugThres=1)
+        else createTbl(self.test, isBin=False, bugThres=1)
 
   def clusterer(self):
     IDs = list(set([f.cells[-1] for f in self.train_df._rows]))
@@ -206,7 +237,7 @@ class treatments():
       self.new_Tab.append(newRow)
 #     for gg, ff in zip(self.train_df._rows, self.test_df._rows):
 #       print([b - a for b, a in zip(gg.cells[:-2], ff.cells[:-2])])
-    scatterPlot(train=self.train_df, test=aa, delta=self.new_Tab).pcaProj()
+    # scatterPlot(train=self.train_df, test=aa, delta=self.new_Tab).pcaProj()
 
     return clone(
         self.test_df, rows=[r.cells for r in self.new_Tab], discrete=True)

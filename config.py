@@ -21,7 +21,7 @@ HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
+sys.path.extend([axe, pystat, cwd, './old/VAPP/'])
 
 
 from numpy import median
@@ -31,7 +31,9 @@ import pandas
 
 from Prediction import CART as cart
 from Prediction import formatData
-from Planner2 import *
+
+from vapp import test as HOW
+
 from cliffsDelta import cliffs
 from demos import cmd
 from methods1 import *
@@ -39,6 +41,10 @@ from sk import rdivDemo
 from sk import scottknott
 from smote import SMOTE
 from table import clone
+
+from Planner.xtress_bin import xtrees
+# from Planner.WHAT_bin import treatments as HOW
+from Planner.strawman import strawman
 
 
 def write2file(data, fname='Untitled', ext='.txt'):
@@ -112,7 +118,7 @@ class predictor():
 
 class fileHandler():
 
-  def __init__(self, dir='./Seigmund/'):
+  def __init__(self, dir='./Data/Seigmund/'):
     self.dir = dir
 
   def reformat(self, file, train_test=True, ttr=0.5, save=False):
@@ -139,14 +145,14 @@ class fileHandler():
           writer.writerow(b)
     elif train_test:
       # call(["mkdir", "./Data/" + file[:-7]], stdout=PIPE)
-      with open("./SeigmundTT/" + file[:-7] + '/Train.csv', 'w+') as fwrite:
+      with open("./Data/Seigmund/tmp/" + file[:-7] + '/Train.csv', 'w+') as fwrite:
         writer = csv.writer(fwrite, delimiter=',')
         train = sample(body, int(ttr * len(body)))
         writer.writerow(header)
         for b in train:
           writer.writerow(b)
 
-      with open("./SeigmundTT/" + file[:-7] + '/Test.csv', 'w+') as fwrite:
+      with open("./Data/Seigmund/tmp/" + file[:-7] + '/Test.csv', 'w+') as fwrite:
         writer = csv.writer(fwrite, delimiter=',')
         test = [b for b in body if not b in train]
         writer.writerow(header)
@@ -174,7 +180,7 @@ class fileHandler():
         self.reformat(f)
     datasets = []
     projects = {}
-    for (dirpath, dirnames, filenames) in walk(cwd + '/SeigmundTT/'):
+    for (dirpath, dirnames, filenames) in walk(cwd + '/Data/Seigmund/tmp/%s/' % (name)):
       if name in dirpath:
         datasets.append([dirpath, filenames])
     return datasets
@@ -196,12 +202,12 @@ class fileHandler():
         test_df.columns[-2]].astype('float32').tolist()
     before = predictor(train=train_df, test=test_df).rforest()
 #           set_trace()
-    newTab = treatments(
+    newTab = HOW(
         train=train,
-        test=test, smoteit=False, bin=False).main()
+        test=test, bin=False).main()
     newTab_df = formatData(newTab)
     after = predictor(train=train_df, test=newTab_df).rforest()
-    return actual, before, after
+    return newTab
 
   def delta0(self):
     before, after = open('before_cpm.txt'), open('after_cpm.txt')
@@ -218,6 +224,7 @@ class fileHandler():
     delta = []
     data = self.explorer(name)
     for d in data:
+      set_trace()
       if name == d[0].strip().split('/')[-1]:
         train = [d[0] + '/' + d[1][1]]
         test = [d[0] + '/' + d[1][0]]
@@ -265,25 +272,60 @@ class fileHandler():
     return result
 
   def main(self, name='Apache', reps=20):
-    effectSize = []
-    Accuracy = []
-    out_auc = [name]
-    out_md = [name]
-    out_acc = [name]
+    out_xtrees = ['xtrees']
+    out_HOW = ['HOW']
+    out_cart = ['CART']
+    out_basln = ['Base']
+    out_baslnFss = ['Base+FSS']
     for _ in xrange(reps):
       data = self.explorer(name)
       for d in data:
-        if name == d[0].strip().split('/')[-1]:
+        if name == d[0].strip().split('/')[-2]:
           #           set_trace()
-          train = [d[0] + '/' + d[1][1]]
-          test = [d[0] + '/' + d[1][0]]
-          actual, before, after = self.planner(train, test)
-          cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
-          out_auc.append(sum(after) / sum(before))
-          out_md.append(median(after) / median(before))
-          out_acc.extend(
-              [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-    return out_acc, out_auc, out_md
+          train = [d[0] + d[1][1]]
+          test = [d[0] + d[1][0]]
+#           set_trace()
+          train_df = formatData(createTbl(train, _smote=False, isBin=False))
+          test_df = formatData(createTbl(test, _smote=False, isBin=False))
+          actual = test_df[test_df.columns[-2]].astype('float32').tolist()
+          before = predictor(train=train_df, test=test_df).rforest()
+
+          "Apply Different Planners"
+
+          xTrees = xtrees(train=train,
+                          test=test,
+                          bin=False,
+                          majority=True).main()
+
+          cart = xtrees(train=train,
+                        test=test,
+                        bin=False,
+                        majority=False).main()
+
+          how = HOW(name)
+          baseln = strawman(
+              train=train,
+              test=test).main(
+              config=True)
+
+          baselnFss = strawman(
+              train=train,
+              test=test,
+              prune=True).main(config=True)
+
+          after = lambda newTab: predictor(
+              train=train_df,
+              test=formatData(newTab)).rforest()
+          frac = lambda aft: sum(aft) / sum(before)
+    #       set_trace()
+          out_xtrees.append(frac(after(xTrees)))
+          out_cart.append(frac(after(cart)))
+          out_HOW.extend(how)
+          out_basln.append(frac(after(baseln)))
+          out_baslnFss.append(frac(after(baselnFss)))
+
+    return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
+
     #----------- DEGUB ----------------
 #     set_trace()
 
@@ -320,25 +362,15 @@ def rdiv():
     lst.append(striplines(line[:-1]))
 
   rdivDemo(lst, isLatex=False)
-#   set_trace()
 
 
-def _test(name='Apache', doWhat='Accuracy'):
-  Accuracy = []
-  Gain = []
-  medianDelta = []
-  a, b, c = fileHandler().main(name, reps=10)
-  if doWhat == 'AUC':
-    print(b)
-  elif doWhat == 'Median':
-    print(c)
+def _test(name='Apache'):
+  for name in ['Apache', 'BDBC', 'BDBJ', 'LLVM', 'X264', 'SQL']:
+    print('## %s \n```' % (name))
+    R = fileHandler().main(name, reps=10)
+    rdivDemo(R, isLatex=False)
+    print('```')
+#     set_trace()
 
 if __name__ == '__main__':
-
-#  rdiv()
-  #   _testPlot()
-  #  _test('BDBC', 'Median')
-  for name in ['Apache', 'BDBC', 'BDBJ', 'LLVM', 'X264', 'SQL']:
-    # deltasTester(name)
-    _test(name=name, doWhat='AUC')
-#   eval(cmd())
+  _test()
