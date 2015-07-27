@@ -18,7 +18,7 @@ import pandas as pd
 import csv
 
 from abcd import _Abcd
-from cliffsDelta import cliffs
+#from cliffsDelta import cliffs
 from _imports.dEvol import tuner
 from demos import cmd
 from sk import rdivDemo
@@ -167,8 +167,8 @@ class run():
 #    # ---------- Debug ----------
 #    set_trace()
 
-  def delta0(self, norm, planner='xtrees'):
-    before, after = open('.tmp/before.txt'), open('.tmp/' + planner + '.txt')
+  def delta0(self, norm, Planner='xtrees'):
+    before, after = open('.tmp/before.txt'), open('.tmp/' + Planner + '.txt')
     for line1, line2 in zip(before, after):
       row1 = np.array([float(l) for l in line1.strip().split(',')[:-1]])
       row2 = np.array([float(l) for l in line2.strip().split(',')])
@@ -200,8 +200,8 @@ class run():
     for _ in xrange(1):
       predTest = clone(test_df, rows=predRows)
 
-      newRows = lambda newTab: np.array(map(lambda Rows: Rows.cells[:-1]
-                                      , newTab._rows))
+      newRows = lambda newTab: map(lambda Rows: Rows.cells[:-1]
+                                      , newTab._rows)
 
       "Apply Different Planners"
       if planner == 'xtrees':
@@ -218,7 +218,7 @@ class run():
                       test_DF=predTest,
                       bin=False,
                       majority=False).main()
-        write2file(newRows(xTrees), fname='cart')  # save file
+        write2file(newRows(cart), fname='cart')  # save file
         delta.append([d for d in self.delta0(Planner='cart', norm=min_max())])
         return delta[0]
 
@@ -226,20 +226,20 @@ class run():
         how = HOW(train=self.train[-1],
                 test=self.test[-1],
                 test_df=predTest).main()
-        write2file(newRows(xTrees), fname='HOW')  # save file
+        write2file(newRows(how), fname='HOW')  # save file
         delta.append([d for d in self.delta0(Planner='HOW', norm=min_max())])
         return delta[0]
 
       elif planner == 'Baseline':
         baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
-        write2file(newRows(xTrees), fname='base0')  # save file
+        write2file(newRows(baseln), fname='base0')  # save file
         delta.append([d for d in self.delta0(Planner='base0', norm=min_max())])
         return delta[0]
 
       elif planner == 'Baseline+FS':
         baselnFss = strawman(
           train=self.train[-1], test=self.test[-1], prune=True).main()
-        write2file(newRows(xTrees), fname='base1')  # save file
+        write2file(newRows(baselnFss), fname='base1')  # save file
         delta.append([d for d in self.delta0(Planner='base1', norm=min_max())])
         return delta[0]
 

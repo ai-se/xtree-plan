@@ -13,12 +13,9 @@ pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
-from Planning import *
 from Prediction import *
-from _imports import *
+from _imports import dEvol
 from abcd import _Abcd
-from cliffsDelta import cliffs
-from dEvol import tuner
 from demos import cmd
 from methods1 import *
 from sk import rdivDemo
@@ -52,8 +49,8 @@ class counter():
     F1 = 2 * self.TP / (2 * self.TP + self.FP + self.FN)
     G = 2 * Sen * Spec / (Sen + Spec)
     G1 = Sen * Spec / (Sen + Spec)
-    return Sen, Spec, Prec, Acc, F1, G    
-    
+    return Sen, Spec, Prec, Acc, F1, G
+
 
 
 class ABCD():
@@ -73,7 +70,7 @@ class data():
   """
   Hold training and testing data
   """
-  def __init__(self, dataName='ant', dir="./Jureczko"):
+  def __init__(self, dataName='ant', dir="./Data/Jureczko"):
     projects = [Name for _, Name, __ in walk(dir)][0]
     numData = len(projects)  # Number of data
     one, two = explore(dir)
@@ -88,32 +85,32 @@ class data():
         if name == dataName:
           return indx
     self.train = [dat[0] for dat in withinClass(data[whereis()])]
-    self.test  = [dat[1] for dat in withinClass(data[whereis()])]
+    self.test = [dat[1] for dat in withinClass(data[whereis()])]
 
 
 class testOracle():
-  
+
   def __init__(self, file='ant'):
     self.file = file
-    self.train = createTbl(data(dataName=self.file).train[-1], isBin=False)
-    self.test  = createTbl(data(dataName=self.file).test[-1],  isBin=False)
-    self.param = tuner(rforest, data(dataName=self.file).train[-1])
-    
+    self.train = createTbl(data(dataName=self.file).train[-1], isBin=True)
+    self.test = createTbl(data(dataName=self.file).test[-1], isBin=True)
+    self.param = dEvol.tuner(rforest, data(dataName=self.file).train[-1])
+
   def main(self):
     actual = Bugs(self.test)
     predicted = rforest(self.train, self.test, tunings=self.param, smoteit=True)
     print("Bugs, Pd, Pf")
     try:
       for k in ABCD(before=actual, after=predicted).all():
-        print('%d, %0.2f, %0.2f'%(k.indx, k.stats()[0], k.stats()[1]))
+        print('%d, %0.2f, %0.2f' % (k.indx, k.stats()[0], k.stats()[1]))
     except:
       pass
     #   # ---------- DEBUG ----------
     #   set_trace()
 
-if __name__=="__main__":
-  for name in ['jedit', 'lucene', 'poi', 'ant']:
-    print('### '+ name)
-    testOracle(file='ant').main()
+if __name__ == "__main__":
+  for name in ['jedit', 'lucene', 'poi', 'ant', 'ivy']:
+    print('### ' + name)
+    testOracle(file=name).main()
 
 
