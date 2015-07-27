@@ -167,7 +167,7 @@ class run():
 #    # ---------- Debug ----------
 #    set_trace()
 
-  def delta0(self, planner='xtrees', norm):
+  def delta0(self, norm, planner='xtrees'):
     before, after = open('.tmp/before.txt'), open('.tmp/' + planner + '.txt')
     for line1, line2 in zip(before, after):
       row1 = np.array([float(l) for l in line1.strip().split(',')[:-1]])
@@ -315,9 +315,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-  _test()
+#  _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
-  # deltaCSVwriter(type='Indv')
+  deltaCSVwriter(type='Indv')
 #   eval(cmd())
