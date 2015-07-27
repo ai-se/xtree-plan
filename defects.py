@@ -34,7 +34,7 @@ from Planner.strawman import strawman
 
 
 def write2file(data, fname='Untitled', ext='.txt'):
-  with open(fname + ext, 'w') as fwrite:
+  with open('.tmp/' + fname + ext, 'w') as fwrite:
     writer = csv.writer(fwrite, delimiter=',')
     if not isinstance(data[0], list):
       writer.writerow(data)
@@ -151,19 +151,21 @@ class run():
       after = lambda newTab: self.pred(train_DF, newTab,
                                        tunings=self.tunedParams,
                                        smoteit=True)
-#       frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]) / \
-#           sum([0 if b < 1 else 1 for b in before])
+
       frac = lambda aft: sum(aft) / sum(before)
 
-#       set_trace()
       out_xtrees.append(frac(after(xTrees)))
       out_cart.append(frac(after(cart)))
       out_HOW.append(frac(after(how)))
       out_basln.append(frac(after(baseln)))
       out_baslnFss.append(frac(after(baselnFss)))
+
     self.logResults(out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss)
+
     return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
-    # ---------- Debug ----------
+
+#    # ---------- Debug ----------
+#    set_trace()
 
   def delta0(self, norm):
     before, after = open('before.txt'), open('after.txt')
@@ -179,25 +181,16 @@ class run():
     test_df = createTbl(self.test[self._n], isBin=True, bugThres=1)
     before = self.pred(train_DF, test_df, tunings=self.tunedParams,
                        smoteit=True)
-    allRows = np.array(
-        map(
-            lambda Rows: np.array(
-                Rows.cells[
-                    :-
-                    1]),
-            train_DF._rows +
-            test_df._rows))
+    allRows = np.array(map(lambda Rows: np.array(Rows.cells[:-1])
+                           , train_DF._rows + test_df._rows))
 
     def min_max():
       N = len(allRows[0])
       base = lambda X: sorted(X)[-1] - sorted(X)[0]
       return [base([r[i] for r in allRows]) for i in xrange(N)]
 
-    for predicted, row in zip(before, test_df._rows):
-      tmp = row.cells
-      tmp[-2] = predicted
-      if predicted > 0:
-        predRows.append(tmp)
+    predRows = [row.cells for predicted,
+                   row in zip(before, test_df._rows) if predicted > 0]
 
     write2file(predRows, fname='before')  # save file
 
@@ -206,9 +199,36 @@ class run():
     """
     for _ in xrange(1):
       predTest = clone(test_df, rows=predRows)
-      newTab = xtrees(train=self.train[self._n], test_DF=predTest).main()
-      newRows = np.array(map(lambda Rows: Rows.cells[:-1], newTab._rows))
-      write2file(newRows, fname='after')  # save file
+
+      "Apply Different Planners"
+
+      xTrees = xtrees(train=self.train[-1],
+                      test_DF=predTest,
+                      bin=False,
+                      majority=True).main()
+
+      cart = xtrees(train=self.train[-1],
+                    test_DF=predTest,
+                    bin=False,
+                    majority=False).main()
+
+      how = HOW(train=self.train[-1],
+                test=self.test[-1],
+                test_df=predTest).main()
+
+      baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
+
+      baselnFss = strawman(
+          train=self.train[-1], test=self.test[-1], prune=True).main()
+
+      newRows = lambda newTab: np.array(map(lambda Rows: Rows.cells[:-1], newTab._rows))
+
+      write2file(newRows(xTrees), fname='xTrees')  # save file
+      write2file(newRows(cart), fname='CART')  # save file
+      write2file(newRows(how), fname='HOW')  # save file
+      write2file(newRows(baseln), fname='basln0')  # save file
+      write2file(newRows(baselnFss), fname='baseln1')  # save file
+
       delta.append([d for d in self.delta0(norm=min_max())])
 
     return delta[0]
