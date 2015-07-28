@@ -49,7 +49,7 @@ def genTable(tbl, rows):
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
-      writer.writerow(el[:-1])
+      writer.writerow(el[:-2] + [1])
 
   return createTbl(['tmp.csv'])
 
@@ -109,6 +109,7 @@ class run():
     for _ in xrange(self.reps):
       predRows = []
       predRows1 = []
+      delta = []
       train_DF = createTbl(self.train[self._n], isBin=True)
       test_df = createTbl(self.test[self._n], isBin=True)
       actual = np.array(Bugs(test_df))
@@ -116,17 +117,19 @@ class run():
                          tunings=self.tunedParams,
                          smoteit=True)
 
-      for predicted, row in zip(before, test_df._rows):
-        tmp = row.cells
-        tmp[-2] = predicted
-        if predicted > 0:
-          predRows.append(tmp)
+      # >> BEGIN
+      allRows = np.array(map(lambda Rows: np.array(Rows.cells[:-1])
+                             , train_DF._rows + test_df._rows))
+      base = lambda X: sorted(X)[-1] - sorted(X)[0]
+      self.min_max = [base([r[i] for r in allRows]) for i in xrange(len(allRows[0]))]
 
-      predRows1 = [row.cells for predicted,
+      predRows = [row.cells for predicted,
                    row in zip(before, test_df._rows) if predicted > 0]
 
-#       set_trace()
-      predTest = genTable(test_df, rows=predRows1)
+      predTest = genTable(test_df, rows=predRows)
+      newRows = lambda newTab: map(lambda Rows: Rows.cells[:-1], newTab._rows)
+
+      write2file(predRows, fname='before')  # save file
 
       "Apply Different Planners"
 
@@ -135,18 +138,25 @@ class run():
                       bin=False,
                       majority=True).main()
 
-      cart = xtrees(train=self.train[-1],
-                    test_DF=predTest,
-                    bin=False,
-                    majority=False).main()
+      write2file(newRows(xTrees), fname='xtrees')  # save file
 
-      how = HOW(train=self.train[-1],
-                test=self.test[-1],
-                test_df=predTest).main()
-
-      baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
-      baselnFss = strawman(
-          train=self.train[-1], test=self.test[-1], prune=True).main()
+#      cart = xtrees(train=self.train[-1],
+#                    test_DF=predTest,
+#                    bin=False,
+#                    majority=False).main()
+#      write2file(newRows(cart), fname='cart')  # save file
+#
+#      how = HOW(train=self.train[-1],
+#                test=self.test[-1],
+#                test_df=predTest).main()
+#      write2file(newRows(cart), fname='HOW')  # save file
+#
+#      baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
+#      write2file(newRows(cart), fname='base0')  # save file
+#
+#      baselnFss = strawman(
+#          train=self.train[-1], test=self.test[-1], prune=True).main()
+#      write2file(newRows(cart), fname='base1')  # save file
 
       after = lambda newTab: self.pred(train_DF, newTab,
                                        tunings=self.tunedParams,
@@ -155,12 +165,12 @@ class run():
       frac = lambda aft: sum(aft) / sum(before)
 
       out_xtrees.append(frac(after(xTrees)))
-      out_cart.append(frac(after(cart)))
-      out_HOW.append(frac(after(how)))
-      out_basln.append(frac(after(baseln)))
-      out_baslnFss.append(frac(after(baselnFss)))
+#      out_cart.append(frac(after(cart)))
+#      out_HOW.append(frac(after(how)))
+#      out_basln.append(frac(after(baseln)))
+#      out_baslnFss.append(frac(after(baselnFss)))
 
-    self.logResults(out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss)
+#    self.logResults(out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss)
 
     return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
 
@@ -177,72 +187,27 @@ class run():
   def deltas(self, planner):
     predRows = []
     delta = []
-    train_DF = createTbl(self.train[self._n], isBin=True, bugThres=1)
-    test_df = createTbl(self.test[self._n], isBin=True, bugThres=1)
-    before = self.pred(train_DF, test_df, tunings=self.tunedParams,
-                       smoteit=True)
-    allRows = np.array(map(lambda Rows: np.array(Rows.cells[:-1])
-                           , train_DF._rows + test_df._rows))
+#    self.go()  #Apply Learners
 
-    def min_max():
-      N = len(allRows[0])
-      base = lambda X: sorted(X)[-1] - sorted(X)[0]
-      return [base([r[i] for r in allRows]) for i in xrange(N)]
+    if planner == 'xtrees':
+      delta.append([d for d in self.delta0(Planner='xtrees', norm=self.min_max)])
+      return delta[0]
 
-    predRows = [row.cells for predicted,
-                   row in zip(before, test_df._rows) if predicted > 0]
+    elif planner == 'cart' or planner == 'CART':
+      delta.append([d for d in self.delta0(Planner='cart', norm=self.min_max)])
+      return delta[0]
 
-    write2file(predRows, fname='before')  # save file
+    elif planner == 'HOW':
+      delta.append([d for d in self.delta0(Planner='HOW', norm=self.min_max)])
+      return delta[0]
 
-    """
-    Apply Learner
-    """
-    for _ in xrange(1):
-      predTest = clone(test_df, rows=predRows)
+    elif planner == 'Baseline':
+      delta.append([d for d in self.delta0(Planner='base0', norm=self.min_max)])
+      return delta[0]
 
-      newRows = lambda newTab: map(lambda Rows: Rows.cells[:-1]
-                                      , newTab._rows)
-
-      "Apply Different Planners"
-      if planner == 'xtrees':
-        xTrees = xtrees(train=self.train[-1],
-                        test_DF=predTest,
-                        bin=False,
-                        majority=True).main()
-        write2file(newRows(xTrees), fname='xtrees')  # save file
-        delta.append([d for d in self.delta0(Planner='xtrees', norm=min_max())])
-        set_trace()
-        return delta[0]
-
-      elif planner == 'cart' or planner == 'CART':
-        cart = xtrees(train=self.train[-1],
-                      test_DF=predTest,
-                      bin=False,
-                      majority=False).main()
-        write2file(newRows(cart), fname='cart')  # save file
-        delta.append([d for d in self.delta0(Planner='cart', norm=min_max())])
-        return delta[0]
-
-      elif planner == 'HOW':
-        how = HOW(train=self.train[-1],
-                test=self.test[-1],
-                test_df=predTest).main()
-        write2file(newRows(how), fname='HOW')  # save file
-        delta.append([d for d in self.delta0(Planner='HOW', norm=min_max())])
-        return delta[0]
-
-      elif planner == 'Baseline':
-        baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
-        write2file(newRows(baseln), fname='base0')  # save file
-        delta.append([d for d in self.delta0(Planner='base0', norm=min_max())])
-        return delta[0]
-
-      elif planner == 'Baseline+FS':
-        baselnFss = strawman(
-          train=self.train[-1], test=self.test[-1], prune=True).main()
-        write2file(newRows(baselnFss), fname='base1')  # save file
-        delta.append([d for d in self.delta0(Planner='base1', norm=min_max())])
-        return delta[0]
+    elif planner == 'Baseline+FS':
+      delta.append([d for d in self.delta0(Planner='base1', norm=self.min_max)])
+      return delta[0]
 
    # -------- DEBUG! --------
     # set_trace()
@@ -251,7 +216,7 @@ class run():
 def _test(file='ant'):
   for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
     print('## %s\n```' % (file))
-    R = run(dataName=file, reps=16).go()
+    R = run(dataName=file, reps=1).go()
     rdivDemo(R, isLatex=False)
     print('```')
 
@@ -260,8 +225,10 @@ def deltaCSVwriter(type='Indv'):
   if type == 'Indv':
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
       print('##', name)
-      for p in ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
-        delta = run(dataName=name).deltas(planner=p)
+      R = run(dataName=name, reps=1)  # Setup Files.
+      R.go()  # Run Planners.
+      for p in ['xtrees']:  #, 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
+        delta = R.deltas(planner=p)
         y = np.median(delta, axis=0)
         yhi, ylo = np.percentile(delta, q=[75, 25], axis=0)
         dat1 = sorted([(h.name[1:], a, b, c) for h, a, b, c in zip(
@@ -317,9 +284,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-  _test()
+#  _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
-#  deltaCSVwriter(type='Indv')
+  deltaCSVwriter(type='Indv')
 #   eval(cmd())

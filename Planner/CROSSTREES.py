@@ -240,7 +240,7 @@ class xtrees():
             lambda x: x.cells,
             self.train_DF._rows))
     myTree = tdiv(t)
-
+#    set_trace()
     # Testing data
     testCase = self.test_DF._rows
     for tC in testCase:
@@ -252,9 +252,9 @@ class xtrees():
         self.mod.append(node.newRow)
       else:
         node.contrastSet = [self.finder2(node.loc, pos='near')]
-
+        set_trace()
         # Now generate 1 potential patch
-        patch = node.patches(self.keys, N_Patches=5)
+        patch = node.patches(self.keys, N_Patches=1)
         # Shuffle
         shuffle(patch)
         p = patch.pop()
@@ -271,7 +271,7 @@ class xtrees():
 def _planningTest():
   # Test contrast sets
   n = 0
-  Dir = 'Data/'
+  Dir = 'Data/Jureczko/'
   one, two = explore(Dir)
   # Training data
   _ = xtrees(train=one[n],
