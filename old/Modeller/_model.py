@@ -191,7 +191,7 @@ def xomod(N=100):
 
 def howMuchEffort(row):
   X = Xomo(model="all")
-  return X.c.xys(x=row)[-1]
+  return X.c.xys(x=row)[1]
 
 
 def pom3d(N=50):

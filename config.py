@@ -69,33 +69,6 @@ class predictor():
     self.smoteit = smoteit
     self.duplicate = duplicate
 
-  def CART(self):
-    "  CART"
-    # Apply random forest Classifier to predict the number of bugs.
-    if self.smoteit:
-      self.train = SMOTE(
-          self.train,
-          atleast=50,
-          atmost=101,
-          resample=self.duplicate)
-
-    if not self.tuning:
-      clf = DecisionTreeRegressor(random_state=1)
-    else:
-      clf = DecisionTreeRegressor(max_depth=int(self.tunings[0]),
-                                  min_samples_split=int(self.tunings[1]),
-                                  min_samples_leaf=int(self.tunings[2]),
-                                  max_features=float(self.tunings[3] / 100),
-                                  max_leaf_nodes=int(self.tunings[4]),
-                                  criterion='entropy', random_state=1)
-    features = self.train.columns[:-2]
-    klass = self.train[self.train.columns[-2]]
-    # set_trace()
-    clf.fit(self.train[features].astype('float32'), klass.astype('float32'))
-    preds = clf.predict(
-        self.test[self.test.columns[:-2]].astype('float32')).tolist()
-    return preds
-
   def rforest(self):
     "  RF"
     # Apply random forest Classifier to predict the number of bugs.
@@ -109,12 +82,10 @@ class predictor():
                                   random_state=1)
     features = self.train.columns[:-2]
     klass = self.train[self.train.columns[-2]]
-    # set_trace()
     clf.fit(self.train[features].astype('float32'), klass.astype('float32'))
     preds = clf.predict(
         self.test[self.test.columns[:-2]].astype('float32')).tolist()
     return preds
-
 
 class fileHandler():
 
@@ -185,16 +156,6 @@ class fileHandler():
         datasets.append([dirpath, filenames])
     return datasets
 
-  def explorer2(self, name):
-    files = [filenames for (
-        dirpath,
-        dirnames,
-        filenames) in walk(self.dir)][0]
-    for f in files:
-      if name in f:
-        return [self.dir + f]
-#     return files, [self.file2pandas(dir + file) for file in files]
-
   def planner(self, train, test):
     train_df = formatData(createTbl(train, _smote=False, isBin=False))
     test_df = formatData(createTbl(test, _smote=False, isBin=False))
@@ -231,12 +192,8 @@ class fileHandler():
         train_DF = createTbl(train, isBin=False)
         test_df = createTbl(test, isBin=False)
         self.headers = train_DF.headers
-        write2file(
-            map(
-                lambda r: r.cells[
-                    :-2],
-                test_df._rows),
-            fname='before_cpm')  # save file
+        write2file(map(lambda r: r.cells[:-2], test_df._rows)
+                   , fname='before_cpm')  # save file
 
         """
         Apply Learner
