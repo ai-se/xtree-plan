@@ -211,6 +211,7 @@ class run():
                         majority=True).main()
         write2file(newRows(xTrees), fname='xtrees')  # save file
         delta.append([d for d in self.delta0(Planner='xtrees', norm=min_max())])
+        set_trace()
         return delta[0]
 
       elif planner == 'cart' or planner == 'CART':
@@ -268,10 +269,11 @@ def deltaCSVwriter(type='Indv'):
         dat = np.asarray([(d[0], n, d[1], d[2], d[3])
                           for d, n in zip(dat1, range(1, 21))])
         with open('/Users/rkrsn/git/GNU-Plots/rkrsn/errorbar/%s.csv' % \
-                  (name + '_' + p), 'w') as csvfile:
+                  (name + '-' + p), 'w') as csvfile:
           writer = csv.writer(csvfile, delimiter=' ')
           for el in dat[()]:
             writer.writerow(el)
+      set_trace()
   elif type == 'All':
     delta = []
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
@@ -315,9 +317,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-#  _test()
+  _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
-  deltaCSVwriter(type='Indv')
+#  deltaCSVwriter(type='Indv')
 #   eval(cmd())
