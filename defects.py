@@ -34,7 +34,7 @@ from Planner.strawman import strawman
 
 
 def write2file(data, fname='Untitled', ext='.txt'):
-  with open('.tmp/' + fname + ext, 'w') as fwrite:
+  with open('.temp/' + fname + ext, 'w') as fwrite:
     writer = csv.writer(fwrite, delimiter=',')
     if not isinstance(data[0], list):
       writer.writerow(data)
@@ -168,7 +168,7 @@ class run():
 #    set_trace()
 
   def delta0(self, norm, Planner='xtrees'):
-    before, after = open('.tmp/before.txt'), open('.tmp/' + Planner + '.txt')
+    before, after = open('.temp/before.txt'), open('.temp/' + Planner + '.txt')
     for line1, line2 in zip(before, after):
       row1 = np.array([float(l) for l in line1.strip().split(',')[:-1]])
       row2 = np.array([float(l) for l in line2.strip().split(',')])
