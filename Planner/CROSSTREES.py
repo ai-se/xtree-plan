@@ -5,6 +5,7 @@ from os import environ, getcwd
 from pdb import set_trace
 from random import uniform, randint, shuffle
 import sys
+import csv
 
 # Update PYTHONPATH
 HOME = environ['HOME']
@@ -33,6 +34,17 @@ from methods1 import *
 import numpy as np
 import pandas as pd
 import sk
+
+
+def genTable(tbl, rows):
+  header = [h.name for h in tbl.headers[:-1]]
+  with open('tmp.csv', 'w') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerow(header)
+    for el in rows:
+      writer.writerow(el[:-1])
+
+  return createTbl(['tmp.csv'])
 
 
 class deltas():
@@ -213,7 +225,7 @@ class xtrees():
     unq = sorted(list(set([v.DoC for v in best])))  # A list of all DoCs..
     for dd in unq:
       bests.update(
-          {dd: sorted([v for v in best if v.DoC == dd], key=lambda F: F.dist)})
+          {dd: sorted([v for v in best if v.DoC == dd], key=lambda F: F.score)})
       attr.update({dd: self.attributes(
           sorted([v for v in best if v.DoC == dd], key=lambda F: F.score))})
 
@@ -252,7 +264,6 @@ class xtrees():
         self.mod.append(node.newRow)
       else:
         node.contrastSet = [self.finder2(node.loc, pos='near')]
-        set_trace()
         # Now generate 1 potential patch
         patch = node.patches(self.keys, N_Patches=1)
         # Shuffle
@@ -265,7 +276,8 @@ class xtrees():
 
       # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
         # set_trace()
-    return clone(self.test_DF, rows=[k.cells for k in self.mod], discrete=True)
+    return genTable(
+        self.test_DF, rows=[k.cells for k in self.mod])
 
 
 def _planningTest():
