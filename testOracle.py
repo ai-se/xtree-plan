@@ -90,11 +90,12 @@ class data():
 
 class testOracle():
 
-  def __init__(self, file='ant'):
+  def __init__(self, file='ant', tuned=True):
     self.file = file
     self.train = createTbl(data(dataName=self.file).train[-1], isBin=True)
     self.test = createTbl(data(dataName=self.file).test[-1], isBin=True)
-    self.param = dEvol.tuner(rforest, data(dataName=self.file).train[-1])
+    self.param = dEvol.tuner(rforest, data(dataName=self.file).train[-1]) if \
+    tuned else None
 
   def main(self):
     actual = Bugs(self.test)
@@ -109,9 +110,12 @@ class testOracle():
     #   set_trace()
 
 if __name__ == "__main__":
-  for name in ['ant', 'camel', 'log4j', 'xalan', 'xerces', 'jedit'
-               , 'lucene', 'poi', 'ivy', 'pbeans', 'synapse', 'velocity']:
-    print('### ' + name)
-    testOracle(file=name).main()
+  for file in ['ant', 'camel', 'ivy',
+               'jedit', 'log4j', 'pbeans',
+               'lucene', 'poi', 'synapse',
+               'velocity', 'xalan', 'xerces']:
+    print('### ' + file + ': Tuned')
+    testOracle(file).main()
 
-
+    print('### ' + file + ': Untuned')
+    testOracle(file, tuned=False).main()
