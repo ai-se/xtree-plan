@@ -16,7 +16,7 @@ sys.path.extend([axe, pystat, cwd])
 import numpy as np
 import pandas as pd
 import csv
-
+from random import seed as rseed
 from abcd import _Abcd
 #from cliffsDelta import cliffs
 from _imports.dEvol import tuner
@@ -101,8 +101,8 @@ class run():
       print(a)
 
   def go(self):
+    rseed(1)
     for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
-
       out = [planner]
       predRows = []
       train_DF = createTbl(self.train[self._n], isBin=True)
