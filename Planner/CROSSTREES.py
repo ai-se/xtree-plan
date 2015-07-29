@@ -52,7 +52,6 @@ class changes():
     self.log = {}
   def save(self, name=None, old=None, new=None):
     self.log.update({name: (old, new)})
-    Change.append(self.log)
 
 class deltas():
 
@@ -70,13 +69,15 @@ class deltas():
     newElem = []
     tmpRow = self.row
     for _ in xrange(N):
+      C = changes()
       for s in stuff:
         lo, hi = s[1]
         pos = keys[s[0].name]
         old = tmpRow.cells[pos]
         new = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
-        changes().save(name=s[0].name, old=old, new=new)
+        C.save(name=s[0].name, old=old, new=new)
         tmpRow.cells[pos] = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
+      Change.append(C.log)
       newElem.append(tmpRow)
     return newElem
 

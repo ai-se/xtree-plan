@@ -158,6 +158,10 @@ class run():
 # ---------- Debug ----------
 #    set_trace()
 
+  def delta1(self, cDict, headers):
+    for el in cDict:
+      pass
+
   def delta0(self, norm, Planner='xtrees'):
     before, after = open('.temp/before.txt'), open('.temp/' + Planner + '.txt')
     for line1, line2 in zip(before, after):
