@@ -166,7 +166,7 @@ class run():
           if n.name[1:] == k:
             try: D[i] = abs(el[k][0] - el[k][1])
             except: set_trace()
-      yield array(D) / norm
+      yield np.array(D) / np.array(norm)
 
   def delta0(self, norm, Planner='xtrees'):
     before, after = open('.temp/before.txt'), open('.temp/' + Planner + '.txt')
@@ -212,7 +212,6 @@ class run():
                         bin=False,
                         majority=True).main(justDeltas=True)
         delta.append([d for d in self.delta1(xTrees, train_DF.headers, norm=min_max())])
-        set_trace()
         return delta[0]
 
       elif planner == 'cart' or planner == 'CART':
