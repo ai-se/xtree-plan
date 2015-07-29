@@ -38,14 +38,21 @@ import sk
 
 def genTable(tbl, rows):
   header = [h.name for h in tbl.headers[:-1]]
-  with open('tmp.csv', 'w') as csvfile:
+  with open('tmp0.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
       writer.writerow(el[:-1])
 
-  return createTbl(['tmp.csv'])
+  return createTbl(['tmp0.csv'])
 
+Change = []
+class changes():
+  def __init__(self):
+    self.log = {}
+  def save(self, name=None, old=None, new=None):
+    self.log.update({name: (old, new)})
+    Change.append(self.log)
 
 class deltas():
 
@@ -66,6 +73,9 @@ class deltas():
       for s in stuff:
         lo, hi = s[1]
         pos = keys[s[0].name]
+        old = tmpRow.cells[pos]
+        new = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
+        changes().save(name=s[0].name, old=old, new=new)
         tmpRow.cells[pos] = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
       newElem.append(tmpRow)
     return newElem
@@ -76,7 +86,7 @@ class deltas():
     newRow = self.row
     for stuff in self.contrastSet:
       isles.append(self.createNew(stuff, keys, N=N_Patches))
-    return isles
+    return isles, None
 
 
 class store():
@@ -126,6 +136,8 @@ class xtrees():
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
     self.majority = majority
+    t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))
+    self.myTree = tdiv(t)
 
   def flatten(self, x):
     """
@@ -240,43 +252,20 @@ class xtrees():
       keys.update({self.test_DF.headers[i].name[1:]: i})
     return keys
 
-  def main(self):
+  def main(self, justDeltas=False):
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    # Decision Tree
-    t = discreteNums(
-        self.train_DF,
-        map(
-            lambda x: x.cells,
-            self.train_DF._rows))
-    myTree = tdiv(t)
-#    set_trace()
-    # Testing data
     testCase = self.test_DF._rows
     for tC in testCase:
-      newRow = tC
-      node = deltas(newRow, myTree)  # A delta instance for the rows
-
-      if newRow.cells[-2] == 0:
-        node.contrastSet = []
-        self.mod.append(node.newRow)
-      else:
-        node.contrastSet = [self.finder2(node.loc, pos='near')]
-        # Now generate 1 potential patch
-        patch = node.patches(self.keys, N_Patches=1)
-        # Shuffle
-        shuffle(patch)
-        p = patch.pop()
-        tmpTbl = clone(self.test_DF,
-                       rows=[k.cells for k in p],
-                       discrete=True)
-        self.mod.append(choice(tmpTbl._rows))
-
-      # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-        # set_trace()
-    return genTable(
+      node = deltas(tC, self.myTree)  # A delta instance for the rows
+      node.contrastSet = [self.finder2(node.loc, pos='near')]
+      patch, _ = node.patches(self.keys, N_Patches=1)
+      self.mod.append(patch[0])
+    if justDeltas:
+      return Change
+    else:
+      return genTable(
         self.test_DF, rows=[k.cells for k in self.mod])
 
 

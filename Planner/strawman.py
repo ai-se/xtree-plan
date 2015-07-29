@@ -1,11 +1,15 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
-from numpy import array, asarray, mean, median, percentile, size, sum
+from numpy import array, asarray, mean, median, percentile, size, sum, sqrt
 from pdb import set_trace
 from methods1 import createTbl
 from Prediction import rforest, rforest2
 from _imports.weights import weights as W
-from os import environ, getcwd
+from os import environ
+from os import getcwd
+from os import system
+from os import walk
+
 import csv
 import sys
 # Update PYTHONPATH
@@ -34,7 +38,7 @@ class node():
     for r in rows:
       self.rows.append(r.cells[:-1])
 
-  def exemplar(self, what='centroid'):
+  def exemplar(self, what='mean'):
     if what == 'centroid':
       return median(array(self.rows), axis=0)
     elif what == 'mean':
@@ -55,7 +59,7 @@ class contrast():
   def envy(self, testCase, alpha=0.5):
     me = self.closest(testCase)
     others = [o for o in self.clusters if not me == o]
-    betters = [f for f in others if f.exemplar()[-1] <= me.exemplar()[-1]]
+    betters = [f for f in others if f.exemplar()[-1] <= alpha * me.exemplar()[-1]]
     try:
       return sorted([f for f in betters],
                     key=lambda F: eDist(F.exemplar(), me.exemplar()))[0]
@@ -68,12 +72,13 @@ class patches():
   "Apply new patch."
 
   def __init__(
-          self, train, test, clusters, prune=False, B=0.33, verbose=False, bin=False):
+          self, train, test, clusters, prune=False, B=0.25
+          , verbose=False, bin=False):
     if bin:
       self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=False)
     else:
-      self.train = createTbl(train, isBin=True)
+      self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=True)
 
     self.clusters = clusters
@@ -120,7 +125,7 @@ class patches():
     C = contrast(self.clusters)
     closest = C.closest(t)
     better = C.envy(t, alpha=0.5)
-    return self.delta0(closest, better)
+    return self.delta0(closest, better) * self.min_max()
 
   def patchIt(self, t):
     if not self.bin:
@@ -140,13 +145,13 @@ class patches():
       self.deltasCSVWriter()
 
     header = [h.name for h in self.test.headers[:-1]]
-    with open('tmp.csv', 'w') as csvfile:
+    with open('tmp0.csv', 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',')
       writer.writerow(header)
       for el in newRows:
         writer.writerow(el + [0])
 
-    return createTbl(['tmp.csv'])
+    return createTbl(['tmp0.csv'])
 
   def deltasCSVWriter(self, name='ant'):
     "Changes"
@@ -184,7 +189,7 @@ class strawman():
   def main(self, config=False):
     if not config:
       train_DF = createTbl(self.train, isBin=False)
-      test_DF = createTbl(self.test, isBin=True)
+      test_DF = createTbl(self.test, isBin=False)
       before = rforest(train=train_DF, test=test_DF)
       clstr = [c for c in self.nodes(train_DF._rows)]
       return patches(train=self.train,
@@ -202,7 +207,30 @@ class strawman():
                      prune=self.prune,
                      bin=True).newTable()
 
+def categorize(dataName):
+  dir = '../Data/Jureczko'
+  projects = [Name for _, Name, __ in walk(dir)][0]
+  numData = len(projects)  # Number of data
+  one, two = explore(dir)
+  data = [one[i] + two[i] for i in xrange(len(one))]
+
+  def withinClass(data):
+    N = len(data)
+    return [(data[:n], [data[n]]) for n in range(1, N)]
+
+  def whereis():
+    for indx, name in enumerate(projects):
+      if name == dataName:
+        return indx
+
+  try:
+    return [
+        dat[0] for dat in withinClass(data[whereis()])], [
+        dat[1] for dat in withinClass(data[whereis()])]  # Train, Test
+  except:
+    set_trace()
 
 if __name__ == '__main__':
   for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
-    strawman(name).main()
+    train, test = categorize(name)
+    strawman(train[-1], test[-1]).main()

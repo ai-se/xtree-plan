@@ -109,7 +109,8 @@ class testOracle():
     #   set_trace()
 
 if __name__ == "__main__":
-  for name in ['jedit', 'lucene', 'poi', 'ant', 'ivy']:
+  for name in ['ant', 'camel', 'log4j', 'xalan', 'xerces', 'jedit'
+               , 'lucene', 'poi', 'ivy', 'pbeans', 'synapse', 'velocity']:
     print('### ' + name)
     testOracle(file=name).main()
 

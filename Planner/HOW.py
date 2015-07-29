@@ -20,6 +20,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from _imports.weights import weights as W
+import csv
 
 from Prediction import *
 # from _imports.settingsWhere import o
@@ -33,6 +34,15 @@ import pandas as pd
 from counts import *
 # import sk
 
+def genTable(tbl, rows):
+  header = [h.name for h in tbl.headers[:-1]]
+  with open('tmp2.csv', 'w') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerow(header)
+    for el in rows:
+      writer.writerow(el[:-1])
+
+  return createTbl(['tmp2.csv'])
 
 class o:
 
@@ -94,8 +104,8 @@ class treatments():
           train_df=None,
           test_df=None,
           fSelect=True,
-          Prune=False,
-          infoPrune=0.1,
+          Prune=True,
+          infoPrune=0.25,
           extent=0.75):
     self.test, self.train = test, train
     self.extent = extent
@@ -196,8 +206,7 @@ class treatments():
       newRow.cells[:-2] = self.mutate(rows.cells, good)
       self.new_Tab.append(newRow)
 
-    return clone(
-        self.test_df, rows=[r.cells for r in self.new_Tab], discrete=True)
+    return genTable(self.test_df, rows=[r.cells for r in self.new_Tab])
 
 
 def testPlanner2():
