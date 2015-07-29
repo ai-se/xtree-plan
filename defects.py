@@ -160,11 +160,12 @@ class run():
 
   def delta1(self, cDict, headers, norm):
     for el in cDict:
-      D = len(headers[:-1]) * []
+      D = len(headers[:-1]) * [0]
       for k in el.keys():
         for i, n in enumerate(headers[:-1]):
           if n.name[1:] == k:
-            D[i] = abs(el[k][0] - el[k][1])
+            try: D[i] = abs(el[k][0] - el[k][1])
+            except: set_trace()
       yield array(D) / norm
 
   def delta0(self, norm, Planner='xtrees'):
