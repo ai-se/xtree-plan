@@ -102,7 +102,7 @@ class run():
 
   def go(self):
     rseed(1)
-    for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
+    for planner in ['baseln0', 'baseln1', 'xtrees', 'cart', 'HOW']:
       out = [planner]
       predRows = []
       train_DF = createTbl(self.train[self._n], isBin=True)
@@ -220,27 +220,26 @@ class run():
                       bin=False,
                       majority=False).main(justDeltas=True)
         delta.append([d for d in self.delta1(cart, train_DF.headers, norm=min_max())])
-        set_trace()
         return delta[0]
 
       elif planner == 'HOW':
         how = HOW(train=self.train[-1],
                 test=self.test[-1],
                 test_df=predTest).main()
-        write2file(newRows(xTrees), fname='HOW')  # save file
+        write2file(newRows(how), fname='HOW')  # save file
         delta.append([d for d in self.delta0(Planner='HOW', norm=min_max())])
         return delta[0]
 
       elif planner == 'Baseline':
         baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
-        write2file(newRows(xTrees), fname='base0')  # save file
+        write2file(newRows(baseln), fname='base0')  # save file
         delta.append([d for d in self.delta0(Planner='base0', norm=min_max())])
         return delta[0]
 
       elif planner == 'Baseline+FS':
         baselnFss = strawman(
           train=self.train[-1], test=self.test[-1], prune=True).main()
-        write2file(newRows(xTrees), fname='base1')  # save file
+        write2file(newRows(baselnFss), fname='base1')  # save file
         delta.append([d for d in self.delta0(Planner='base1', norm=min_max())])
         return delta[0]
 
@@ -251,9 +250,10 @@ class run():
 def _test(file='ant'):
   for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
     print('## %s\n```' % (file))
-    R = [r for r in run(dataName=file, reps=1).go()]
+    R = [r for r in run(dataName=file, reps=10).go()]
     rdivDemo(R, isLatex=False)
     print('```')
+    set_trace()
 
 
 def deltaCSVwriter(type='Indv'):
@@ -262,8 +262,8 @@ def deltaCSVwriter(type='Indv'):
       print('##', name)
       delta = []
       R = run(dataName=name, reps=1)  # Setup Files.
-      for p in ['xtrees']:  # , 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
-        for _ in xrange(4):
+      for p in ['xtrees' , 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
+        for _ in xrange(10):
           delta.extend(R.deltas(planner=p))
         y = np.median(delta, axis=0)
         yhi, ylo = np.percentile(delta, q=[75, 25], axis=0)

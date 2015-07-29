@@ -38,7 +38,7 @@ class node():
     for r in rows:
       self.rows.append(r.cells[:-1])
 
-  def exemplar(self, what='mean'):
+  def exemplar(self, what='centroid'):
     if what == 'centroid':
       return median(array(self.rows), axis=0)
     elif what == 'mean':
@@ -59,7 +59,7 @@ class contrast():
   def envy(self, testCase, alpha=0.5):
     me = self.closest(testCase)
     others = [o for o in self.clusters if not me == o]
-    betters = [f for f in others if f.exemplar()[-1] <= alpha * me.exemplar()[-1]]
+    betters = [f for f in others if f.exemplar()[-1] <= me.exemplar()[-1]]
     try:
       return sorted([f for f in betters],
                     key=lambda F: eDist(F.exemplar(), me.exemplar()))[0]
@@ -73,12 +73,12 @@ class patches():
 
   def __init__(
           self, train, test, clusters, prune=False, B=0.25
-          , verbose=False, bin=False):
+          , verbose=False, bin=False, pred=[]):
     if bin:
       self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=False)
     else:
-      self.train = createTbl(train, isBin=False)
+      self.train = createTbl(train, isBin=True)
       self.test = createTbl(test, isBin=True)
 
     self.clusters = clusters
@@ -87,10 +87,7 @@ class patches():
     self.mask = self.fWeight()
     self.write = verbose
     self.bin = bin
-    if bin:
-      self.pred = rforest2(self.train, self.test, smoteit=True, duplicate=True)
-    else:
-      self.pred = rforest(self.train, self.test, smoteit=True, duplicate=True)
+    self.pred = pred
 
   def min_max(self):
     allRows = array(
@@ -125,7 +122,7 @@ class patches():
     C = contrast(self.clusters)
     closest = C.closest(t)
     better = C.envy(t, alpha=0.5)
-    return self.delta0(closest, better) * self.min_max()
+    return self.delta0(closest, better)
 
   def patchIt(self, t):
     if not self.bin:
@@ -188,14 +185,16 @@ class strawman():
 
   def main(self, config=False):
     if not config:
-      train_DF = createTbl(self.train, isBin=False)
-      test_DF = createTbl(self.test, isBin=False)
+      train_DF = createTbl(self.train, isBin=True)
+      test_DF = createTbl(self.test, isBin=True)
       before = rforest(train=train_DF, test=test_DF)
+#      set_trace()
       clstr = [c for c in self.nodes(train_DF._rows)]
       return patches(train=self.train,
                      test=self.test,
                      clusters=clstr,
-                     prune=self.prune).newTable()
+                     prune=self.prune,
+                     pred=before).newTable()
     else:
       train_DF = createTbl(self.train, isBin=False)
       test_DF = createTbl(self.test, isBin=False)
@@ -205,6 +204,7 @@ class strawman():
                      test=self.test,
                      clusters=clstr,
                      prune=self.prune,
+                     pred=before,
                      bin=True).newTable()
 
 def categorize(dataName):

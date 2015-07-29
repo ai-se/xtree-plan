@@ -100,7 +100,7 @@ class treatments():
           self,
           train,
           test,
-          far=True,
+          far=False,
           train_df=None,
           test_df=None,
           fSelect=True,
@@ -118,7 +118,7 @@ class treatments():
         else createTbl(self.train, isBin=False, bugThres=1)
 
     self.test_df = test_df if test_df \
-        else createTbl(self.test, isBin=True, bugThres=1)
+        else createTbl(self.test, isBin=False, bugThres=1)
 
   def clusterer(self):
     IDs = list(set([f.cells[-1] for f in self.train_df._rows]))
