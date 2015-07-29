@@ -253,7 +253,6 @@ def _test(file='ant'):
     R = [r for r in run(dataName=file, reps=10).go()]
     rdivDemo(R, isLatex=False)
     print('```')
-    set_trace()
 
 
 def deltaCSVwriter(type='Indv'):
@@ -320,9 +319,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-#    _test()
+    _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
-  deltaCSVwriter(type='Indv')
+#  deltaCSVwriter(type='Indv')
 #   eval(cmd())

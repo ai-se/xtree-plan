@@ -48,7 +48,7 @@ from Planner.strawman import strawman
 
 
 def write2file(data, fname='Untitled', ext='.txt'):
-  with open(fname + ext, 'w') as fwrite:
+  with open('' + fname + ext, 'w') as fwrite:
     writer = csv.writer(fwrite, delimiter=',')
     for b in data:
       writer.writerow(b)
