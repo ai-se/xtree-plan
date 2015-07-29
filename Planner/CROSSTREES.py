@@ -262,7 +262,7 @@ class xtrees():
       node = deltas(tC, self.myTree)  # A delta instance for the rows
       node.contrastSet = [self.finder2(node.loc, pos='near')]
       patch, _ = node.patches(self.keys, N_Patches=1)
-      self.mod.append(patch[0])
+      self.mod.extend(patch[0])
     if justDeltas:
       return Change
     else:

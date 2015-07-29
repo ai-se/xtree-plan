@@ -184,6 +184,7 @@ class fileHandler():
     predRows = []
     delta = []
     data = self.explorer(name)
+    rows = lambda newTab: map(lambda r: r.cells[:-2], newTab._rows)
     for d in data:
       set_trace()
       if name == d[0].strip().split('/')[-1]:
@@ -192,24 +193,35 @@ class fileHandler():
         train_DF = createTbl(train, isBin=False)
         test_df = createTbl(test, isBin=False)
         self.headers = train_DF.headers
-        write2file(map(lambda r: r.cells[:-2], test_df._rows)
-                   , fname='before_cpm')  # save file
+        write2file(rows(test_df), fname='before_cpm')  # save file
 
         """
         Apply Learner
         """
-        for _ in xrange(10):
-          newTab = treatments(
+        if planner == 'xtrees':
+          newTab = xtrees(train=train,
+                          test=test,
+                          bin=False,
+                          majority=True).main()
+          write2file(rows(newTab), fname='xtrees_cpm')
+        if planner == 'cart':
+          newTab = xtrees(train=train,
+                        test=test,
+                        bin=False,
+                        majority=False).main()
+        if planner == 'HOW':
+          newTab = HOW(name)
+        if planner == 'baseln0':
+          newTab = strawman(
+              train=train,
+              test=test).main(config=True)
+        if planner == 'baseln1':
+          newTab = strawman(
               train=train,
               test=test,
-              smoteit=False,
-              bin=False).main()
-          write2file(
-              map(
-                  lambda r: r.cells[
-                      :-2],
-                  newTab._rows),
-              fname='after_cpm')  # save file
+              prune=True).main(config=True)
+
+            # save file
           delta.append([d for d in self.delta0()])
 
         return np.array(
@@ -229,12 +241,16 @@ class fileHandler():
     return result
 
   def main(self, name='Apache', reps=20):
-    out_xtrees = ['xtrees']
-    out_HOW = ['HOW']
-    out_cart = ['CART']
-    out_basln = ['Base']
-    out_baslnFss = ['Base+FSS']
-    for _ in xrange(reps):
+    rseed(1)
+    for planner in ['baseln0', 'baseln1', 'xtrees', 'cart', 'HOW']:
+      out = [planner]
+
+      after = lambda newTab: predictor(train=train_df
+                                       , test=formatData(newTab)).rforest()
+
+      frac = lambda aft: sum(aft) / sum(before)
+
+
       data = self.explorer(name)
       for d in data:
         if name == d[0].strip().split('/')[-2]:
@@ -246,42 +262,33 @@ class fileHandler():
           test_df = formatData(createTbl(test, _smote=False, isBin=False))
           actual = test_df[test_df.columns[-2]].astype('float32').tolist()
           before = predictor(train=train_df, test=test_df).rforest()
+          for _ in xrange(reps):
+            "Apply Different Planners"
+            if planner == 'xtrees':
+              newTab = xtrees(train=train,
+                              test=test,
+                              bin=False,
+                              majority=True).main()
+            if planner == 'cart':
+              newTab = xtrees(train=train,
+                            test=test,
+                            bin=False,
+                            majority=False).main()
+            if planner == 'HOW':
+              newTab = HOW(name)
+            if planner == 'baseln0':
+              newTab = strawman(
+                  train=train,
+                  test=test).main(config=True)
+            if planner == 'baseln1':
+              newTab = strawman(
+                  train=train,
+                  test=test,
+                  prune=True).main(config=True)
 
-          "Apply Different Planners"
+            out.append(frac(after(newTab)))
 
-          xTrees = xtrees(train=train,
-                          test=test,
-                          bin=False,
-                          majority=True).main()
-
-          cart = xtrees(train=train,
-                        test=test,
-                        bin=False,
-                        majority=False).main()
-
-          how = HOW(name)
-          baseln = strawman(
-              train=train,
-              test=test).main(
-              config=True)
-
-          baselnFss = strawman(
-              train=train,
-              test=test,
-              prune=True).main(config=True)
-
-          after = lambda newTab: predictor(
-              train=train_df,
-              test=formatData(newTab)).rforest()
-          frac = lambda aft: sum(aft) / sum(before)
-    #       set_trace()
-          out_xtrees.append(frac(after(xTrees)))
-          out_cart.append(frac(after(cart)))
-          out_HOW.extend(how)
-          out_basln.append(frac(after(baseln)))
-          out_baslnFss.append(frac(after(baselnFss)))
-
-    return [out_xtrees, out_cart, out_HOW, out_basln, out_baslnFss]
+      yield out
 
     #----------- DEGUB ----------------
 #     set_trace()
@@ -324,7 +331,7 @@ def rdiv():
 def _test(name='Apache'):
   for name in ['Apache', 'BDBC', 'BDBJ', 'LLVM', 'X264', 'SQL']:
     print('## %s \n```' % (name))
-    R = fileHandler().main(name, reps=10)
+    R = [r for r in fileHandler().main(name, reps=10)]
     rdivDemo(R, isLatex=False)
     print('```')
 #     set_trace()

@@ -234,7 +234,7 @@ class fileHandler():
         Prune=_prune).main()
     newTab_df = formatData(newTab)
     after = predictor(train=train_df, test=newTab_df).rforest()
-    return actual, before, after
+    return actual, before, after, newTab
 
   def flatten(self, x):
     """
@@ -320,14 +320,14 @@ class fileHandler():
           #           set_trace()
           train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
           test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
-          actual, before, after = self.planner(
+          actual, before, after, newTab = self.planner(
               train, test, fSel, ext, _prune, _info, method='best')
           cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
           out_auc.append(sum(after) / sum(before))
           out_md.append(median(after) / median(before))
           out_acc.extend(
               [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-    return out_acc, out_auc, out_md
+    return newTab
     #----------- DEGUB ----------------
 #     set_trace()
 
@@ -547,12 +547,11 @@ def test(name='Apache', doWhat='AUC'):
 #     print(b)
 #   elif doWhat == 'Median':
 #     print(c)
-  _, out, __ = fileHandler().main(name, reps=24,
+  return fileHandler().main(name, reps=24,
                                   ext=0.75,
                                   _prune=True,
                                   _info=0.25,
                                   fSel=True)
-  return out[1:]
 
 
 def _doCrossVal():

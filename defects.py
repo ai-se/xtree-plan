@@ -151,8 +151,7 @@ class run():
                             , test=self.test[-1], prune=True).main()
 
         out.append(frac(after(newTab)))
-
-      self.logResults(out)
+#      self.logResults(out)
       yield out
 
 # ---------- Debug ----------
@@ -234,7 +233,8 @@ class run():
         baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
         write2file(newRows(baseln), fname='base0')  # save file
         delta.append([d for d in self.delta0(Planner='base0', norm=min_max())])
-        return delta[0]
+        try: return delta[0]
+        except: set_trace()
 
       elif planner == 'Baseline+FS':
         baselnFss = strawman(
@@ -263,7 +263,7 @@ def deltaCSVwriter(type='Indv'):
       delta = []
       R = run(dataName=name, reps=1)  # Setup Files.
       for p in ['xtrees' , 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
-        for _ in xrange(10):
+        for _ in xrange(1):
           delta.extend(R.deltas(planner=p))
         y = np.median(delta, axis=0)
         yhi, ylo = np.percentile(delta, q=[75, 25], axis=0)
