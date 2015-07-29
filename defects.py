@@ -102,29 +102,30 @@ class run():
 
   def go(self):
     rseed(1)
-    for planner in ['baseln0', 'baseln1', 'xtrees', 'cart', 'HOW']:
-      out = [planner]
-      predRows = []
-      train_DF = createTbl(self.train[self._n], isBin=True)
-      test_df = createTbl(self.test[self._n], isBin=True)
-      actual = np.array(Bugs(test_df))
-      before = self.pred(train_DF, test_df,
-                         tunings=self.tunedParams,
-                         smoteit=True)
+    base = lambda X: sorted(X)[-1] - sorted(X)[0]
+    newRows = lambda newTab: map(lambda Rows: Rows.cells[:-1], newTab._rows)
+    after = lambda newTab: self.pred(train_DF, newTab, tunings=self.tunedParams
+                                     , smoteit=True)
+    frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]
+                           ) / sum([0 if b < 1 else 1 for b in before])
 
-      base = lambda X: sorted(X)[-1] - sorted(X)[0]
-      newRows = lambda newTab: map(lambda Rows: Rows.cells[:-1], newTab._rows)
-      after = lambda newTab: self.pred(train_DF, newTab, tunings=self.tunedParams
-                                       , smoteit=True)
-      frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]
-                             ) / sum([0 if b < 1 else 1 for b in before])
-      predRows = [row.cells for predicted, row in zip(before
-                             , createTbl(self.test[self._n]
-                             , isBin=False)._rows) if predicted > 0]
-
-      predTest = genTable(test_df, rows=predRows)
-
+    for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
       for _ in xrange(self.reps):
+        out = [planner]
+        predRows = []
+        train_DF = createTbl(self.train[self._n], isBin=True)
+        test_df = createTbl(self.test[self._n], isBin=True)
+        actual = np.array(Bugs(test_df))
+        before = self.pred(train_DF, test_df,
+                           tunings=self.tunedParams,
+                           smoteit=True)
+
+        predRows = [row.cells for predicted, row in zip(before
+                               , createTbl(self.test[self._n]
+                               , isBin=False)._rows) if predicted > 0]
+
+        predTest = genTable(test_df, rows=predRows)
+
         "Apply Different Planners"
         if planner == 'xtrees':
           newTab = xtrees(train=self.train[-1],
@@ -248,9 +249,9 @@ class run():
 
 
 def _test(file='ant'):
-  for file in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
+  for file in ['synapse', 'ivy', 'jedit', 'poi', 'ant']:
     print('## %s\n```' % (file))
-    R = [r for r in run(dataName=file, reps=10).go()]
+    R = [r for r in run(dataName=file, reps=1).go()]
     rdivDemo(R, isLatex=False)
     print('```')
 
