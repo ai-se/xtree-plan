@@ -164,7 +164,7 @@ class run():
       for k in el.keys():
         for i, n in enumerate(headers[:-1]):
           if n.name[1:] == k:
-            try: D[i] = abs(el[k][0] - el[k][1])
+            try: D[i] = el[k][0] - el[k][1]
             except: set_trace()
       yield np.array(D) / np.array(norm)
 
