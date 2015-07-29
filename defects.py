@@ -260,10 +260,11 @@ def deltaCSVwriter(type='Indv'):
   if type == 'Indv':
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
       print('##', name)
+      delta = []
       R = run(dataName=name, reps=1)  # Setup Files.
-      R.go()  # Run Planners.
       for p in ['xtrees']:  # , 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
-        delta = R.deltas(planner=p)
+        for _ in xrange(4):
+          delta.extend(R.deltas(planner=p))
         y = np.median(delta, axis=0)
         yhi, ylo = np.percentile(delta, q=[75, 25], axis=0)
         dat1 = sorted([(h.name[1:], a, b, c) for h, a, b, c in zip(
