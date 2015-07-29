@@ -276,7 +276,7 @@ def deltaCSVwriter(type='Indv'):
           writer = csv.writer(csvfile, delimiter=' ')
           for el in dat[()]:
             writer.writerow(el)
-      set_trace()
+#      set_trace()
   elif type == 'All':
     delta = []
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
