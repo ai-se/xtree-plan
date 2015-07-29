@@ -133,7 +133,7 @@ class patches():
 
   def newTable(self):
     if not self.bin:
-      oldRows = [r for r, p in zip(self.test._rows, self.pred) if p > 0]
+      oldRows = [r for r in self.test._rows if r.cells[-2] > 0]
     else:
       oldRows = self.test._rows
     newRows = [self.patchIt(t) for t in oldRows]

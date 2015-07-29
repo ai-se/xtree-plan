@@ -49,7 +49,9 @@ def genTable(tbl, rows, name='tmp'):
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
-      writer.writerow(el[:-1])
+      if len(el[:-1]) < len(header):
+        writer.writerow(el)
+      else: writer.writerow(el[:-1])
 
   return createTbl([name + '.csv'])
 
@@ -107,11 +109,11 @@ class run():
     after = lambda newTab: self.pred(train_DF, newTab, tunings=self.tunedParams
                                      , smoteit=True)
     frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]
-                           ) / sum([0 if b < 1 else 1 for b in before])
+                           ) / sum([0 if b < 1 else 1 for b in actual])
 
     for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
+      out = [planner]
       for _ in xrange(self.reps):
-        out = [planner]
         predRows = []
         train_DF = createTbl(self.train[self._n], isBin=True)
         test_df = createTbl(self.test[self._n], isBin=True)
@@ -120,19 +122,20 @@ class run():
                            tunings=self.tunedParams,
                            smoteit=True)
 
-        predRows = [row.cells for predicted, row in zip(before
+        predRows = [row.cells for predicted, row in zip(after(test_df)
                                , createTbl(self.test[self._n]
-                               , isBin=False)._rows) if predicted > 0]
+                               , isBin=True)._rows) if predicted > 0]
 
-        predTest = genTable(test_df, rows=predRows)
+        predRows1 = [row.cells for row in createTbl(self.test[self._n]
+                               , isBin=True)._rows if row.cells[-2] > 0]
+
+        predTest = genTable(test_df, rows=predRows1, name='Before_temp')
 
         "Apply Different Planners"
         if planner == 'xtrees':
-          newTab = xtrees(train=self.train[-1],
-                        test_DF=predTest,
-                        bin=False,
-                        majority=True).main()
-
+          newTab = xtrees(train=self.train[-1], test_DF=predTest, bin=False, majority=True).main()
+          genTable(test_df, rows=newRows(newTab), name='After_xtrees')
+#          set_trace()
         elif planner == 'cart' or planner == 'CART':
           newTab = xtrees(train=self.train[-1],
                       test_DF=predTest,
@@ -251,7 +254,7 @@ class run():
 def _test(file='ant'):
   for file in ['synapse', 'ivy', 'jedit', 'poi', 'ant']:
     print('## %s\n```' % (file))
-    R = [r for r in run(dataName=file, reps=1).go()]
+    R = [r for r in run(dataName=file, reps=10).go()]
     rdivDemo(R, isLatex=False)
     print('```')
 
