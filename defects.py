@@ -158,9 +158,14 @@ class run():
 # ---------- Debug ----------
 #    set_trace()
 
-  def delta1(self, cDict, headers):
+  def delta1(self, cDict, headers, norm):
     for el in cDict:
-      pass
+      D = len(headers[:-1]) * []
+      for k in el.keys():
+        for i, n in enumerate(headers[:-1]):
+          if n.name[1:] == k:
+            D[i] = abs(el[k][0] - el[k][1])
+      yield array(D) / norm
 
   def delta0(self, norm, Planner='xtrees'):
     before, after = open('.temp/before.txt'), open('.temp/' + Planner + '.txt')
@@ -205,6 +210,7 @@ class run():
                         test_DF=predTest,
                         bin=False,
                         majority=True).main(justDeltas=True)
+        delta.append([d for d in self.delta1(xTrees, train_DF.headers, norm=min_max())])
         set_trace()
         return delta[0]
 
@@ -213,8 +219,8 @@ class run():
                       test_DF=predTest,
                       bin=False,
                       majority=False).main(justDeltas=True)
-        write2file(newRows(xTrees), fname='cart')  # save file
-        delta.append([d for d in self.delta0(Planner='cart', norm=min_max())])
+        delta.append([d for d in self.delta1(cart, train_DF.headers, norm=min_max())])
+        set_trace()
         return delta[0]
 
       elif planner == 'HOW':
