@@ -140,11 +140,6 @@ class diffEvol(object):
         two)[1]
 
   def sortbyscore(self):
-   #    front = []
-   #    for f in self.frontier:
-   #      sc = self.model.depen(f)
-   #      f.append(sc)
-   #      front.append(f)
     return sorted(
         self.frontier, key=lambda F: self.model.depen(F), reverse=True)
 
@@ -155,11 +150,8 @@ class diffEvol(object):
     while lives > 0 and iter < 30:
       better = False
       self.xbest = self.sortbyscore()[0]
-#       print('Iter = %d' % (iter))
       for pos in xrange(len(self.frontier)):
         iter += 1
-#         print('Pos: %d' % (pos))
-#         set_trace()
         lives -= 1
         l1, l2 = self.one234(self.frontier[pos], self.frontier)
         new = self.extrapolate(self.xbest, l1, l2)
@@ -168,34 +160,20 @@ class diffEvol(object):
           self.frontier.insert(pos, new)
           better = True
           lives += 1
-#           print('!')
-#           print(lives)
           if self.model.depen(new) > self.model.depen(self.xbest):
             self.xbest = new
-          # print(self.model.depen(new))
         elif self.dominates(self.frontier[pos], new):
-          #           lives -= 1
-          #           print('.')
-          #           print(lives)
           better = False
           if self.model.depen(
                   self.frontier[pos]) > self.model.depen(
                   self.xbest):
             self.xbest = self.frontier[pos]
-          # print(self.model.depen(new))
         else:
           self.frontier.append(new)
           if self.model.depen(new) > self.model.depen(self.xbest):
             self.xbest = new
           better = True
           lives += 1
-#           print(
-#               'Non-Dominant. Lives: %d. Frontier Size= %d' %
-#               (lives, len(
-#                   self.frontier)))
-#           self.frontier = self.sortbyscore()[:10]
-
-#      print(self.model.depen(self.xbest))
     return self.xbest
 
 
@@ -214,9 +192,9 @@ class tuneRF(object):
 
   def depen(self, rows):
     mod = rforest(self.train, self.test, tunings=rows, smoteit=True)
-    prec = ABCD(before=Bugs(self.test), after=mod).all()[2]
-    pdpf = ABCD(before=Bugs(self.test), after=mod).all()[:2]
-    return prec
+    Prec = ABCD(before=Bugs(self.test), after=mod).all()[2]
+    Pd_Pf = ABCD(before=Bugs(self.test), after=mod).all()[:2]
+    return Prec
 
   def indep(self):
     return [(50, 150)  # n_estimators
