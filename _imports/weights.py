@@ -1,13 +1,17 @@
 from __future__ import division
+from os import environ, getcwd
+from os import walk
+from os.path import expanduser
+from pdb import set_trace
 import sys
-import os
-sys.dont_write_bytecode = True
+
 # Update PYTHONPATH
-HOME = os.environ['HOME']
+HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystat/'  # PySTAT
-cwd = os.getcwd()  # Current Directory
+pystat = HOME + '/git/pystats/'  # PySTAT
+cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
+
 from lib    import *
 from demos  import *
 from counts import *

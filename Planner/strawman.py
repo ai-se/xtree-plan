@@ -5,19 +5,19 @@ from pdb import set_trace
 from methods1 import createTbl
 from Prediction import rforest, rforest2
 from _imports.weights import weights as W
-from os import environ
-from os import getcwd
-from os import system
+from os import environ, getcwd
 from os import walk
-
-import csv
+from os.path import expanduser
+from pdb import set_trace
 import sys
+
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
+
 from table import clone
 
 

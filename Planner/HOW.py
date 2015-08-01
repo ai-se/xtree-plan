@@ -26,8 +26,6 @@ from _imports.weights import weights as W
 import csv
 
 from Prediction import *
-from cliffsDelta import *
-from hist import *
 from smote import *
 import _imports.makeAmodel as mam
 from methods1 import *
