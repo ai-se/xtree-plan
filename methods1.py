@@ -1,8 +1,13 @@
 #! /Users/rkrsn/anaconda/bin/python
-from os import environ, getcwd, walk
+from pdb import set_trace
+from os import environ, getcwd
+from os import walk
+from os.path import expanduser
+from pdb import set_trace
 import sys
+
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory

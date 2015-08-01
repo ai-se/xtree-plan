@@ -1,14 +1,19 @@
 #! /Users/rkrsn/anaconda/bin/python
 from pdb import set_trace
 from os import environ, getcwd
+from os import walk
+from os.path import expanduser
+from pdb import set_trace
 import sys
-from scipy.spatial.distance import euclidean
+
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
+
+from scipy.spatial.distance import euclidean
 from random import choice, seed as rseed, uniform as rand
 import pandas as pd
 from table import *

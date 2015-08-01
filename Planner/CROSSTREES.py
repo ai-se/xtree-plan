@@ -1,18 +1,24 @@
 #! /Users/rkrsn/anaconda/bin/python
 from __future__ import print_function
 from __future__ import division
-from os import environ, getcwd
+
 from pdb import set_trace
-from random import uniform, randint, shuffle
+from os import environ, getcwd
+from os import walk
+from os.path import expanduser
+from pdb import set_trace
 import sys
-import csv
 
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystat/'  # PySTAT
+pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
+
+from pdb import set_trace
+from random import uniform, randint, shuffle
+import csv
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -24,10 +30,10 @@ from collections import Counter
 # from Prediction import *
 from _imports import *
 from abcd import _Abcd
-from cliffsDelta import *
+# from cliffsDelta import *
 # from contrastset import *
 # from dectree import *
-from hist import *
+# from hist import *
 from smote import *
 import _imports.makeAmodel as mam
 from methods1 import *

@@ -1,20 +1,23 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function
 from __future__ import division
-from os import environ
-from os import getcwd
+
+from os import environ, getcwd
+from os import walk
+from os.path import expanduser
 from pdb import set_trace
-from random import uniform as rand
-from random import randint as randi
 import sys
 
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystat/'  # PySTAT
+pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, '../'])
+sys.path.extend([axe, pystat, cwd])
 
+from pdb import set_trace
+from random import uniform as rand
+from random import randint as randi
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -23,7 +26,6 @@ from _imports.weights import weights as W
 import csv
 
 from Prediction import *
-# from _imports.settingsWhere import o
 from cliffsDelta import *
 from hist import *
 from smote import *
