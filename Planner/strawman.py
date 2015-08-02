@@ -19,7 +19,7 @@ cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
 from table import clone
-
+import csv
 
 def eDist(row1, row2):
   "Euclidean Distance"
