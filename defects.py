@@ -180,7 +180,7 @@ class run():
       for k in el.keys():
         for i, n in enumerate(headers[:-1]):
           if n.name[1:] == k:
-            D[i] += 1 
+            D[i] += 100 
       yield D
 
   def delta0(self, headers, norm, Planner='xtrees'):
@@ -238,7 +238,7 @@ class run():
                         majority=True).main(justDeltas=True)
         delta.append(
             [d for d in self.delta1(xTrees, train_DF.headers, norm=len(predRows))])
-        return np.sum(delta[0], axis=0)/np.array((len(predRows[0])-2)* [len(predRows)])
+        return (np.sum(delta[0], axis=0)/np.array((len(predRows[0])-2)* [len(predRows)])).tolist()
       
       elif planner == 'cart' or planner == 'CART':
         cart = xtrees(train=self.train[-1],
@@ -247,7 +247,7 @@ class run():
                       majority=False).main(justDeltas=True)
         delta.append(
             [d for d in self.delta1(cart, train_DF.headers, norm=len(predRows))])
-        return np.sum(delta[0], axis=0)/np.array((len(predRows[0])-2)* [len(predRows)])
+        return (np.sum(delta[0], axis=0)/np.array((len(predRows[0])-2)* [len(predRows)])).tolist()
       
       elif planner == 'HOW':
         how = HOW(train=self.train[-1],
@@ -260,15 +260,15 @@ class run():
       elif planner == 'Baseline':
         baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
         write2file(newRows(baseln), fname='base0')  # save file
-        delta.append([d for d in self.delta0(Planner='base0', norm=len(predRows))])
-        return delta[0]
+        delta.extend(self.delta0(train_DF.headers, Planner='HOW', norm=len(predRows)))
+        return [d/len(predRows) for d in delta]
 
       elif planner == 'Baseline+FS':
         baselnFss = strawman(
             train=self.train[-1], test=self.test[-1], prune=True).main()
         write2file(newRows(baselnFss), fname='base1')  # save file
-        delta.append([d for d in self.delta0(Planner='base1', norm=min_max())])
-        return delta[0]
+        delta.extend(self.delta0(train_DF.headers, Planner='HOW', norm=len(predRows)))
+        return [d/len(predRows) for d in delta]
 
    # -------- DEBUG! --------
     # set_trace()
@@ -283,26 +283,28 @@ def _test(file='ant'):
 
 
 def deltaCSVwriter(type='Indv'):
+      
   if type == 'Indv':
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
       print('##', name)
       delta = []
       Planners = ['xtrees', 'HOW', 'cart', 'Baseline', 'Baseline+FS']
       R = run(dataName=name, reps=1)  # Setup Files.
+      
       for p in Planners:
           delta.append(R.deltas(planner=p))
+      
+      def getRow(i):
+        for d in delta:
+          yield d[i]
+      
       set_trace()
-      y = np.median(delta, axis=0)
-      yhi, ylo = np.percentile(delta, q=[75, 25], axis=0)
-      dat1 = sorted([(h.name[1:], a, b, c) for h, a, b, c in zip(
-          run(dataName=name).headers[:-2], y, ylo, yhi)], key=lambda F: F[1])
-      dat = np.asarray([(d[0], n, d[1], d[2], d[3])
-                        for d, n in zip(dat1, range(1, 21))])
       with open('/Users/rkrsn/git/GNU-Plots/rkrsn/errorbar/%s.csv' %
-                (name + '-' + p), 'w') as csvfile:
+                (name), 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ')
-        for el in dat[()]:
-          writer.writerow(el)
+        writer.writerow(["Features"]+Planners)
+        for i, h in enumerate(run(dataName=name).headers[:-2]):
+          writer.writerow([h.name[1:]]+[el for el in getRow(i)])
 #      set_trace()
   elif type == 'All':
     delta = []
