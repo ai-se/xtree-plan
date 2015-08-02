@@ -176,22 +176,21 @@ class run():
 
   def delta1(self, cDict, headers, norm):
     for el in cDict:
-      D = len(headers[:-1]) * [0]
+      D = len(headers[:-2]) * [0]
       for k in el.keys():
         for i, n in enumerate(headers[:-1]):
           if n.name[1:] == k:
-            try:
-              D[i] = el[k][0] - el[k][1]
-            except:
-              set_trace()
-      yield np.array(D) / np.array(norm)
+            D[i] += 1 
+      yield np.array(D) / np.array(norm) * 100
 
-  def delta0(self, norm, Planner='xtrees'):
+  def delta0(self, headers, norm, Planner='xtrees'):
     before, after = open('.temp/before.txt'), open('.temp/' + Planner + '.txt')
+    D = le
     for line1, line2 in zip(before, after):
       row1 = np.array([float(l) for l in line1.strip().split(',')[:-1]])
       row2 = np.array([float(l) for l in line2.strip().split(',')])
-      yield ((row2 - row1) / norm).tolist()
+      changed = (row2 - row1) / norm
+      yield [1 if c > 1 else 0 for c in changed]
 
   def deltas(self, planner):
     predRows = []
