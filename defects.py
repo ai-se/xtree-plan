@@ -180,7 +180,7 @@ class run():
       for k in el.keys():
         for i, n in enumerate(headers[:-1]):
           if n.name[1:] == k:
-            D[i] += 100 
+            D[i] += 100
       yield D
 
   def delta0(self, headers, norm, Planner='xtrees'):
@@ -191,9 +191,8 @@ class run():
       row2 = np.array([float(l) for l in line2.strip().split(',')[:-1]])
       changed = (row2 - row1).tolist()
       for i, c in enumerate(changed):
-        if c > 0: 
-          try: D[i] += 100
-          except: set_trace()
+        if c > 0:
+          D[i] += 100
     return D
 
   def deltas(self, planner):
@@ -238,37 +237,53 @@ class run():
                         majority=True).main(justDeltas=True)
         delta.append(
             [d for d in self.delta1(xTrees, train_DF.headers, norm=len(predRows))])
-        return (np.sum(delta[0], axis=0)/np.array((len(predRows[0])-2)* [len(predRows)])).tolist()
-      
+        set_trace()
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
+
       elif planner == 'cart' or planner == 'CART':
         cart = xtrees(train=self.train[-1],
                       test_DF=predTest,
                       bin=False,
                       majority=False).main(justDeltas=True)
+
         delta.append(
             [d for d in self.delta1(cart, train_DF.headers, norm=len(predRows))])
-        return (np.sum(delta[0], axis=0)/np.array((len(predRows[0])-2)* [len(predRows)])).tolist()
-      
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
+
       elif planner == 'HOW':
         how = HOW(train=self.train[-1],
                   test=self.test[-1],
                   test_df=predTest).main()
         write2file(newRows(how), fname='HOW')  # save file
-        delta.extend(self.delta0(train_DF.headers, Planner='HOW', norm=len(predRows)))
-        return [d/len(predRows) for d in delta]
+        delta.extend(
+            self.delta0(
+                train_DF.headers,
+                Planner='HOW',
+                norm=len(predRows)))
+        return [d / len(predRows) for d in delta]
 
       elif planner == 'Baseline':
         baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
         write2file(newRows(baseln), fname='base0')  # save file
-        delta.extend(self.delta0(train_DF.headers, Planner='HOW', norm=len(predRows)))
-        return [d/len(predRows) for d in delta]
+        delta.extend(
+            self.delta0(
+                train_DF.headers,
+                Planner='HOW',
+                norm=len(predRows)))
+        return [d / len(predRows) for d in delta]
 
       elif planner == 'Baseline+FS':
         baselnFss = strawman(
             train=self.train[-1], test=self.test[-1], prune=True).main()
         write2file(newRows(baselnFss), fname='base1')  # save file
-        delta.extend(self.delta0(train_DF.headers, Planner='HOW', norm=len(predRows)))
-        return [d/len(predRows) for d in delta]
+        delta.extend(
+            self.delta0(
+                train_DF.headers,
+                Planner='HOW',
+                norm=len(predRows)))
+        return [d / len(predRows) for d in delta]
 
    # -------- DEBUG! --------
     # set_trace()
@@ -283,28 +298,28 @@ def _test(file='ant'):
 
 
 def deltaCSVwriter(type='Indv'):
-      
+
   if type == 'Indv':
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
       print('##', name)
       delta = []
       Planners = ['xtrees', 'HOW', 'cart', 'Baseline', 'Baseline+FS']
       R = run(dataName=name, reps=1)  # Setup Files.
-      
+
       for p in Planners:
-          delta.append(R.deltas(planner=p))
-      
+        delta.append(R.deltas(planner=p))
+
       def getRow(i):
         for d in delta:
           yield d[i]
-      
-      set_trace()
+
+#       set_trace()
       with open('/Users/rkrsn/git/GNU-Plots/rkrsn/errorbar/%s.csv' %
                 (name), 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ')
-        writer.writerow(["Features"]+Planners)
+        writer.writerow(["Features"] + Planners)
         for i, h in enumerate(run(dataName=name).headers[:-2]):
-          writer.writerow([h.name[1:]]+[el for el in getRow(i)])
+          writer.writerow([h.name[1:]] + [el for el in getRow(i)])
 #      set_trace()
   elif type == 'All':
     delta = []
@@ -349,7 +364,7 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-#   _test()
+  #   _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')

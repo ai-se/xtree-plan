@@ -48,11 +48,16 @@ def genTable(tbl, rows):
   return createTbl(['tmp0.csv'])
 
 Change = []
+
+
 class changes():
+
   def __init__(self):
     self.log = {}
+
   def save(self, name=None, old=None, new=None):
     self.log.update({name: (old, new)})
+
 
 class deltas():
 
@@ -77,7 +82,7 @@ class deltas():
         old = tmpRow.cells[pos]
         new = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
         C.save(name=s[0].name, old=old, new=new)
-        tmpRow.cells[pos] = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
+        tmpRow.cells[pos] = new
       Change.append(C.log)
       newElem.append(tmpRow)
     return newElem
@@ -118,7 +123,8 @@ class store():
         if el > maxel:
           maxel = el
           id = i
-      return np.mean([r.cells[-2] for r in node.rows if r.cells[-1] == unq[id]])
+      return np.mean([r.cells[-2]
+                      for r in node.rows if r.cells[-1] == unq[id]])
     else:
       return np.mean([r.cells[-2] for r in node.rows])
 
@@ -138,7 +144,11 @@ class xtrees():
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
     self.majority = majority
-    t = discreteNums(self.train_DF, map(lambda x: x.cells, self.train_DF._rows))
+    t = discreteNums(
+        self.train_DF,
+        map(
+            lambda x: x.cells,
+            self.train_DF._rows))
     self.myTree = tdiv(t)
 
   def flatten(self, x):
@@ -268,7 +278,7 @@ class xtrees():
       return Change
     else:
       return genTable(
-        self.test_DF, rows=[k.cells for k in self.mod])
+          self.test_DF, rows=[k.cells for k in self.mod])
 
 
 def _planningTest():
