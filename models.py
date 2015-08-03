@@ -1,15 +1,19 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
+
 from os import environ, getcwd
+from os import walk
 from os.path import expanduser
+from pdb import set_trace
 import sys
 
 # Update PYTHONPATH
 HOME = expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystat/'  # PySTAT
-SOURCE = '../SOURCE/'
-sys.path.extend([axe, pystat, SOURCE])
+pystat = HOME + '/git/pystats/'  # PySTAT
+cwd = getcwd()  # Current Directory
+sys.path.extend([axe, pystat, cwd, './old/Modeller/'])
+
 
 import csv
 from Prediction import *
@@ -19,14 +23,17 @@ from methods1 import *
 import numpy as np
 import pandas as pd
 from pdb import set_trace
-from WHAT import treatments as WHAT
-from CROSSTREES import treatments as xtrees
-from _model import xomod, howMuchEffort
-from _XOMO import *
+
+from Models._model import xomod, howMuchEffort
+from Models._XOMO import *
 from numpy import sum, array
 from sk import rdivDemo
-from pom3.pom3 import pom3
+from Models.pom3 import pom3
 import random
+
+from Planner.xtress_bin import xtrees
+from WHAT import treatments as HOW
+from Planner.strawman import strawman
 
 
 class XOMO():
@@ -50,7 +57,7 @@ class XOMO():
   def genData(i, N=100):
     train = i.toCSV(xomod(N), name='Train.csv')
     test = i.toCSV(xomod(N), name='Test.csv')
-    return createTbl([train]), createTbl([test])
+    return train, test
 
   def model(i, X):
     row = {h: el for h, el in zip(i.header, X)}
@@ -80,7 +87,7 @@ class POM3():
   def genData(p3, N=100):
     train = p3.toCSV(pom3d(N), name='Train.csv')
     test = p3.toCSV(pom3d(N), name='Test.csv')
-    return createTbl([train]), createTbl([test])
+    return train, test
 
   def model(p3, X):
     try:
@@ -102,17 +109,35 @@ def predictor(tbl, Model=XOMO):
 
 def learner(mdl=XOMO, lst=[], reps=24):
   train, test = mdl().genData(N=1000)
-  before = array(predictor(Model=mdl, tbl=train))
-  for ext in [0, 0.25, 0.5, 0.75]:
-    for info, prune in zip([0.25, 0.5, 0.75, 1.00],
-                           [True, True, True, False]):
-      prefix = '        Base' if ext == 0 else 'F=%0.2f, B=%0.2f' % (ext, info)
-#       print(prefix)
-      E = [prefix]
-      for _ in xrange(reps):
-        newTab = xtrees(train=train, test=test, verbose=False).main()
-        after = array(predictor(tbl=newTab))
-        E.append(sum(after) / sum(before))
+  before = array(predictor(Model=mdl, tbl=createTbl(train)))
+  for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
+    E = [planner]
+    after = lambda newTab: array(predictor(tbl=newTab))
+    frac = lambda aft: sum(aft) / sum(before)
+    for _ in xrange(reps):
+      "Apply Different Planners"
+      if planner == 'xtrees':
+        newTab = xtrees(train=train,
+                        test=test,
+                        bin=False,
+                        majority=True).main()
+      if planner == 'cart':
+        newTab = xtrees(train=train,
+                        test=test,
+                        bin=False,
+                        majority=False).main()
+      if planner == 'HOW':
+        newTab = HOW(train=train, test=test).main()
+      if planner == 'baseln0':
+        newTab = strawman(
+            train=train,
+            test=test).main(config=True)
+      if planner == 'baseln1':
+        newTab = strawman(
+            train=train,
+            test=test,
+            prune=True).main(config=True)
+      E.append(sum(after) / sum(before))
       lst.append(E)
   return lst
 

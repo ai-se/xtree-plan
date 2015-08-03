@@ -67,12 +67,12 @@ class treatments():
           train,
           test,
           bin=False,
-          far=True,
+          far=False,
           method='mean',
           train_df=None,
           test_df=None,
           fSelect=True,
-          Prune=True,
+          Prune=False,
           infoPrune=0.5,
           extent=0.75):
     self.test, self.train = test, train
