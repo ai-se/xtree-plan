@@ -85,7 +85,7 @@ cmd_subfolder = os.path.realpath(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from xomo import *
+from xomo.xomo import *
 
 
 class Xomo:
@@ -189,9 +189,9 @@ def xomod(N=100):
   return head, body
 
 
-def howMuchEffort(row):
+def howMuchEffort(row, n=0):
   X = Xomo(model="all")
-  return X.c.xys(x=row)[1]
+  return X.c.xys(x=row)[n]
 
 
 def pom3d(N=50):

@@ -39,15 +39,17 @@ from Planner.strawman import strawman
 class XOMO():
 
   "XOMO"
-  def __init__(i):
+  def __init__(i, n=0):
     i.header = Xomo(model="all").names
-    pass
+    i.depen = ['$>effort', '$>months', '$defects', '$>risk']
+    i.ndep = max(n, 3)
 
   def toCSV(i, data, dir='Models/Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      writer.writerow(['$' + d for d in i.header] + ['$>effort'])  # Header
+      writer.writerow(
+          ['$' + d for d in i.header] + [i.depen[i.ndep]])  # Header
       for cells in data[1]:  # Body
         indep = cells[:-4]
         depen = i.model(indep)
@@ -62,23 +64,25 @@ class XOMO():
 
   def model(i, X):
     row = {h: el for h, el in zip(i.header, X)}
-    return howMuchEffort(row)
+    return howMuchEffort(row, n=i.ndep)
 
 
 class POM3():
 
   "POM3"
-  def __init__(p3):
+  def __init__(p3, n=0):
     p3.indep = ["Culture", "Criticality", "CriticalityModifier",
                 "InitialKnown", "InterDependency", "Dynamism",
                 "Size", "Plan", "TeamSize"]
     p3.depen = ['$>cost', '$<completion', '$>idle']
+    p3.ndep = max(n, 2)
 
   def toCSV(p3, data, dir='Models/Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      writer.writerow(['$' + d for d in p3.indep] + [p3.depen[0]])  # Header
+      writer.writerow(
+          ['$' + d for d in p3.indep] + [p3.depen[p3.ndep]])  # Header
       for cells in data[1]:  # Body
         indep = cells[:-3]
         depen = p3.model(indep)
@@ -93,7 +97,7 @@ class POM3():
 
   def model(p3, X):
     try:
-      return pom3().simulate(X)[0]
+      return pom3().simulate(X)[p3.ndep]
     except:
       set_trace()
 
@@ -109,8 +113,8 @@ def predictor(tbl, Model=XOMO):
   return out
 
 
-def learner(mdl=XOMO, reps=24):
-  train, test = mdl().genData(N=1000)
+def learner(mdl=XOMO, n=0, reps=24):
+  train, test = mdl(n).genData(N=1000)
   before = array(predictor(Model=mdl, tbl=createTbl(train)))
   for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
@@ -146,12 +150,14 @@ def learner(mdl=XOMO, reps=24):
 
 
 def _test():
-  for mdl in [POM3, XOMO]:
-    print('## %s \n```' % (mdl.__doc__))
-    R = [r for r in learner(mdl, reps=25)]
-    set_trace()
-    rdivDemo(R, isLatex=False)
-    print('```')
+  for mdl in [XOMO, POM3]:
+    print('## %s \n\n' % (mdl.__doc__))
+    ndep = 3 if mdl == XOMO else 2
+    for n in xrange(ndep):
+      print('#### %s \n```' % (mdl().depen[n][2:]))
+      R = [r for r in learner(mdl, n, reps=25)]
+      rdivDemo(R, isLatex=False)
+      print('```')
 
 if __name__ == "__main__":
   _test()
