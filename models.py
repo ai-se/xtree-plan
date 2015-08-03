@@ -41,8 +41,8 @@ class XOMO():
   "XOMO"
   def __init__(i, n=0):
     i.header = Xomo(model="all").names
-    i.depen = ['$>effort', '$>months', '$defects', '$>risk']
-    i.ndep = max(n, 3)
+    i.depen = ['$>effort', '$>months', '$>defects', '$>risk']
+    i.ndep = min(n, 3)
 
   def toCSV(i, data, dir='Models/Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
@@ -75,7 +75,7 @@ class POM3():
                 "InitialKnown", "InterDependency", "Dynamism",
                 "Size", "Plan", "TeamSize"]
     p3.depen = ['$>cost', '$<completion', '$>idle']
-    p3.ndep = max(n, 2)
+    p3.ndep = min(n, 2)
 
   def toCSV(p3, data, dir='Models/Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
@@ -97,7 +97,10 @@ class POM3():
 
   def model(p3, X):
     try:
-      return pom3().simulate(X)[p3.ndep]
+      if p3.ndep == 1:
+        return -pom3().simulate(X)[p3.ndep]
+      else:
+        return pom3().simulate(X)[p3.ndep]
     except:
       set_trace()
 
@@ -114,10 +117,10 @@ def predictor(tbl, Model=XOMO):
 
 
 def learner(mdl=XOMO, n=0, reps=24):
-  train, test = mdl(n).genData(N=1000)
-  before = array(predictor(Model=mdl, tbl=createTbl(train)))
   for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
+    train, test = mdl(n).genData(N=500)
+    before = array(predictor(Model=mdl, tbl=createTbl(train)))
     after = lambda newTab: array(predictor(Model=mdl, tbl=newTab))
     frac = lambda aft: sum(aft) / sum(before)
     for _ in xrange(reps):
@@ -139,23 +142,24 @@ def learner(mdl=XOMO, n=0, reps=24):
       if planner == 'baseln0':
         newTab = strawman(
             train=train,
-            test=test).main()
+            test=test).main(mode='models')
       if planner == 'baseln1':
         newTab = strawman(
             train=train,
             test=test,
-            prune=True).main()
+            prune=True).main(mode='models')
       E.append(frac(after(newTab)))
     yield E
 
 
 def _test():
-  for mdl in [XOMO, POM3]:
+  for mdl in [POM3, XOMO]:
     print('## %s \n\n' % (mdl.__doc__))
-    ndep = 3 if mdl == XOMO else 2
+    ndep = 4 if mdl == XOMO else 2
+    random.seed(0)
     for n in xrange(ndep):
       print('#### %s \n```' % (mdl().depen[n][2:]))
-      R = [r for r in learner(mdl, n, reps=25)]
+      R = [r for r in learner(mdl, n, reps=12)]
       rdivDemo(R, isLatex=False)
       print('```')
 

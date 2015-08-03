@@ -228,7 +228,7 @@ class fileHandler():
         if planner == 'Baseline':
           newTab = strawman(
               train=train,
-              test=test).main(config=True)
+              test=test).main(mode="config")
           write2file(rows(newTab), fname='base0_cpm')
           delta.append([d for d in self.delta0(Planner='base0')])
           return np.array(
@@ -238,7 +238,7 @@ class fileHandler():
           newTab = strawman(
               train=train,
               test=test,
-              prune=True).main(config=True)
+              prune=True).main(mode="config")
           write2file(rows(newTab), fname='base1_cpm')
           delta.append([d for d in self.delta0(Planner='base1')])
           return np.array(
@@ -296,12 +296,12 @@ class fileHandler():
             if planner == 'baseln0':
               newTab = strawman(
                   train=train,
-                  test=test).main(config=True)
+                  test=test).main(mode="config")
             if planner == 'baseln1':
               newTab = strawman(
                   train=train,
                   test=test,
-                  prune=True).main(config=True)
+                  prune=True).main(mode="config")
 
             out.append(frac(after(newTab)))
 

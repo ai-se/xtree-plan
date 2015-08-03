@@ -24,23 +24,24 @@ import pandas as pd
 import csv
 from numpy import sum
 
+
 class counter():
+
   def __init__(self, before, after, indx):
     self.indx = indx
     self.actual = before
     self.predicted = after
     self.TP, self.TN, self.FP, self.FN = 0, 0, 0, 0
     for a, b in zip(self.actual, self.predicted):
-      if a == indx and b == indx:
+      if a == 1 and b == 1:
         self.TP += 1
-      elif a == b and a != indx:
+      if a == 0 and b == 0:
         self.TN += 1
-      elif a != indx and b == indx:
+      if a == 0 and b == 1:
         self.FP += 1
-      elif a == indx and b != indx:
+      if a == 1 and b == 0:
         self.FN += 1
-      elif a != indx and b != indx:
-        pass
+
   def stats(self):
     Sen = self.TP / (self.TP + self.FN)
     Spec = self.TN / (self.TN + self.FP)
@@ -49,8 +50,7 @@ class counter():
     F1 = 2 * self.TP / (2 * self.TP + self.FP + self.FN)
     G = 2 * Sen * Spec / (Sen + Spec)
     G1 = Sen * Spec / (Sen + Spec)
-    return Sen, Spec, Prec, Acc, F1, G
-
+    return Sen, 1 - Spec, Prec, Acc, F1, G
 
 
 class ABCD():
@@ -66,10 +66,13 @@ class ABCD():
     for u in list(uniques):
       yield counter(self.actual, self.predicted, indx=u)
 
+
 class data():
+
   """
   Hold training and testing data
   """
+
   def __init__(self, dataName='ant', dir="./Data/Jureczko"):
     projects = [Name for _, Name, __ in walk(dir)][0]
     numData = len(projects)  # Number of data
@@ -95,18 +98,23 @@ class testOracle():
     self.train = createTbl(data(dataName=self.file).train[-1], isBin=True)
     self.test = createTbl(data(dataName=self.file).test[-1], isBin=True)
     self.param = dEvol.tuner(rforest, data(dataName=self.file).train[-1]) if \
-    tuned else None
+        tuned else None
 
   def main(self):
+    Pd, Pf = [], []
     actual = Bugs(self.test)
-    predicted = rforest(self.train, self.test, tunings=self.param, smoteit=True)
+    predicted = rforest(
+        self.train,
+        self.test,
+        tunings=self.param,
+        smoteit=True)
     print("Bugs, Pd, Pf")
     try:
       for k in ABCD(before=actual, after=predicted).all():
         print('%d, %0.2f, %0.2f' % (k.indx, k.stats()[0], k.stats()[1]))
     except:
       pass
-    #   # ---------- DEBUG ----------
+    # ---------- DEBUG ----------
     #   set_trace()
 
 if __name__ == "__main__":

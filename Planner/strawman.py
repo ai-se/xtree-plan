@@ -137,7 +137,7 @@ class patches():
 
   def newTable(self):
     if not self.bin:
-      oldRows = [r for r in self.test._rows if r.cells[-2] > 0]
+      oldRows = [r for r in self.test._rows if abs(r.cells[-2]) > 0]
     else:
       oldRows = self.test._rows
     newRows = [self.patchIt(t) for t in oldRows]
@@ -152,7 +152,10 @@ class patches():
       for el in newRows:
         writer.writerow(el + [0])
 
-    return createTbl(['tmp0.csv'])
+    try:
+      return createTbl(['tmp0.csv'])
+    except:
+      set_trace()
 
   def deltasCSVWriter(self, name='ant'):
     "Changes"
@@ -187,19 +190,28 @@ class strawman():
           cluster.append(row)
       yield node(cluster)
 
-  def main(self, config=False):
-    if not config:
+  def main(self, mode='defect'):
+    if mode == "defect":
       train_DF = createTbl(self.train, isBin=True)
       test_DF = createTbl(self.test, isBin=True)
       before = rforest(train=train_DF, test=test_DF)
-#      set_trace()
       clstr = [c for c in self.nodes(train_DF._rows)]
       return patches(train=self.train,
                      test=self.test,
                      clusters=clstr,
                      prune=self.prune,
                      pred=before).newTable()
-    else:
+    elif mode == "models":
+      train_DF = createTbl(self.train, isBin=False)
+      test_DF = createTbl(self.test, isBin=False)
+      before = rforest(train=train_DF, test=test_DF)
+      clstr = [c for c in self.nodes(train_DF._rows)]
+      return patches(train=self.train,
+                     test=self.test,
+                     clusters=clstr,
+                     prune=self.prune,
+                     pred=before).newTable()
+    elif mode == "config":
       train_DF = createTbl(self.train, isBin=False)
       test_DF = createTbl(self.test, isBin=False)
       before = rforest2(train=train_DF, test=test_DF)
