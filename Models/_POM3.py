@@ -2,8 +2,8 @@ import sys
 import os
 _pwd = os.getcwd()
 sys.path.insert(0, _pwd + '/pom3/')
-from pom3_teams import *
-from pom3_requirements import *
+from pom3.pom3_teams import *
+from pom3.pom3_requirements import *
 import random
 from numpy.random.mtrand import shuffle
 

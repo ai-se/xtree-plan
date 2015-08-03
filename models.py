@@ -28,21 +28,22 @@ from Models._model import xomod, howMuchEffort
 from Models._XOMO import *
 from numpy import sum, array
 from sk import rdivDemo
-from Models.pom3 import pom3
+import Models.pom3
 import random
 
-from Planner.xtress_bin import xtrees
+from Planner.CROSSTREES import xtrees
 from WHAT import treatments as HOW
 from Planner.strawman import strawman
 
 
 class XOMO():
 
+  "XOMO"
   def __init__(i):
     i.header = Xomo(model="all").names
     pass
 
-  def toCSV(i, data, dir='Data/XOMO/', name=None):
+  def toCSV(i, data, dir='Models/Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -57,7 +58,7 @@ class XOMO():
   def genData(i, N=100):
     train = i.toCSV(xomod(N), name='Train.csv')
     test = i.toCSV(xomod(N), name='Test.csv')
-    return train, test
+    return [train], [test]
 
   def model(i, X):
     row = {h: el for h, el in zip(i.header, X)}
@@ -66,13 +67,14 @@ class XOMO():
 
 class POM3():
 
+  "POM3"
   def __init__(p3):
     p3.indep = ["Culture", "Criticality", "CriticalityModifier",
                 "InitialKnown", "InterDependency", "Dynamism",
                 "Size", "Plan", "TeamSize"]
-    p3.depen = ['-cost', '+completion', '-idle']
+    p3.depen = ['$>cost', '$<completion', '$>idle']
 
-  def toCSV(p3, data, dir='Data/POM3/', name=None):
+  def toCSV(p3, data, dir='Models/Data/POM3/', name=None):
     with open(dir + name, 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',',
                           quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -87,7 +89,7 @@ class POM3():
   def genData(p3, N=100):
     train = p3.toCSV(pom3d(N), name='Train.csv')
     test = p3.toCSV(pom3d(N), name='Test.csv')
-    return train, test
+    return [train], [test]
 
   def model(p3, X):
     try:
@@ -103,16 +105,16 @@ def predictor(tbl, Model=XOMO):
     if Model == XOMO:
       out += [Model().model(elem[:-2])]
     elif Model == POM3:
-      out += [Model().simulate(elem[:-2])[0]]
+      out += [Model().model(elem[:-2])]
   return out
 
 
-def learner(mdl=XOMO, lst=[], reps=24):
+def learner(mdl=XOMO, reps=24):
   train, test = mdl().genData(N=1000)
   before = array(predictor(Model=mdl, tbl=createTbl(train)))
   for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
-    after = lambda newTab: array(predictor(tbl=newTab))
+    after = lambda newTab: array(predictor(Model=mdl, tbl=newTab))
     frac = lambda aft: sum(aft) / sum(before)
     for _ in xrange(reps):
       "Apply Different Planners"
@@ -120,33 +122,38 @@ def learner(mdl=XOMO, lst=[], reps=24):
         newTab = xtrees(train=train,
                         test=test,
                         bin=False,
+                        smoteit=False,
                         majority=True).main()
       if planner == 'cart':
         newTab = xtrees(train=train,
                         test=test,
                         bin=False,
+                        smoteit=False,
                         majority=False).main()
       if planner == 'HOW':
         newTab = HOW(train=train, test=test).main()
       if planner == 'baseln0':
         newTab = strawman(
             train=train,
-            test=test).main(config=True)
+            test=test).main()
       if planner == 'baseln1':
         newTab = strawman(
             train=train,
             test=test,
-            prune=True).main(config=True)
-      E.append(sum(after) / sum(before))
-      lst.append(E)
-  return lst
+            prune=True).main()
+      E.append(frac(after(newTab)))
+    yield E
+
+
+def _test():
+  for mdl in [POM3, XOMO]:
+    print('## %s \n```' % (mdl.__doc__))
+    R = [r for r in learner(mdl, reps=25)]
+    set_trace()
+    rdivDemo(R, isLatex=False)
+    print('```')
 
 if __name__ == "__main__":
-  random.seed(0)
-  lst = learner(reps=10)
-  try:
-    rdivDemo(lst, isLatex=True)
-  except:
-    set_trace()
+  _test()
   #------- Debug --------
   set_trace()

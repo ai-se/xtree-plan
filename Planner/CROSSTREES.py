@@ -136,7 +136,10 @@ class xtrees():
   def __init__(self, train=None, test=None, test_DF=None,
                verbose=True, smoteit=True, bin=False, majority=False):
     self.train, self.test = train, test
-    self.train_DF = createTbl(train, _smote=smoteit, isBin=bin)
+    try:
+      self.train_DF = createTbl(train, isBin=bin)
+    except:
+      set_trace()
     if not test_DF:
       self.test_DF = createTbl(test, isBin=bin)
     else:
@@ -145,7 +148,7 @@ class xtrees():
     self.mod, self.keys = [], self.getKey()
     self.majority = majority
     t = discreteNums(
-        self.train_DF,
+        createTbl(train, isBin=bin),
         map(
             lambda x: x.cells,
             self.train_DF._rows))

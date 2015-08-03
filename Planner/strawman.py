@@ -21,6 +21,7 @@ sys.path.extend([axe, pystat, cwd])
 from table import clone
 import csv
 
+
 def eDist(row1, row2):
   "Euclidean Distance"
   return sum([(a * a - b * b) ** 0.5 for a, b in zip(row1[:-1], row2[:-1])])
@@ -72,8 +73,7 @@ class patches():
   "Apply new patch."
 
   def __init__(
-          self, train, test, clusters, prune=False, B=0.25
-          , verbose=False, bin=False, pred=[]):
+          self, train, test, clusters, prune=False, B=0.25, verbose=False, bin=False, pred=[]):
     if bin:
       self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=False)
@@ -104,10 +104,14 @@ class patches():
 
   def fWeight(self, criterion='Variance'):
     lbs = W(use=criterion).weights(self.train)
-    sortedLbs = sorted([l / max(lbs[0]) for l in lbs[0]], reverse=True)
+    try:
+      sortedLbs = sorted([l / max(0.0001, max(lbs[0]))
+                          for l in lbs[0]], reverse=True)
+    except:
+      set_trace()
     indx = int(self.B * len(sortedLbs)) - 1 if self.Prune else -1
     cutoff = sortedLbs[indx]
-    L = [l / max(lbs[0]) for l in lbs[0]]
+    L = [l / max(0.0001, max(lbs[0])) for l in lbs[0]]
     return array([0 if l < cutoff else l for l in L] if self.Prune else L)
 
   def delta0(self, node1, node2):
@@ -206,6 +210,7 @@ class strawman():
                      prune=self.prune,
                      pred=before,
                      bin=True).newTable()
+
 
 def categorize(dataName):
   dir = '../Data/Jureczko'
