@@ -348,13 +348,13 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  for name in ['Apache', 'BDBC', 'BDBJ', 'LLVM', 'X264', 'SQL']:
+  for name in ['Apache', 'BDBJ', 'LLVM', 'X264', 'BDBC', 'SQL']:
     print('## %s \n```' % (name))
-    R = [r for r in fileHandler().main(name, reps=10)]
+    R = [r for r in fileHandler().main(name, reps=25)]
     rdivDemo(R, isLatex=False)
     print('```')
 #     set_trace()
 
 if __name__ == '__main__':
-#  _test()
-  deltasTester()
+  _test()
+#  deltasTester()
