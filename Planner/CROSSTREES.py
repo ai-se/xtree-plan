@@ -8,7 +8,6 @@ from os import walk
 from os.path import expanduser
 from pdb import set_trace
 import sys
-from audioop import reverse
 
 # Update PYTHONPATH
 HOME = expanduser('~')

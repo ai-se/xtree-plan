@@ -289,10 +289,9 @@ class run():
 
 
 def _test(file='ant'):
-  for file in ['lucene', 'ivy', 'jedit', 'poi', 'ant']:
-    print('## %s\n' % (file))
-    R = [r for r in run(dataName=file, reps=28).go()]
-    rdivDemo(R, isLatex=True)
+  print('## %s\n' % (file))
+  R = [r for r in run(dataName=file, reps=28).go()]
+  rdivDemo(R, isLatex=True)
 #     print('```')
 
 
@@ -363,9 +362,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-  _test()
+#  _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
 #   deltaCSVwriter(type='Indv')
-#   eval(cmd())
+  eval(cmd())
