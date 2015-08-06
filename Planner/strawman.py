@@ -73,8 +73,8 @@ class patches():
   "Apply new patch."
 
   def __init__(
-          self, train, test, clusters, prune=False, B=0.25, verbose=False, bin=False, pred=[]):
-    if bin:
+          self, train, test, clusters, prune=False, B=0.25, verbose=False, config=False, models=False, pred=[]):
+    if config or models:
       self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=False)
     else:
@@ -86,7 +86,7 @@ class patches():
     self.B = B
     self.mask = self.fWeight()
     self.write = verbose
-    self.bin = bin
+    self.bin = config
     self.pred = pred
 
   def min_max(self):
@@ -210,6 +210,7 @@ class strawman():
                      test=self.test,
                      clusters=clstr,
                      prune=self.prune,
+                     models=True,
                      pred=before).newTable()
     elif mode == "config":
       train_DF = createTbl(self.train, isBin=False)
@@ -221,7 +222,7 @@ class strawman():
                      clusters=clstr,
                      prune=self.prune,
                      pred=before,
-                     bin=True).newTable()
+                     config=True).newTable()
 
 
 def categorize(dataName):
