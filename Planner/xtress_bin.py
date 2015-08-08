@@ -116,6 +116,12 @@ class xtrees():
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
     self.majority = majority
+    t = discreteNums(
+        createTbl(train, _smote=smoteit, isBin=bin),
+        map(
+            lambda x: x.cells,
+            self.train_DF._rows))
+    self.myTree = tdiv(t)
 
   def flatten(self, x):
     """
@@ -234,39 +240,19 @@ class xtrees():
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    # Decision Tree
-    t = discreteNums(
-        self.train_DF,
-        map(
-            lambda x: x.cells,
-            self.train_DF._rows))
-    myTree = tdiv(t)
-    # showTdiv(myTree)
-    # set_trace()
-    # Testing data
     testCase = self.test_DF._rows
     for tC in testCase:
       newRow = tC
-      node = deltas(newRow, myTree)  # A delta instance for the rows
+      node = deltas(newRow, self.myTree)  # A delta instance for the rows
 
       if newRow.cells[-2] == 0:
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
         node.contrastSet = [self.finder2(node.loc, pos='near')]
-        # set_trace()
-        # Now generate 1 potential patch
         patch = node.patches(self.keys, N_Patches=1)
+        self.mod.extend(patch[0])
 
-        p = patch.pop()
-        tmpTbl = clone(self.test_DF,
-                       rows=[k.cells for k in p],
-                       discrete=True)
-        self.mod.append(choice(tmpTbl._rows))
-
-      # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
-        # set_trace()
     return clone(self.test_DF, rows=[k.cells for k in self.mod], discrete=True)
 
 

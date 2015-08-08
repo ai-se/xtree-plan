@@ -111,9 +111,9 @@ def predictor(tbl, Model=XOMO):
 
 
 def learner(mdl=XOMO, n=0, reps=24, numel=1000):
+  train, test = mdl(n).genData(N=numel)
   for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
-    train, test = mdl(n).genData(N=numel)
     before = array(predictor(Model=mdl, tbl=createTbl(train)))
     after = lambda newTab: array(predictor(Model=mdl, tbl=newTab))
     frac = lambda aft: sum(aft) / sum(before)
