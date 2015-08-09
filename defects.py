@@ -6,6 +6,7 @@ from os import walk
 from os.path import expanduser
 from pdb import set_trace
 import sys
+from bdb import set_trace
 
 # Update PYTHONPATH
 HOME = expanduser('~')
@@ -237,19 +238,16 @@ class run():
                         majority=True).main(justDeltas=True)
         delta.append(
             [d for d in self.delta1(xTrees, train_DF.headers, norm=len(predRows))])
-        return (np.sum(
-            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
+        return (np.sum(delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
       elif planner == 'cart' or planner == 'CART':
         cart = xtrees(train=self.train[-1],
                       test_DF=predTest,
-                      bin=False,
-                      majority=False).main(justDeltas=True)
+                      bin=False, majority=False).main(justDeltas=True)
 
         delta.append(
             [d for d in self.delta1(cart, train_DF.headers, norm=len(predRows))])
-        return (np.sum(
-            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
+        return (np.sum(delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
       elif planner == 'HOW':
         how = HOW(train=self.train[-1],
@@ -289,10 +287,11 @@ class run():
 
 
 def _test(file='ant'):
-  print('## %s\n' % (file))
-  R = [r for r in run(dataName=file, reps=28).go()]
-  rdivDemo(R, isLatex=True)
-#     print('```')
+  for file in ['synapse', 'ivy', 'jedit', 'poi', 'ant']:
+    print('## %s\n```' % (file))
+    R = [r for r in run(dataName=file, reps=25).go()]
+    rdivDemo(R, isLatex=False)
+    print('```')
 
 
 def deltaCSVwriter(type='Indv'):
@@ -301,7 +300,7 @@ def deltaCSVwriter(type='Indv'):
     for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
       print('##', name)
       delta = []
-      Planners = ['xtrees', 'HOW', 'cart', 'Baseline', 'Baseline+FS']
+      Planners = ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']
       R = run(dataName=name, reps=1)  # Setup Files.
 
       for p in Planners:
@@ -362,9 +361,9 @@ def deltaTest():
 
 
 if __name__ == '__main__':
-#  _test()
+  #   _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
-#   deltaCSVwriter(type='Indv')
-  eval(cmd())
+  deltaCSVwriter(type='Indv')
+#   eval(cmd())

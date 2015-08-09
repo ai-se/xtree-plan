@@ -47,8 +47,6 @@ def genTable(tbl, rows):
 
   return createTbl(['tmp0.csv'])
 
-Change = []
-
 
 class changes():
 
@@ -67,6 +65,7 @@ class deltas():
     self.contrastSet = None
     self.newRow = row
     self.score = self.scorer(self.loc)
+    self.change = []
 
   def scorer(self, node):
     return np.mean([r.cells[-2] for r in node.rows])
@@ -83,7 +82,7 @@ class deltas():
         new = float(max(lo, min(hi, lo + rand() * abs(hi - lo))))
         C.save(name=s[0].name, old=old, new=new)
         tmpRow.cells[pos] = new
-      Change.append(C.log)
+      self.change.append(C.log)
       newElem.append(tmpRow)
     return newElem
 
@@ -93,7 +92,7 @@ class deltas():
     newRow = self.row
     for stuff in self.contrastSet:
       isles.append(self.createNew(stuff, keys, N=N_Patches))
-    return isles, None
+    return isles, self.change
 
 
 class store():
@@ -133,11 +132,11 @@ class xtrees():
 
   "Treatments"
 
-  def __init__(self, train=None, test=None, test_DF=None, pos='near',
-               verbose=True, smoteit=True, bin=False, majority=False, Min=True):
+  def __init__(self, train=None, test=None, test_DF=None,
+               verbose=True, smoteit=True, bin=False, majority=True):
     self.train, self.test = train, test
     try:
-      self.train_DF = createTbl(train, _smote=smoteit, isBin=bin)
+      self.train_DF = createTbl(train, _smote=False, isBin=bin)
     except:
       set_trace()
     if not test_DF:
@@ -147,14 +146,13 @@ class xtrees():
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
     self.majority = majority
-    self.pos = pos
-    self.min = Min
     t = discreteNums(
-        createTbl(train, _smote=smoteit, isBin=bin),
-        map(
-            lambda x: x.cells,
-            self.train_DF._rows))
+        createTbl(
+            train, isBin=bin), map(
+            lambda x: x.cells, self.train_DF._rows))
     self.myTree = tdiv(t)
+    showTdiv(self.myTree)
+    set_trace()
 
   def flatten(self, x):
     """
@@ -221,7 +219,7 @@ class xtrees():
     finder2 is a more elegant version of finder that performs a search on
     the entire tree to find leaves which are better than a certain 'node'
     """
-    meanScore = lambda rows: np.mean([r.cells[-2] for r in rows])
+
     euclidDist = lambda a, b: ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
     midDist = lambda a, b: abs(sum(b) - sum(a)) / 2
     vals = []
@@ -243,44 +241,25 @@ class xtrees():
       l.dist = np.sqrt(np.sum(dist))
       vals.append(l)
     vals = sorted(vals, key=lambda F: F.DoC, reverse=False)
-    vals2 = sorted(vals, key=lambda F: F.score, reverse=False)
-    if self.min:
-      best = [v for v in vals if v.score < alpha * current.score]
-      best2 = [v for v in vals2 if v.score < current.score]
-    else:
-      best = [v for v in vals if v.score > alpha * current.score]
-      best2 = sorted(
-          [v for v in vals2 if v.score > current.score], key=lambda F: F.score)
-
+    best = [v for v in vals if v.score < alpha * current.score]
     if not len(best) > 0:
       best = vals
 
+    # Get a list of DoCs (DoC -> (D)epth (o)f (C)orrespondence, btw..)
+    # set_trace()
     attr = {}
     bests = {}
     unq = sorted(list(set([v.DoC for v in best])))  # A list of all DoCs..
     for dd in unq:
-      if self.min:
-        bests.update(
-            {dd: sorted([v for v in best if v.DoC == dd], key=lambda F: F.score)})
-        attr.update({dd: self.attributes(
-            sorted([v for v in best if v.DoC == dd], key=lambda F: F.score))})
-      else:
-        bests.update(
-            {dd: sorted([v for v in best if v.DoC == dd], key=lambda F: F.score, reverse=True)})
-        attr.update({dd: self.attributes(
-            sorted([v for v in best if v.DoC == dd], key=lambda F: F.score, reverse=True))})
-
-#     set_trace()
+      bests.update(
+          {dd: sorted([v for v in best if v.DoC == dd], key=lambda F: F.score)})
+      attr.update({dd: self.attributes(
+          sorted([v for v in best if v.DoC == dd], key=lambda F: F.score))})
 
     if pos == 'near':
       return attr[unq[-1]][0]
     elif pos == 'far':
       return attr[unq[0]][-1]
-    elif pos == 'best':
-      try:
-        return self.attributes(best2)[0]
-      except:
-        return self.attributes([current])[0]
 
   def getKey(self):
     keys = {}
@@ -292,20 +271,18 @@ class xtrees():
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    Change = []
     testCase = self.test_DF._rows
     for tC in testCase:
       node = deltas(tC, self.myTree)  # A delta instance for the rows
-      node.contrastSet = [self.finder2(node.loc, pos=self.pos)]
-      try:
-        patch, _ = node.patches(self.keys, N_Patches=1)
-      except:
-        set_trace()
+      node.contrastSet = [self.finder2(node.loc, pos='near')]
+      patch, change = node.patches(self.keys, N_Patches=1)
+      Change.extend(change)
       self.mod.extend(patch[0])
     if justDeltas:
       return Change
     else:
-      return genTable(
-          self.test_DF, rows=[k.cells for k in self.mod])
+      return genTable(self.test_DF, rows=[k.cells for k in self.mod])
 
 
 def _planningTest():
