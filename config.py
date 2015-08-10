@@ -171,16 +171,27 @@ class fileHandler():
     after = predictor(train=train_df, test=newTab_df).rforest()
     return newTab
 
-  def delta0(self, Planner='xtrees'):
+  def delta1(self, cDict, headers, norm):
+    for el in cDict:
+      D = len(headers[:-2]) * [0]
+      for k in el.keys():
+        for i, n in enumerate(headers[:-1]):
+          if n.name[1:] == k:
+            D[i] += 100
+      yield D
+
+  def delta0(self, headers, Planner='xtrees'):
     before, after = open(
         '.temp/before_cpm.txt'), open('.temp/' + Planner + '_cpm.txt')
+    D = len(headers[:-1]) * [0]
     for line1, line2 in zip(before, after):
       row1 = np.array([float(l) for l in line1.strip().split(',')])
       row2 = np.array([float(l) for l in line2.strip().split(',')])
-      try:
-        yield np.bitwise_xor(row2, row1, dtype='int')
-      except:
-        set_trace()
+      changed = (row2 - row1).tolist()
+      for i, c in enumerate(changed):
+        if c > 0:
+          D[i] += 100
+    return D
 
   def deltas(self, name, planner):
     predRows = []
@@ -203,36 +214,38 @@ class fileHandler():
           newTab = xtrees(train=train,
                           test=test,
                           bin=False,
-                          majority=True).main()
-          write2file(rows(newTab), fname='xtrees_cpm')
-          delta.append([d for d in self.delta0(Planner='xtrees')])
+                          majority=True).main(justDeltas=True)
+          delta.append(
+              [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
-              np.sum(delta[0], axis=0), dtype='float') / np.size(delta[0], axis=0)
+              np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
         if planner == 'cart':
           newTab = xtrees(train=train,
                           test=test,
                           bin=False,
-                          majority=False).main()
-          write2file(rows(newTab), fname='cart_cpm')
-          delta.append([d for d in self.delta0(Planner='cart')])
+                          majority=False).main(justDeltas=True)
+          delta.append(
+              [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
-              np.sum(delta[0], axis=0), dtype='float') / np.size(delta[0], axis=0)
-
+              np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
         if planner == 'HOW':
           newTab = HOW(name)
           write2file(rows(newTab), fname='how_cpm')
-          delta.append([d for d in self.delta0(Planner='how')])
-          return np.array(
-              np.sum(delta[0], axis=0), dtype='float') / np.size(delta[0], axis=0)
+          delta.append(
+              [d for d in self.delta0(train_DF.headers, Planner='how')])
+          try:
+            return [d / len(rows(test_df)) for d in delta[0]]
+          except:
+            set_trace()
 
         if planner == 'Baseline':
           newTab = strawman(
               train=train,
               test=test).main(mode="config")
           write2file(rows(newTab), fname='base0_cpm')
-          delta.append([d for d in self.delta0(Planner='base0')])
-          return np.array(
-              np.sum(delta[0], axis=0), dtype='float') / np.size(delta[0], axis=0)
+          delta.append(
+              [d for d in self.delta0(train_DF.headers, Planner='base0')])
+          return [d / len(rows(train_DF)) for d in delta[0]]
 
         if planner == 'Baseline+FS':
           newTab = strawman(
@@ -240,9 +253,9 @@ class fileHandler():
               test=test,
               prune=True).main(mode="config")
           write2file(rows(newTab), fname='base1_cpm')
-          delta.append([d for d in self.delta0(Planner='base1')])
-          return np.array(
-              np.sum(delta[0], axis=0), dtype='float') / np.size(delta[0], axis=0)
+          delta.append(
+              [d for d in self.delta0(train_DF.headers, Planner='base1')])
+          return [d / len(rows(train_DF)) for d in delta[0]]
 
   def flatten(self, x):
     """
@@ -312,25 +325,27 @@ class fileHandler():
 
 
 def deltasTester():
-  for name in ['Apache', 'BDBC', 'BDBJ', 'LLVM', 'X264', 'SQL']:
+  Planners = ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']
+  for name in ['BDBJ', 'Apache', 'BDBC', 'LLVM', 'X264', 'SQL']:
     print('##', name)
     delta = []
     f = fileHandler()
     for plan in ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
-      delta = [f.deltas(name, planner=plan) for _ in xrange(4)]
-      try:
-        y = np.median(delta, axis=0)
-      except:
-        set_trace()
-      yhi, ylo = np.percentile(delta, q=[75, 25], axis=0)
-      dat1 = sorted([(h.name[1:], a, b, c) for h, a, b, c in zip(
-          f.headers[:-2], y, ylo, yhi)], key=lambda F: F[1])
-      dat = np.asarray([(d[0], n, d[1], d[2], d[3])
-                        for d, n in zip(dat1, range(1, 21))])
-      with open('/Users/rkrsn/git/GNU-Plots/rkrsn/errorbar/%s.csv' % (name + '-' + plan), 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter=' ')
-        for el in dat[()]:
-          writer.writerow(el)
+      delta.append(f.deltas(name, planner=plan))
+
+    def getRow(i):
+      for d in delta:
+        try:
+          yield d[i]
+        except:
+          set_trace()
+
+    with open('/Users/rkrsn/git/GNU-Plots/rkrsn/errorbar/%s.csv' %
+              (name), 'w') as csvfile:
+      writer = csv.writer(csvfile, delimiter=' ')
+      writer.writerow(["Features"] + Planners)
+      for i, h in enumerate(f.headers[:-2]):
+        writer.writerow([i] + [el for el in getRow(i)])
 
 
 def rdiv():
@@ -352,12 +367,12 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  for name in ['Apache', 'BDBJ', 'LLVM', 'X264', 'BDBC', 'SQL']:
+  for name in ['BDBJ', 'Apache', 'LLVM', 'X264', 'BDBC', 'SQL']:
     print('## %s \n```' % (name))
     R = [r for r in fileHandler().main(name, reps=25)]
     rdivDemo(R, isLatex=False)
     print('```')
-#     set_trace()
+    set_trace()
 
 if __name__ == '__main__':
   #   _test()

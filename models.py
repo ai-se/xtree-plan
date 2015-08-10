@@ -174,7 +174,7 @@ def _test():
     for n in xrange(ndep):
       print('#### %s \n```' % (mdl().depen[n][2:]))
       R = [r for r in learner(mdl, n, reps=28)]
-      rdivDemo(R, isLatex=False)
+      rdivDemo(R, isLatex=True)
       print('```')
 
 if __name__ == "__main__":

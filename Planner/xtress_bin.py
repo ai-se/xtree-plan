@@ -30,6 +30,27 @@ from methods1 import *
 import numpy as np
 import pandas as pd
 import sk
+import csv
+
+
+def genTable(tbl, rows):
+  header = [h.name for h in tbl.headers[:-1]]
+  with open('tmp3.csv', 'w') as csvfile:
+    writer = csv.writer(csvfile, delimiter=',')
+    writer.writerow(header)
+    for el in rows:
+      writer.writerow(el[:-1])
+
+  return createTbl(['tmp3.csv'])
+
+
+class changes():
+
+  def __init__(self):
+    self.log = {}
+
+  def save(self, name=None, old=None, new=None):
+    self.log.update({name: (old, new)})
 
 
 class deltas():
@@ -40,6 +61,7 @@ class deltas():
     self.contrastSet = None
     self.newRow = row
     self.score = self.scorer(self.loc)
+    self.change = []
 
   def scorer(self, node):
     return mean([r.cells[-2] for r in node.rows])
@@ -49,11 +71,15 @@ class deltas():
     tmpRow = self.row
     prob = [2 ** -d for d in xrange(1, len(stuff) + 1)]
     for _ in xrange(N):
-      for ss, p in zip(stuff, prob):
+      C = changes()
+      for ss in stuff:
         lo, hi = ss[1]
         pos = keys[ss[0].name]
-        # if uniform(0,1)>0.5 else tmpRow.cells[pos]
+        old = tmpRow.cells[pos]
+        new = int(lo)
         tmpRow.cells[pos] = int(lo)
+        C.save(name=ss[0].name, old=old, new=new)
+      self.change.append(C.log)
       newElem.append(tmpRow)
     return newElem
 
@@ -63,7 +89,7 @@ class deltas():
     newRow = self.row
     for stuff in self.contrastSet:
       isles.append(self.createNew(stuff, keys, N=N_Patches))
-    return isles
+    return isles, self.change
 
 
 class store():
@@ -236,24 +262,28 @@ class xtrees():
     except:
       set_trace()
 
-  def main(self):
+  def main(self, justDeltas=False):
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    Change = []
     testCase = self.test_DF._rows
     for tC in testCase:
       newRow = tC
       node = deltas(newRow, self.myTree)  # A delta instance for the rows
-
       if newRow.cells[-2] == 0:
         node.contrastSet = []
         self.mod.append(node.newRow)
       else:
         node.contrastSet = [self.finder2(node.loc, pos='near')]
-        patch = node.patches(self.keys, N_Patches=1)
+        patch, change = node.patches(self.keys, N_Patches=1)
+        Change.extend(change)
         self.mod.extend(patch[0])
-
-    return clone(self.test_DF, rows=[k.cells for k in self.mod], discrete=True)
+    if justDeltas:
+      return Change
+    else:
+      return genTable(
+          self.test_DF, rows=[k.cells for k in self.mod])
 
 
 def planningTest():
