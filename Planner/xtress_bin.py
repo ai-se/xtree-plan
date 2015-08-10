@@ -122,7 +122,6 @@ class xtrees():
             lambda x: x.cells,
             self.train_DF._rows))
     self.myTree = tdiv(t)
-    set_trace()
 
   def flatten(self, x):
     """

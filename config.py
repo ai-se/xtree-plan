@@ -15,7 +15,7 @@ from subprocess import PIPE
 from subprocess import call
 import sys
 import csv
-
+import numpy as np
 # Update PYTHONPATH
 HOME = environ['HOME']
 axe = HOME + '/git/axe/axe/'  # AXE
@@ -360,5 +360,5 @@ def _test(name='Apache'):
 #     set_trace()
 
 if __name__ == '__main__':
-  _test()
-#  deltasTester()
+  #   _test()
+  deltasTester()
