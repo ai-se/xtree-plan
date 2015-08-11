@@ -22,6 +22,15 @@ from table import clone
 import csv
 
 
+class changes():
+
+  def __init__(self):
+    self.log = {}
+
+  def save(self, name=None, old=None, new=None):
+    self.log.update({name: (old, new)})
+
+
 def eDist(row1, row2):
   "Euclidean Distance"
   return sum([(a * a - b * b) ** 0.5 for a, b in zip(row1[:-1], row2[:-1])])
@@ -88,6 +97,7 @@ class patches():
     self.write = verbose
     self.bin = config
     self.pred = pred
+    self.change = []
 
   def min_max(self):
     allRows = array(
@@ -129,13 +139,26 @@ class patches():
     return self.delta0(closest, better)
 
   def patchIt(self, t):
+    C = changes()
     if not self.bin:
+      for i, old, delt, m in zip(range(len(t.cells[:-2])), t.cells[:-2], self.delta(t), self.mask.tolist()):
+        C.save(self.train.headers[i].name[1:], old, new=old + delt)
+      self.change.append(C.log)
       return (array(t.cells[:-2]) + self.delta(t)).tolist()
     else:
+      for i, old, delt, m in zip(range(len(t.cells[:-2])), t.cells[:-2], self.delta(t), self.mask.tolist()):
+        C.save(
+            self.train.headers[i].name[
+                1:],
+            old,
+            new=(
+                1 -
+                old if delt and m > 0 else old))
+      self.change.append(C.log)
       return [1 - val if d and m > 0 else val for val, m,
               d in zip(t.cells[:-2], self.mask, self.delta(t))]
 
-  def newTable(self):
+  def newTable(self, justDeltas=False):
     if not self.bin:
       oldRows = [r for r in self.test._rows if abs(r.cells[-2]) > 0]
     else:
@@ -152,10 +175,13 @@ class patches():
       for el in newRows:
         writer.writerow(el + [0])
 
-    try:
-      return createTbl(['tmp0.csv'])
-    except:
-      set_trace()
+    if justDeltas == False:
+      try:
+        return createTbl(['tmp0.csv'])
+      except:
+        set_trace()
+    else:
+      return self.change
 
   def deltasCSVWriter(self, name='ant'):
     "Changes"
@@ -190,7 +216,7 @@ class strawman():
           cluster.append(row)
       yield node(cluster)
 
-  def main(self, mode='defect'):
+  def main(self, mode='defect', justDeltas=False):
     if mode == "defect":
       train_DF = createTbl(self.train, isBin=True)
       test_DF = createTbl(self.test, isBin=True)
@@ -200,7 +226,7 @@ class strawman():
                      test=self.test,
                      clusters=clstr,
                      prune=self.prune,
-                     pred=before).newTable()
+                     pred=before).newTable(justDeltas=justDeltas)
     elif mode == "models":
       train_DF = createTbl(self.train, isBin=False)
       test_DF = createTbl(self.test, isBin=False)
@@ -211,7 +237,7 @@ class strawman():
                      clusters=clstr,
                      prune=self.prune,
                      models=True,
-                     pred=before).newTable()
+                     pred=before).newTable(justDeltas=justDeltas)
     elif mode == "config":
       train_DF = createTbl(self.train, isBin=False)
       test_DF = createTbl(self.test, isBin=False)
@@ -222,7 +248,7 @@ class strawman():
                      clusters=clstr,
                      prune=self.prune,
                      pred=before,
-                     config=True).newTable()
+                     config=True).newTable(justDeltas=justDeltas)
 
 
 def categorize(dataName):

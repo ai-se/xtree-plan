@@ -151,8 +151,8 @@ class xtrees():
             train, isBin=bin), map(
             lambda x: x.cells, self.train_DF._rows))
     self.myTree = tdiv(t)
-    showTdiv(self.myTree)
-    set_trace()
+#     showTdiv(self.myTree)
+#     set_trace()
 
   def flatten(self, x):
     """

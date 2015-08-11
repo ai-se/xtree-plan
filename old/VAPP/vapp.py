@@ -41,6 +41,15 @@ from smote import SMOTE
 from table import clone
 
 
+class changes():
+
+  def __init__(self):
+    self.log = {}
+
+  def save(self, name=None, old=None, new=None):
+    self.log.update({name: (old, new)})
+
+
 class predictor():
 
   def __init__(
@@ -107,6 +116,7 @@ class fileHandler():
 
   def __init__(self, dir='./Data/Seigmund/'):
     self.dir = dir
+    self.changes = []
 
   def reformat(self, file, train_test=True, ttr=0.5, save=False):
     """
@@ -180,40 +190,9 @@ class fileHandler():
     for f in files:
       if name in f:
         return [self.dir + f]
-#     return files, [self.file2pandas(dir + file) for file in files]
 
-  def preamble(self):
-    print(r"""
-\documentclass{article}
-\usepackage{colortbl}
-\usepackage{fullpage}
-\usepackage{times}
-\usepackage{booktabs}
-\usepackage{bigstrut}
-\usepackage{subfig}
-\usepackage[table]{xcolor}
-\usepackage{graphicx}
-\graphicspath{../_fig/}
-\begin{document}
-\title{text}
-\maketitle
-""")
-
-  def figname(self, fSel, ext, _prune, _info):
-    if ext:
-      a = '\_w' if fSel else ""
-      b = str(int(ext * 100))
-      c = "\_iP(%s)" % (str(int(_info * 100))) if _prune else ""
-      suffix = '\_%s%s%s' % (b, a, c)
-      A = ", Feature Weighting" if fSel else ""
-      B = ", %s Information Pruning" % (
-          str(int(_info * 100)) + r"\%") if _prune else ""
-      comment = "Mutation Probability = %.2f%s%s" % (ext, A, B)
-      return suffix, comment
-    else:
-      return "\_baseline", "Baseline"
-
-  def planner(self, train, test, fSel, ext, _prune, _info, method='best'):
+  def planner(self, train, test, fSel, ext, _prune,
+              _info, method='best', justDeltas=False):
     train_df = formatData(train)
     test_df = formatData(test)
     actual = test_df[
@@ -231,9 +210,10 @@ class fileHandler():
         far=False,
         infoPrune=_info,
         method=method,
-        Prune=_prune).main()
-    newTab_df = formatData(newTab)
-    after = predictor(train=train_df, test=newTab_df).rforest()
+        Prune=_prune).main(justDeltas=justDeltas)
+#     newTab_df = formatData(newTab)
+    after = predictor(train=train_df, test=test_df).rforest()
+
     return actual, before, after, newTab
 
   def flatten(self, x):
@@ -288,9 +268,9 @@ class fileHandler():
   def crossval(self, name, k=5, fSel=True,
                ext=0.5, _prune=False, _info=0.25, method='best'):
     before, after = [], []
-    cv_acc = [name + self.figname(fSel, ext, _prune, _info)[0]]
-    cv_md = [name + self.figname(fSel, ext, _prune, _info)[0]]
-    cv_auc = [name + self.figname(fSel, ext, _prune, _info)[0]]
+    cv_acc = []
+    cv_md = []
+    cv_auc = []
     for _ in xrange(k):
       proj = self.explorer2(name)
       data = createTbl(proj, isBin=False)
@@ -304,31 +284,30 @@ class fileHandler():
     return cv_acc, cv_auc, cv_md, before, after
 
   def main(self, name='Apache', reps=20, fSel=True,
-           ext=0.5, _prune=False, _info=0.25):
+           ext=0.5, _prune=False, _info=0.25, justDeltas=False):
     effectSize = []
     Accuracy = []
-    out_auc = [name + self.figname(fSel, ext, _prune, _info)[0]]
-    out_md = [name + self.figname(fSel, ext, _prune, _info)[0]]
-    out_acc = [name]
-    for _ in xrange(reps):
-      data = self.explorer(name)
-      # self.preamble()
-      for d in data:
-        #       print("\\subsection{%s}\n \\begin{figure}\n \\centering" %
-        #             (d[0].strip().split('/')[-1]))
-        if name == d[0].strip().split('/')[-2]:
-          #           set_trace()
-          train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
-          test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
-          actual, before, after, newTab = self.planner(
-              train, test, fSel, ext, _prune, _info, method='best')
-          cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
-          out_auc.append(sum(after) / sum(before))
-          out_md.append(median(after) / median(before))
-          out_acc.extend(
-              [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
-    return newTab
-    #----------- DEGUB ----------------
+    out_auc = []
+    out_md = []
+    out_acc = []
+    data = self.explorer(name)
+    # self.preamble()
+    for d in data:
+      #       print("\\subsection{%s}\n \\begin{figure}\n \\centering" %
+      #             (d[0].strip().split('/')[-1]))
+      if name == d[0].strip().split('/')[-2]:
+        #           set_trace()
+        train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
+        test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
+        actual, before, after, newTab = self.planner(
+            train, test, fSel, ext, _prune, _info, method='best', justDeltas=justDeltas)
+        cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
+        out_auc.append(sum(after) / sum(before))
+        out_md.append(median(after) / median(before))
+        out_acc.extend(
+            [(1 - abs(b - a) / a) * 100 for b, a in zip(before, actual)])
+        return newTab
+  #----------- DEGUB ----------------
 #     set_trace()
 
   def mainraw(self, name='Apache', reps=10, fSel=True,
@@ -448,110 +427,12 @@ def overlayCurve(
 #   plt.close()
 
 
-def test(name='Apache', doWhat='AUC'):
-  Accuracy = []
-#   preamble1()
-  Gain = []
-  medianDelta = []
-# for name in ['Apache', 'SQL', 'BDBC', 'BDBJ', 'X264', 'LLVM']:
-#   "Baseline"
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=False)
-#   if doWhat == 'Accuracy':
-#     print(a)
-#   elif doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#
-#   "No Feature Weighting"
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.25,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=False)
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.5,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=False)
-#
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.75,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=False)
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#
-#   "Feature Weighting"
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.25,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=True)
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.5,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=True)
-#
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.75,
-#                                _prune=False,
-#                                _info=1,
-#                                fSel=True)
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#
-#   "Info Prune (25%)"
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.25,
-#                                _prune=True,
-#                                _info=0.25,
-#                                fSel=True)
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-#   a, b, c = fileHandler().main(name, reps=24,
-#                                ext=0.5,
-#                                _prune=True,
-#                                _info=0.25,
-#                                fSel=True)
-#
-#   if doWhat == 'AUC':
-#     print(b)
-#   elif doWhat == 'Median':
-#     print(c)
-  return fileHandler().main(name, reps=24,
-                                  ext=0.75,
-                                  _prune=True,
-                                  _info=0.25,
-                                  fSel=True)
+def test(name='Apache', doWhat='AUC', justDeltas=False):
+  return fileHandler().main(name, reps=1,
+                            ext=0.75,
+                            _prune=True,
+                            _info=0.25,
+                            fSel=True, justDeltas=justDeltas)
 
 
 def _doCrossVal():

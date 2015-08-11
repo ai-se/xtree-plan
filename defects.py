@@ -238,7 +238,8 @@ class run():
                         majority=True).main(justDeltas=True)
         delta.append(
             [d for d in self.delta1(xTrees, train_DF.headers, norm=len(predRows))])
-        return (np.sum(delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
       elif planner == 'cart' or planner == 'CART':
         cart = xtrees(train=self.train[-1],
@@ -247,7 +248,8 @@ class run():
 
         delta.append(
             [d for d in self.delta1(cart, train_DF.headers, norm=len(predRows))])
-        return (np.sum(delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
       elif planner == 'HOW':
         how = HOW(train=self.train[-1],
@@ -262,25 +264,20 @@ class run():
         return [d / len(predRows) for d in delta]
 
       elif planner == 'Baseline':
-        baseln = strawman(train=self.train[-1], test=self.test[-1]).main()
-        write2file(newRows(baseln), fname='base0')  # save file
-        delta.extend(
-            self.delta0(
-                train_DF.headers,
-                Planner='HOW',
-                norm=len(predRows)))
-        return [d / len(predRows) for d in delta]
+        baseln = strawman(
+            train=self.train[-1], test=self.test[-1]).main(justDeltas=True)
+        delta.append(
+            [d for d in self.delta1(baseln, train_DF.headers, norm=len(predRows))])
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
       elif planner == 'Baseline+FS':
         baselnFss = strawman(
-            train=self.train[-1], test=self.test[-1], prune=True).main()
-        write2file(newRows(baselnFss), fname='base1')  # save file
-        delta.extend(
-            self.delta0(
-                train_DF.headers,
-                Planner='HOW',
-                norm=len(predRows)))
-        return [d / len(predRows) for d in delta]
+            train=self.train[-1], test=self.test[-1], prune=True).main(justDeltas=True)
+        delta.append(
+            [d for d in self.delta1(baselnFss, train_DF.headers, norm=len(predRows))])
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
    # -------- DEBUG! --------
     # set_trace()

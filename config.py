@@ -229,33 +229,29 @@ class fileHandler():
           return np.array(
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
         if planner == 'HOW':
-          newTab = HOW(name)
-          write2file(rows(newTab), fname='how_cpm')
+          newTab = HOW(name, justDeltas=True)
           delta.append(
-              [d for d in self.delta0(train_DF.headers, Planner='how')])
-          try:
-            return [d / len(rows(test_df)) for d in delta[0]]
-          except:
-            set_trace()
+              [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
+          return np.array(
+              np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
 
         if planner == 'Baseline':
           newTab = strawman(
               train=train,
-              test=test).main(mode="config")
-          write2file(rows(newTab), fname='base0_cpm')
+              test=test).main(mode="config", justDeltas=True)
           delta.append(
-              [d for d in self.delta0(train_DF.headers, Planner='base0')])
-          return [d / len(rows(train_DF)) for d in delta[0]]
-
+              [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
+          return np.array(
+              np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
         if planner == 'Baseline+FS':
           newTab = strawman(
               train=train,
               test=test,
-              prune=True).main(mode="config")
-          write2file(rows(newTab), fname='base1_cpm')
+              prune=True).main(mode="config", justDeltas=True)
           delta.append(
-              [d for d in self.delta0(train_DF.headers, Planner='base1')])
-          return [d / len(rows(train_DF)) for d in delta[0]]
+              [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
+          return np.array(
+              np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
 
   def flatten(self, x):
     """
@@ -326,7 +322,7 @@ class fileHandler():
 
 def deltasTester():
   Planners = ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']
-  for name in ['BDBJ', 'Apache', 'BDBC', 'LLVM', 'X264', 'SQL']:
+  for name in ['Apache', 'BDBJ', 'BDBC', 'LLVM', 'X264', 'SQL']:
     print('##', name)
     delta = []
     f = fileHandler()
