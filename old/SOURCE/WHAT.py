@@ -70,6 +70,32 @@ def settings(**d):
 opt = settings()
 
 
+def avoid(name='BDBC'):
+  if name == 'BDBC':
+    return range(8, 13) + range(14, 18)
+  if name == 'BDBJ':
+    return [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]
+
+
+def alternates(name='BDBJ'):
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+
+
+def flatten(x):
+  """
+  Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
+  and returns a single list [a,b,c,d,e,f]
+  """
+  result = []
+  for el in x:
+    if hasattr(el, "__iter__") and not isinstance(el, basestring):
+      result.extend(flatten(el))
+    else:
+      result.append(el)
+  return result
+
+
 class vertex():
 
   def __init__(self, ID, rows):
@@ -99,6 +125,7 @@ class treatments():
           self,
           train,
           test,
+          name=None,
           bin=False,
           far=True,
           method='mean',
@@ -110,6 +137,7 @@ class treatments():
           extent=0.75):
     self.test, self.train = test, train
     self.extent = extent
+    self.name = name
     self.fSelect = fSelect
     self.Prune = Prune
     self.method = method
@@ -175,18 +203,23 @@ class treatments():
 
   def fWeight(self, criterion='Variance'):
     lbs = W(use=criterion).weights(self.train_df)
-    sortedLbs = sorted(
-        [l / max(lbs[0]) if max(lbs[0]) else 0 for l in lbs[0]], reverse=True)
+    try:
+      sortedLbs = sorted([l / max(0.0001, max(lbs[0]))
+                          for l in lbs[0]], reverse=True)
+    except:
+      set_trace()
     indx = int(self.infoPrune * len(sortedLbs)) - 1 if self.Prune else -1
-    cutoff = sortedLbs[indx]
-    L = [l / max(lbs[0]) if max(lbs[0]) else 0 for l in lbs[0]]
-    return [0 if l < cutoff else l for l in L] if self.Prune else L
+    L = [l / max(0.0001, max(lbs[0])) if not i in avoid(name=self.name) + flatten(
+        alternates(self.name)) else 0 for i, l in enumerate(lbs[0])]
+    cutoff = sorted(L, reverse=True)[indx]
+    return [0 if l < cutoff else l for i,
+            l in enumerate(L)] if self.Prune else L
 
   def mutate(self, me, others):
     C = changes()
 
     def new(my, good, extent, f=None):
-      if my == good:
+      if my == good or f == 0:
         return my
       elif f:
         return good if rand() < extent * f else my

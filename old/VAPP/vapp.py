@@ -47,7 +47,8 @@ class changes():
     self.log = {}
 
   def save(self, name=None, old=None, new=None):
-    self.log.update({name: (old, new)})
+    if old != new:
+      self.log.update({name: (old, new)})
 
 
 class predictor():
@@ -192,7 +193,7 @@ class fileHandler():
         return [self.dir + f]
 
   def planner(self, train, test, fSel, ext, _prune,
-              _info, method='best', justDeltas=False):
+              _info, name, method='best', justDeltas=False):
     train_df = formatData(train)
     test_df = formatData(test)
     actual = test_df[
@@ -200,6 +201,7 @@ class fileHandler():
     before = predictor(train=train_df, test=test_df).rforest()
 #           set_trace()
     newTab = WHAT(
+        name=name,
         train=None,
         test=None,
         train_df=train,
@@ -300,7 +302,7 @@ class fileHandler():
         train = createTbl([d[0] + '/' + d[1][1]], isBin=False)
         test = createTbl([d[0] + '/' + d[1][0]], isBin=False)
         actual, before, after, newTab = self.planner(
-            train, test, fSel, ext, _prune, _info, method='best', justDeltas=justDeltas)
+            train, test, fSel, ext, _prune, _info, name=name, method='best', justDeltas=justDeltas)
         cliffsdelta = cliffs(lst1=actual, lst2=after).delta()
         out_auc.append(sum(after) / sum(before))
         out_md.append(median(after) / median(before))

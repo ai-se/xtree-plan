@@ -23,7 +23,7 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd, './old/VAPP/'])
 
-
+from collections import Counter
 from numpy import median
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
@@ -45,6 +45,40 @@ from table import clone
 from Planner.xtress_bin import xtrees
 # from Planner.WHAT_bin import treatments as HOW
 from Planner.strawman import strawman
+
+
+#=========================================================================
+# SANITY CHECK!!
+#=========================================================================
+def rowwise_xor(lst):
+  return sum(lst) == 1
+
+
+def isValid(row, name='BDBC'):
+  if name == 'BDBC':
+    def failed(*arg):
+      if not arg[0]:
+        return 'Test 1'
+      elif not arg[1]:
+        return 'Test 2'
+      elif not arg[2]:
+        return 'Test 3'
+
+    T1 = row[7] == 1 and row[13] == 1
+    T2 = rowwise_xor(row[8:13])
+    T3 = rowwise_xor(row[14:18])
+    return failed(T1, T2, T3)
+  if name == 'BDBJ':
+    for a in [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]:
+      if row[a] == 0:
+        return 'Failed Test Mandatory'
+    for b in [[11, 12], [3, 4], [7, 8], [23, 24]]:
+      if sum(row[b[0]:b[1] + 1]) > 1:
+        return 'Failed Test Alternative'
+
+#   return 'Passed: %s. ' % (
+#       T1 and T2 and T3) + "" if (T1 and T2 and T3) else failed(T1, T2, T3)
+#=========================================================================
 
 
 def write2file(data, fname='Untitled', ext='.txt'):
@@ -214,16 +248,18 @@ class fileHandler():
           newTab = xtrees(train=train,
                           test=test,
                           bin=False,
-                          majority=True).main(justDeltas=True)
+                          majority=True,
+                          name=name).main(justDeltas=True)
           delta.append(
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
-        if planner == 'cart':
+        if planner == 'DTREE':
           newTab = xtrees(train=train,
                           test=test,
                           bin=False,
-                          majority=False).main(justDeltas=True)
+                          majority=False,
+                          name=name).main(justDeltas=True)
           delta.append(
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
@@ -236,18 +272,18 @@ class fileHandler():
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
 
         if planner == 'Baseline':
-          newTab = strawman(
-              train=train,
-              test=test).main(mode="config", justDeltas=True)
+          newTab = strawman(name=name,
+                            train=train,
+                            test=test).main(mode="config", justDeltas=True)
           delta.append(
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
         if planner == 'Baseline+FS':
-          newTab = strawman(
-              train=train,
-              test=test,
-              prune=True).main(mode="config", justDeltas=True)
+          newTab = strawman(name=name,
+                            train=train,
+                            test=test,
+                            prune=True).main(mode="config", justDeltas=True)
           delta.append(
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
@@ -268,9 +304,8 @@ class fileHandler():
 
   def main(self, name='Apache', reps=20):
     rseed(1)
-    for planner in ['baseln0', 'baseln1', 'xtrees', 'cart', 'HOW']:
+    for planner in ['DTREE', 'baseln1', 'baseln0', 'HOW']:
       out = [planner]
-
       after = lambda newTab: predictor(
           train=train_df,
           test=formatData(newTab)).rforest()
@@ -286,31 +321,49 @@ class fileHandler():
 #           set_trace()
           train_df = formatData(createTbl(train, _smote=False, isBin=False))
           test_df = formatData(createTbl(test, _smote=False, isBin=False))
+          valid = [
+              isValid(
+                  new.cells, name=name) for new in createTbl(
+                  test,
+                  _smote=False,
+                  isBin=False)._rows]
+          set_trace()
           actual = test_df[test_df.columns[-2]].astype('float32').tolist()
           before = predictor(train=train_df, test=test_df).rforest()
           for _ in xrange(reps):
+            newTab = None  # Just so I am sure, there isn't any residue.
             "Apply Different Planners"
             if planner == 'xtrees':
               newTab = xtrees(train=train,
                               test=test,
                               bin=False,
-                              majority=True).main()
-            if planner == 'cart':
+                              majority=True,
+                              name=name).main()
+            if planner == 'DTREE':
               newTab = xtrees(train=train,
                               test=test,
                               bin=False,
-                              majority=False).main()
+                              majority=False,
+                              name=name).main()
+              valid = [isValid(new.cells, name=name) for new in newTab._rows]
+#               set_trace()
             if planner == 'HOW':
               newTab = HOW(name)
+              valid = [isValid(new.cells, name=name) for new in newTab._rows]
+#               set_trace()
             if planner == 'baseln0':
-              newTab = strawman(
-                  train=train,
-                  test=test).main(mode="config")
+              newTab = strawman(name=name,
+                                train=train,
+                                test=test).main(mode="config")
+              valid = [isValid(new.cells, name=name) for new in newTab._rows]
+#               set_trace()
             if planner == 'baseln1':
-              newTab = strawman(
-                  train=train,
-                  test=test,
-                  prune=True).main(mode="config")
+              newTab = strawman(name=name,
+                                train=train,
+                                test=test,
+                                prune=True).main(mode="config")
+              valid = [isValid(new.cells, name=name) for new in newTab._rows]
+#               set_trace()
 
             out.append(frac(after(newTab)))
 
@@ -321,12 +374,12 @@ class fileHandler():
 
 
 def deltasTester():
-  Planners = ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']
-  for name in ['Apache', 'BDBJ', 'BDBC', 'LLVM', 'X264', 'SQL']:
+  Planners = ['DTREE', 'HOW', 'Baseline', 'Baseline+FS']
+  for name in ['BDBJ']:
     print('##', name)
     delta = []
     f = fileHandler()
-    for plan in ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']:
+    for plan in ['DTREE', 'HOW', 'Baseline+FS', 'Baseline']:
       delta.append(f.deltas(name, planner=plan))
 
     def getRow(i):
@@ -341,7 +394,8 @@ def deltasTester():
       writer = csv.writer(csvfile, delimiter=' ')
       writer.writerow(["Features"] + Planners)
       for i, h in enumerate(f.headers[:-2]):
-        writer.writerow([i] + [el for el in getRow(i)])
+        if sum([el for el in getRow(i)]):
+          writer.writerow([h.name[1:]] + [el for el in getRow(i)])
 
 
 def rdiv():
@@ -363,13 +417,13 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  for name in ['BDBJ', 'Apache', 'LLVM', 'X264', 'BDBC', 'SQL']:
+  for name in ['BDBJ']:  # , 'Apache', 'LLVM', 'X264', 'BDBC', 'SQL']:
     print('## %s \n```' % (name))
-    R = [r for r in fileHandler().main(name, reps=25)]
+    R = [r for r in fileHandler().main(name, reps=10)]
     rdivDemo(R, isLatex=False)
     print('```')
     set_trace()
 
 if __name__ == '__main__':
-  #   _test()
   deltasTester()
+  _test()

@@ -44,19 +44,49 @@ def genTable(tbl, rows):
   return createTbl(['tmp3.csv'])
 
 
+def avoid(name='BDBC'):
+  if name == 'BDBC':
+    for i in range(8, 13) + range(14, 18):
+      yield i
+  if name == 'BDBJ':
+    for i in [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]:
+      yield i
+
+
+def alternates(name='BDBJ'):
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+
+
+def flatten(x):
+  """
+  Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
+  and returns a single list [a,b,c,d,e,f]
+  """
+  result = []
+  for el in x:
+    if hasattr(el, "__iter__") and not isinstance(el, basestring):
+      result.extend(flatten(el))
+    else:
+      result.append(el)
+  return result
+
+
 class changes():
 
   def __init__(self):
     self.log = {}
 
   def save(self, name=None, old=None, new=None):
-    self.log.update({name: (old, new)})
+    if not old == new:
+      self.log.update({name: (old, new)})
 
 
 class deltas():
 
-  def __init__(self, row, myTree):
+  def __init__(self, row, myTree, name):
     self.row = row
+    self.name = name
     self.loc = drop(row, myTree)
     self.contrastSet = None
     self.newRow = row
@@ -69,18 +99,36 @@ class deltas():
   def createNew(self, stuff, keys, N=1):
     newElem = []
     tmpRow = self.row
-    prob = [2 ** -d for d in xrange(1, len(stuff) + 1)]
-    for _ in xrange(N):
-      C = changes()
-      for ss in stuff:
-        lo, hi = ss[1]
-        pos = keys[ss[0].name]
-        old = tmpRow.cells[pos]
-        new = int(lo)
+    C = changes()
+    for ss in stuff:
+      lo, hi = ss[1]
+      pos = ss[0].col
+      old = tmpRow.cells[pos]
+      new = int(lo)
+      if pos in flatten(alternates(self.name)):
+        for alts in alternates(self.name):
+          if pos in alts:
+            if old == 1 and new == 0:
+              tmpRow.cells[pos] = int(new)
+              C.save(name=ss[0].name, old=old, new=new)
+              for n in alts:
+                if not n == pos:
+                  o = tmpRow.cells[n]
+                  tmpRow.cells[n] = 1
+                  C.save(name=ss[0].name, old=o, new=1)
+            elif old == 0 and new == 1:
+              tmpRow.cells[pos] = int(new)
+              C.save(name=ss[0].name, old=old, new=new)
+              for n in alts:
+                if not n == pos:
+                  o = tmpRow.cells[n]
+                  tmpRow.cells[n] = 0
+                  C.save(name=ss[0].name, old=o, new=0)
+      else:
         tmpRow.cells[pos] = int(lo)
         C.save(name=ss[0].name, old=old, new=new)
-      self.change.append(C.log)
-      newElem.append(tmpRow)
+    self.change.append(C.log)
+    newElem.append(tmpRow)
     return newElem
 
   def patches(self, keys, N_Patches=10):
@@ -128,9 +176,10 @@ class xtrees():
 
   "Treatments"
 
-  def __init__(self, train=None, test=None, test_DF=None,
+  def __init__(self, train=None, test=None, test_DF=None, name='Apache',
                verbose=True, smoteit=False, majority=False, bin=False):
     self.train, self.test = train, test
+    self.name = name
     try:
       self.train_DF = createTbl(train, _smote=smoteit, isBin=False)
     except:
@@ -139,6 +188,8 @@ class xtrees():
       self.test_DF = createTbl(test, isBin=False)
     else:
       self.test_DF = test_DF
+    self.ignore = [self.train_DF.headers[i].name[1:]
+                   for i in avoid(name=name)]
     self.verbose, self.smoteit = verbose, smoteit
     self.mod, self.keys = [], self.getKey()
     self.majority = majority
@@ -148,19 +199,7 @@ class xtrees():
             lambda x: x.cells,
             self.train_DF._rows))
     self.myTree = tdiv(t)
-
-  def flatten(self, x):
-    """
-    Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
-    and returns a single list [a,b,c,d,e,f]
-    """
-    result = []
-    for el in x:
-      if hasattr(el, "__iter__") and not isinstance(el, basestring):
-        result.extend(self.flatten(el))
-      else:
-        result.append(el)
-    return result
+#     set_trace()
 
   def leaves(self, node):
     """
@@ -205,7 +244,8 @@ class xtrees():
       xx.append(x)
     for node in nodes:
       if not node.node.branch in xx:
-        attr.append(node.node.branch)
+        attr.append(
+            [n for n in node.node.branch if n[0].name not in self.ignore])
         seen(node.node.branch)
     return attr
 
@@ -223,7 +263,7 @@ class xtrees():
       node = node.up  # Move to tree root
 
     # Get all the terminal nodes
-    leaves = self.flatten([self.leaves(_k) for _k in node.kids])
+    leaves = flatten([self.leaves(_k) for _k in node.kids])
 
     for leaf in leaves:
       l = store(leaf, majority=self.majority)
@@ -270,15 +310,14 @@ class xtrees():
     testCase = self.test_DF._rows
     for tC in testCase:
       newRow = tC
-      node = deltas(newRow, self.myTree)  # A delta instance for the rows
-      if newRow.cells[-2] == 0:
-        node.contrastSet = []
-        self.mod.append(node.newRow)
-      else:
-        node.contrastSet = [self.finder2(node.loc, pos='near')]
-        patch, change = node.patches(self.keys, N_Patches=1)
-        Change.extend(change)
-        self.mod.extend(patch[0])
+      node = deltas(
+          newRow,
+          self.myTree,
+          name=self.name)  # A delta instance for the rows
+      node.contrastSet = [self.finder2(node.loc, pos='near')]
+      patch, change = node.patches(self.keys, N_Patches=1)
+      Change.extend(change)
+      self.mod.extend(patch[0])
     if justDeltas:
       return Change
     else:

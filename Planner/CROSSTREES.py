@@ -54,7 +54,8 @@ class changes():
     self.log = {}
 
   def save(self, name=None, old=None, new=None):
-    self.log.update({name: (old, new)})
+    if not old == new:
+      self.log.update({name: (old, new)})
 
 
 class deltas():

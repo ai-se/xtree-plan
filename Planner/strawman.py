@@ -22,13 +22,40 @@ from table import clone
 import csv
 
 
+def avoid(name='BDBC'):
+  if name == 'BDBC':
+    return range(8, 13) + range(14, 18)
+  if name == 'BDBJ':
+    return [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]
+
+
+def alternates(name='BDBJ'):
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+
+
+def flatten(x):
+  """
+  Takes an N times nested list of list like [[a,b],[c, [d, e]],[f]]
+  and returns a single list [a,b,c,d,e,f]
+  """
+  result = []
+  for el in x:
+    if hasattr(el, "__iter__") and not isinstance(el, basestring):
+      result.extend(flatten(el))
+    else:
+      result.append(el)
+  return result
+
+
 class changes():
 
   def __init__(self):
     self.log = {}
 
   def save(self, name=None, old=None, new=None):
-    self.log.update({name: (old, new)})
+    if not old == new:
+      self.log.update({name: (old, new)})
 
 
 def eDist(row1, row2):
@@ -82,7 +109,7 @@ class patches():
   "Apply new patch."
 
   def __init__(
-          self, train, test, clusters, prune=False, B=0.25, verbose=False, config=False, models=False, pred=[]):
+          self, train, test, clusters, prune=False, B=0.25, verbose=False, config=False, models=False, pred=[], name=None):
     if config or models:
       self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=False)
@@ -90,6 +117,7 @@ class patches():
       self.train = createTbl(train, isBin=True)
       self.test = createTbl(test, isBin=True)
 
+    self.name = name
     self.clusters = clusters
     self.Prune = prune
     self.B = B
@@ -120,14 +148,23 @@ class patches():
     except:
       set_trace()
     indx = int(self.B * len(sortedLbs)) - 1 if self.Prune else -1
-    cutoff = sortedLbs[indx]
-    L = [l / max(0.0001, max(lbs[0])) for l in lbs[0]]
-    return array([0 if l < cutoff else l for l in L] if self.Prune else L)
+    if self.name:
+      L = [l / max(0.0001, max(lbs[0])) if not i in avoid(name=self.name) + flatten(
+          alternates(self.name)) else 0 for i, l in enumerate(lbs[0])]
+      cutoff = sorted(L, reverse=True)[indx]
+      return array(
+          [0 if l < cutoff else l for i, l in enumerate(L)] if self.Prune else L)
+    else:
+      L = [l / max(0.0001, max(lbs[0])) for i, l in enumerate(lbs[0])]
+      cutoff = sorted(L, reverse=True)[indx]
+      return array(
+          [0 if l < cutoff else l for i, l in enumerate(L)] if self.Prune else L)
 
   def delta0(self, node1, node2):
     if not self.bin:
       return array([el1 - el2 for el1, el2 in zip(node1.exemplar()
                                                   [:-1], node2.exemplar()[:-1])]) / self.min_max() * self.mask
+
     else:
       return array([el1 == el2 for el1, el2 in zip(node1.exemplar()
                                                    [:-1], node2.exemplar()[:-1])])
@@ -164,7 +201,6 @@ class patches():
     else:
       oldRows = self.test._rows
     newRows = [self.patchIt(t) for t in oldRows]
-
     if self.write:
       self.deltasCSVWriter()
 
@@ -203,9 +239,10 @@ class patches():
 
 class strawman():
 
-  def __init__(self, train, test, prune=False):
+  def __init__(self, train, test, name=None, prune=False):
     self.train, self.test = train, test
     self.prune = prune
+    self.name = name
 
   def nodes(self, rowObject):
     clusters = set([r.cells[-1] for r in rowObject])
@@ -246,6 +283,7 @@ class strawman():
       return patches(train=self.train,
                      test=self.test,
                      clusters=clstr,
+                     name=self.name,
                      prune=self.prune,
                      pred=before,
                      config=True).newTable(justDeltas=justDeltas)

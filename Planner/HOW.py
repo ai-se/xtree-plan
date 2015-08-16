@@ -7,6 +7,7 @@ from os import walk
 from os.path import expanduser
 from pdb import set_trace
 import sys
+from itertools import chain
 
 # Update PYTHONPATH
 HOME = expanduser('~')
@@ -34,6 +35,17 @@ import pandas as pd
 from counts import *
 # import sk
 
+
+class changes():
+
+  def __init__(self):
+    self.log = {}
+
+  def save(self, name=None, old=None, new=None):
+    if not old == new:
+      self.log.update({name: (old, new)})
+
+
 def genTable(tbl, rows):
   header = [h.name for h in tbl.headers[:-1]]
   with open('tmp2.csv', 'w') as csvfile:
@@ -43,6 +55,7 @@ def genTable(tbl, rows):
       writer.writerow(el[:-1])
 
   return createTbl(['tmp2.csv'])
+
 
 class o:
 
@@ -104,8 +117,8 @@ class treatments():
           train_df=None,
           test_df=None,
           fSelect=True,
-          Prune=True,
-          infoPrune=0.25,
+          Prune=False,
+          infoPrune=0.5,
           extent=0.75):
     self.test, self.train = test, train
     self.extent = extent
@@ -119,6 +132,8 @@ class treatments():
 
     self.test_df = test_df if test_df \
         else createTbl(self.test, isBin=False, bugThres=1)
+
+    self.change = []
 
   def clusterer(self):
     IDs = list(set([f.cells[-1] for f in self.train_df._rows]))
@@ -170,25 +185,36 @@ class treatments():
     return [0 if l < cutoff else l for l in L] if self.Prune else L
 
   def mutate(self, me, others):
+    C = changes()
+
     def one234(pop, f=lambda x: id(x)):
       seen = []
 
-      def oneOther():
-        x = any(pop)
-        while f(x) in seen:
-          x = any(pop)
-        seen.append(f(x))
-        return x
-      return oneOther()
-    two = one234(others.rows)
     if self.fSelect:
+      for i, old, other, f in zip(range(len(me[:-2])), me[:-2], others.representative(), opt.f):
+        C.save(
+            self.train_df.headers[i].name[
+                1:],
+            old,
+            new=old + self.extent * f * (other - old))
+
+      self.change.append(C.log)
+
       return [my + self.extent * f * (good - my)
               for f, my, good in zip(opt.f, me[:-2], others.representative())]
     else:
+      for i, old, other, f in zip(range(len(me[:-2])), me[:-2], others.representative(), opt.f):
+        C.save(
+            self.train_df.headers[i].name[
+                1:],
+            old,
+            new=old + self.extent * (other - old))
+      self.change.append(C.log)
+
       return [my + self.extent * (good - my)
               for f, my, good in zip(opt.f, me[:-2], others.representative())]
 
-  def main(self):
+  def main(self, justDeltas=False):
     hyperPlanes = self.getHyperplanes()
     opt.f = self.fWeight()
     for rows in self.test_df._rows:
@@ -206,7 +232,10 @@ class treatments():
       newRow.cells[:-2] = self.mutate(rows.cells, good)
       self.new_Tab.append(newRow)
 
-    return genTable(self.test_df, rows=[r.cells for r in self.new_Tab])
+    if justDeltas:
+      return self.change
+    else:
+      return genTable(self.test_df, rows=[r.cells for r in self.new_Tab])
 
 
 def testPlanner2():

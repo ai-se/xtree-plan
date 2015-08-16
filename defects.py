@@ -35,6 +35,10 @@ from Planner.HOW import treatments as HOW
 from Planner.strawman import strawman
 
 
+def say(x):
+  sys.stdout.write(str(x))
+
+
 def write2file(data, fname='Untitled', ext='.txt'):
   with open('.temp/' + fname + ext, 'w') as fwrite:
     writer = csv.writer(fwrite, delimiter=',')
@@ -117,7 +121,7 @@ class run():
     frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]
                            ) / sum([0 if b < 1 else 1 for b in actual])
 
-    for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
+    for planner in ['DTREE', 'HOW', 'baseln0', 'baseln1']:
       out = [planner]
       for _ in xrange(self.reps):
         predRows = []
@@ -150,7 +154,7 @@ class run():
                           majority=True).main()
           genTable(test_df, rows=newRows(newTab), name='After_xtrees')
 #          set_trace()
-        elif planner == 'cart' or planner == 'CART':
+        elif planner == 'DTREE' or planner == 'DTREE':
           newTab = xtrees(train=self.train[-1],
                           test_DF=predTest,
                           bin=False,
@@ -197,10 +201,10 @@ class run():
     return D
 
   def deltas(self, planner):
-    predRows = []
     delta = []
     train_DF = createTbl(self.train[self._n], isBin=True, bugThres=1)
     test_df = createTbl(self.test[self._n], isBin=True, bugThres=1)
+    actual = np.array(Bugs(test_df))
     before = self.pred(train_DF, test_df, tunings=self.tunedParams,
                        smoteit=True)
     allRows = np.array(
@@ -217,8 +221,8 @@ class run():
       base = lambda X: sorted(X)[-1] - sorted(X)[0]
       return [base([r[i] for r in allRows]) for i in xrange(N)]
 
-    predRows = [row.cells for predicted,
-                row in zip(before, createTbl(self.test[self._n], isBin=False)._rows) if predicted > 0]
+    predRows = [row.cells for row in createTbl(
+        self.test[self._n], isBin=True)._rows if row.cells[-2] > 0]
 
     write2file(predRows, fname='before')  # save file
 
@@ -241,29 +245,26 @@ class run():
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'cart' or planner == 'CART':
-        cart = xtrees(train=self.train[-1],
+      elif planner == 'DTREE' or planner == 'DTREE':
+        C4_5 = xtrees(train=self.train[-1],
                       test_DF=predTest,
                       bin=False, majority=False).main(justDeltas=True)
 
         delta.append(
-            [d for d in self.delta1(cart, train_DF.headers, norm=len(predRows))])
+            [d for d in self.delta1(C4_5, train_DF.headers, norm=len(predRows))])
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
       elif planner == 'HOW':
         how = HOW(train=self.train[-1],
                   test=self.test[-1],
-                  test_df=predTest).main()
-        write2file(newRows(how), fname='HOW')  # save file
-        delta.extend(
-            self.delta0(
-                train_DF.headers,
-                Planner='HOW',
-                norm=len(predRows)))
-        return [d / len(predRows) for d in delta]
+                  test_df=predTest).main(justDeltas=True)
+        delta.append(
+            [d for d in self.delta1(how, train_DF.headers, norm=len(predRows))])
+        return (np.sum(
+            delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'Baseline':
+      elif planner == 'kNN':
         baseln = strawman(
             train=self.train[-1], test=self.test[-1]).main(justDeltas=True)
         delta.append(
@@ -271,7 +272,7 @@ class run():
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'Baseline+FS':
+      elif planner == 'kNN+FS':
         baselnFss = strawman(
             train=self.train[-1], test=self.test[-1], prune=True).main(justDeltas=True)
         delta.append(
@@ -284,20 +285,38 @@ class run():
 
 
 def _test(file='ant'):
-  for file in ['synapse', 'ivy', 'jedit', 'poi', 'ant']:
+  for file in ['lucene', 'ivy', 'jedit', 'poi', 'ant']:
     print('## %s\n```' % (file))
-    R = [r for r in run(dataName=file, reps=25).go()]
+    R = [r for r in run(dataName=file, reps=10).go()]
     rdivDemo(R, isLatex=False)
     print('```')
+    set_trace()
+
+
+def deltaCSVwriter0():
+  Planners = ['DTREE', 'HOW', 'kNN', 'kNN+FS']
+  print(',%s,%s,%s,%s' % tuple(Planners))
+  for name in ['ant', 'ivy', 'jedit', 'lucene', 'poi']:
+    say(name)
+    delta = []
+    R = run(dataName=name, reps=1)  # Setup Files.
+    for p in Planners:
+      delta.append(R.deltas(planner=p))
+
+    D = np.mean(delta, axis=1).tolist()
+    for n in D:
+      say(',%0.2f' % (n))
+    print('')
+#       set_trace()
 
 
 def deltaCSVwriter(type='Indv'):
 
   if type == 'Indv':
-    for name in ['ivy', 'jedit', 'lucene', 'poi', 'ant']:
+    for name in ['lucene']:
       print('##', name)
       delta = []
-      Planners = ['xtrees', 'cart', 'HOW', 'Baseline', 'Baseline+FS']
+      Planners = ['DTREE', 'HOW', 'kNN', 'kNN+FS']
       R = run(dataName=name, reps=1)  # Setup Files.
 
       for p in Planners:
@@ -362,5 +381,6 @@ if __name__ == '__main__':
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
-  deltaCSVwriter(type='Indv')
+  #   deltaCSVwriter(type='Indv')
+  deltaCSVwriter0()
 #   eval(cmd())
