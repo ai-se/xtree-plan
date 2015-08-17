@@ -325,7 +325,6 @@ class fileHandler():
                   test,
                   _smote=False,
                   isBin=False)._rows]
-          set_trace()
           actual = test_df[test_df.columns[-2]].astype('float32').tolist()
           before = predictor(train=train_df, test=test_df).rforest()
           for _ in xrange(reps):
@@ -415,13 +414,12 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  for name in ['BDBJ']:  # , 'Apache', 'LLVM', 'X264', 'BDBC', 'SQL']:
+  for name in ['BDBJ', 'Apache', 'LLVM', 'X264', 'BDBC', 'SQL']:
     print('## %s \n```' % (name))
-    R = [r for r in fileHandler().main(name, reps=10)]
+    R = [r for r in fileHandler().main(name, reps=1)]
     rdivDemo(R, isLatex=False)
     print('```')
-    set_trace()
 
 if __name__ == '__main__':
-  deltasTester()
+  #   deltasTester()
   _test()
