@@ -1,13 +1,13 @@
 #! /Users/rkrsn/anaconda/bin/python
 from __future__ import print_function
 from __future__ import division
-from os import environ, getcwd
+from os import environ, getcwd, path
 from pdb import set_trace
 from random import uniform, randint, shuffle
 import sys
 
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = path.expanduser("~")
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
