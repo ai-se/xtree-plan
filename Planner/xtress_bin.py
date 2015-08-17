@@ -45,12 +45,21 @@ def genTable(tbl, rows):
 
 
 def avoid(name='BDBC'):
-  if name == 'BDBC':
+  if name == 'Apache':
+    return None
+  elif name == 'BDBC':
     for i in range(8, 13) + range(14, 18):
       yield i
-  if name == 'BDBJ':
+  elif name == 'BDBJ':
     for i in [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]:
       yield i
+  elif name == 'LLVM':
+    yield 0
+  elif name == 'X264':
+    for i in [0, 8, 12]:
+      yield i
+  elif name=='SQL':
+    
 
 
 def alternates(name='BDBJ'):
@@ -105,6 +114,10 @@ class deltas():
       pos = ss[0].col
       old = tmpRow.cells[pos]
       new = int(lo)
+      """
+      If current pos is in alternates, only one attribute can be True at at
+      a time.
+      """
       if pos in flatten(alternates(self.name)):
         for alts in alternates(self.name):
           if pos in alts:
