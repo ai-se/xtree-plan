@@ -112,7 +112,7 @@ def predictor(tbl, Model=XOMO):
 
 def learner(mdl=XOMO, n=0, reps=24, numel=1000):
   train, test = mdl(n).genData(N=numel)
-  for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
+  for planner in ['xtrees', 'dtree', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
     before = array(predictor(Model=mdl, tbl=createTbl(train)))
     after = lambda newTab: array(predictor(Model=mdl, tbl=newTab))
@@ -123,34 +123,31 @@ def learner(mdl=XOMO, n=0, reps=24, numel=1000):
         if mdl == POM3 and n == 1:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           smoteit=False,
                           majority=True,
-                          Min=False).main()
+                          Min=False).main(which='Best')
         else:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           smoteit=False,
-                          majority=True).main()
-      if planner == 'cart':
+                          majority=True).main(which='Best')
+      if planner == 'dtree':
         if mdl == POM3 and n == 1:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           Min=False,
                           smoteit=False,
-                          majority=False).main()
+                          majority=False).main(which='Best')
         else:
           newTab = xtrees(train=train,
                           test=test,
                           pos='best',
                           bin=False,
                           smoteit=False,
-                          majority=False).main()
+                          majority=False).main(which='Best')
       if planner == 'HOW':
         newTab = HOW(train=train, test=test).main()
       if planner == 'baseln0':

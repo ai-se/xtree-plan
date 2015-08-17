@@ -109,7 +109,8 @@ class patches():
   "Apply new patch."
 
   def __init__(
-          self, train, test, clusters, prune=False, B=0.25, verbose=False, config=False, models=False, pred=[], name=None):
+          self, train, test, clusters, prune=False, B=0.25
+          , verbose=False, config=False, models=False, pred=[], name=None):
     if config or models:
       self.train = createTbl(train, isBin=False)
       self.test = createTbl(test, isBin=False)

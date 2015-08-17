@@ -59,10 +59,22 @@ def avoid(name='BDBC'):
     for i in [0, 8, 12]:
       yield i
   elif name=='SQL':
+    for i in xrange(10):
+      pass
     
 
 
 def alternates(name='BDBJ'):
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+  if name == 'BDBJ':
+    return [[11, 12], [3, 4], [7, 8], [23, 24]]
   if name == 'BDBJ':
     return [[11, 12], [3, 4], [7, 8], [23, 24]]
 
