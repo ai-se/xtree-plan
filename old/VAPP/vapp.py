@@ -5,7 +5,7 @@ from __future__ import print_function
 from os import environ
 from os import getcwd
 from os import system
-from os import walk
+from os import walk, path
 from pdb import set_trace
 from random import randint as randi
 from random import sample
@@ -16,11 +16,11 @@ from subprocess import call
 import sys
 
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = path.expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
-WHAT = '/Users/rkrsn/git/Transfer-Learning/old/SOURCE'
+WHAT = HOME+'/git/Transfer-Learning/old/SOURCE'
 sys.path.extend([axe, pystat, cwd, WHAT])
 
 
@@ -32,7 +32,6 @@ import pandas
 from Prediction import CART as cart
 from Prediction import formatData
 from WHAT import treatments as WHAT
-from cliffsDelta import cliffs
 from demos import cmd
 from methods1 import *
 from sk import rdivDemo

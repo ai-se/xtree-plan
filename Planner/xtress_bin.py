@@ -46,9 +46,9 @@ def genTable(tbl, rows):
 
 def avoid(name='BDBC'):
   if name == 'Apache':
-    return None
+    return []
   elif name == 'BDBC':
-    for i in range(8, 13) + range(14, 18):
+    for i in [7,13]:
       yield i
   elif name == 'BDBJ':
     for i in [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]:
@@ -59,24 +59,23 @@ def avoid(name='BDBC'):
     for i in [0, 8, 12]:
       yield i
   elif name=='SQL':
-    for i in xrange(10):
-      pass
-    
-
+    for i in [0,2,7,10,23]:
+      yield i
+      
 
 def alternates(name='BDBJ'):
+  if name == 'Apache':
+    return []
+  if name == 'BDBC':
+    return [range(8,13),range(14,18)]
   if name == 'BDBJ':
     return [[11, 12], [3, 4], [7, 8], [23, 24]]
-  if name == 'BDBJ':
-    return [[11, 12], [3, 4], [7, 8], [23, 24]]
-  if name == 'BDBJ':
-    return [[11, 12], [3, 4], [7, 8], [23, 24]]
-  if name == 'BDBJ':
-    return [[11, 12], [3, 4], [7, 8], [23, 24]]
-  if name == 'BDBJ':
-    return [[11, 12], [3, 4], [7, 8], [23, 24]]
-  if name == 'BDBJ':
-    return [[11, 12], [3, 4], [7, 8], [23, 24]]
+  if name == 'LLVM':
+    return []
+  if name == 'X264':
+    return [[9, 10, 11], [13, 14, 15]]
+  if name == 'SQL':
+    return [range(3,7), [25, 27], [28,29,30], [32,33], range(35,39)]
 
 
 def flatten(x):

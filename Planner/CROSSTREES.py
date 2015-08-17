@@ -262,7 +262,7 @@ class xtrees():
     elif pos == 'far':
       return attr[unq[0]][-1]
     elif pos =='Best':
-      set_trace()
+      return self.attributes([sorted(best, key=lambda F: F.score)[0]])[0]
 
   def getKey(self):
     keys = {}

@@ -2,7 +2,7 @@
 from __future__ import print_function
 from __future__ import division
 from os import environ
-from os import getcwd
+from os import getcwd, path
 from pdb import set_trace
 from weights import weights as W
 from random import random as rand
@@ -11,7 +11,7 @@ from random import randint as randi
 import sys
 
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = path.expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory

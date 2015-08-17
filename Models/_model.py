@@ -92,7 +92,7 @@ class Xomo:
 
   def __init__(
           self,
-          out=os.environ["HOME"] +
+          out=os.path.expanduser('~') +
           "/git/Transfer-Learning/Models/xomo/",
           data="data",
           model=None):

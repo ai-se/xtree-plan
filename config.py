@@ -5,7 +5,7 @@ from __future__ import print_function
 from os import environ
 from os import getcwd
 from os import system
-from os import walk
+from os import walk, path
 from pdb import set_trace
 from random import randint as randi
 from random import sample
@@ -17,7 +17,7 @@ import sys
 import csv
 import numpy as np
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = path.expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
@@ -33,8 +33,6 @@ from Prediction import CART as cart
 from Prediction import formatData
 
 from vapp import test as HOW
-
-from cliffsDelta import cliffs
 from demos import cmd
 from methods1 import *
 from sk import rdivDemo

@@ -112,7 +112,7 @@ def predictor(tbl, Model=XOMO):
 
 def learner(mdl=XOMO, n=0, reps=24, numel=1000):
   train, test = mdl(n).genData(N=numel)
-  for planner in ['xtrees', 'dtree', 'HOW', 'baseln0', 'baseln1']:
+  for planner in ['dtree', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
     before = array(predictor(Model=mdl, tbl=createTbl(train)))
     after = lambda newTab: array(predictor(Model=mdl, tbl=newTab))
@@ -144,7 +144,6 @@ def learner(mdl=XOMO, n=0, reps=24, numel=1000):
         else:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           smoteit=False,
                           majority=False).main(which='Best')
