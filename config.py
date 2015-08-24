@@ -271,7 +271,7 @@ class fileHandler():
           return np.array(
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
 
-        if planner == 'Baseline':
+        if planner == 'CD':
           newTab = strawman(name=name,
                             train=train,
                             test=test).main(mode="config", justDeltas=True)
@@ -279,7 +279,7 @@ class fileHandler():
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
-        if planner == 'Baseline+FS':
+        if planner == 'CD+FS':
           newTab = strawman(name=name,
                             train=train,
                             test=test,
@@ -304,7 +304,7 @@ class fileHandler():
 
   def main(self, name='Apache', reps=20):
     rseed(1)
-    for planner in ['DTREE', 'baseln1', 'baseln0', 'HOW']:
+    for planner in ['DTREE', 'CD+FS', 'CD', 'HOW']:
       out = [planner]
       after = lambda newTab: predictor(
           train=train_df,
@@ -351,13 +351,13 @@ class fileHandler():
               newTab = HOW(name)
               valid = [isValid(new.cells, name=name) for new in newTab._rows]
 #               set_trace()
-            if planner == 'baseln0':
+            if planner == 'CD':
               newTab = strawman(name=name,
                                 train=train,
                                 test=test).main(mode="config")
               valid = [isValid(new.cells, name=name) for new in newTab._rows]
 #               set_trace()
-            if planner == 'baseln1':
+            if planner == 'CD+FS':
               newTab = strawman(name=name,
                                 train=train,
                                 test=test,
@@ -372,14 +372,30 @@ class fileHandler():
     #----------- DEGUB ----------------
 #     set_trace()
 
+def deltaCSVwriter0():
+  Planners = ['DTREE', 'HOW', 'CD', 'CD+FS']
+  print(',%s,%s,%s,%s' % tuple(Planners))
+  for name in ['Apache', 'BDBJ', 'LLVM', 'X264', 'BDBC', 'SQL']:
+    say(name)
+    delta = []
+    R = fileHandler()  # Setup Files.
+    for p in Planners:
+      delta.append(R.deltas(name, planner=p))
+
+    D = np.mean(delta, axis=1).tolist()
+    for n in D:
+      say(',%d' % (n))
+    print('')
+#       set_trace()
+
 
 def deltasTester():
-  Planners = ['DTREE', 'HOW', 'Baseline', 'Baseline+FS']
+  Planners = ['DTREE', 'HOW', 'CD', 'CD+FS']
   for name in ['BDBJ']:
     print('##', name)
     delta = []
     f = fileHandler()
-    for plan in ['DTREE', 'HOW', 'Baseline+FS', 'Baseline']:
+    for plan in ['DTREE', 'HOW', 'CD+FS', 'CD']:
       delta.append(f.deltas(name, planner=plan))
 
     def getRow(i):
@@ -425,5 +441,5 @@ def _test(name='Apache'):
     set_trace()
 
 if __name__ == '__main__':
-  deltasTester()
-  _test()
+  deltaCSVwriter0()
+#  _test()
