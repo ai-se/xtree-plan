@@ -360,7 +360,7 @@ def deltaTest():
 def _test(file='ant'):
   # for file in ['ivy', 'lucene', 'jedit', 'poi', 'ant']:
   print('## %s\n' % (file))
-  R = [r for r in run(dataName=file, reps=10).go()]
+  R = [r for r in run(dataName=file, reps=40).go()]
   rdivDemo(R, isLatex=True)
     # print('```')
 #    rdivDemo(R, isLatex=True)

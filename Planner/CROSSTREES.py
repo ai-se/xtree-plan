@@ -41,13 +41,13 @@ import sk
 def genTable(tbl, rows):
   name = str(randint(0, 1000))
   header = [h.name for h in tbl.headers[:-1]]
-  with open(name + '.csv', 'w') as csvfile:
+  with open('tmp0.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
       writer.writerow(el[:-1])
-  new = createTbl([name + '.csv'])
-  rm(name + '.csv')
+  new = createTbl(['tmp0.csv'])
+  rm('tmp0.csv')
   return new
 
 

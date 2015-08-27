@@ -50,15 +50,14 @@ class changes():
 def genTable(tbl, rows):
   name = str(randint(0, 1e6))
   header = [h.name for h in tbl.headers[:-1]]
-  with open(name + '.csv', 'w') as csvfile:
+  with open('tmp0.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
       writer.writerow(el[:-1])
-  new = createTbl([name + '.csv'])
-  rm(name + '.csv')
+  new = createTbl(['tmp0.csv'])
+  rm('tmp0.csv')
   return new
-
 
 
 class o:
@@ -203,9 +202,8 @@ class treatments():
             new=old + self.extent * f * (other - old))
 
       self.change.append(C.log)
-
-      return [my + self.extent * f * (good - my)
-              for f, my, good in zip(opt.f, me[:-2], others.representative())]
+      # set_trace()
+      return [my + self.extent * f * (good - my) for f, my, good in zip(opt.f, me[:-2], others.representative())]
     else:
       for i, old, other, f in zip(range(len(me[:-2])), me[:-2], others.representative(), opt.f):
         C.save(

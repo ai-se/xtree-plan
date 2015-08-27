@@ -361,13 +361,16 @@ class fileHandler():
                                 prune=True).main(mode="config")
               valid = [isValid(new.cells, name=name) for new in newTab._rows]
 #               set_trace()
-            try: out.append(frac(after(newTab)))
-            except: set_trace()
+            try:
+              out.append(frac(after(newTab)))
+            except:
+              set_trace()
 
       yield out
 
     #----------- DEGUB ----------------
 #     set_trace()
+
 
 def deltaCSVwriter0():
   Planners = ['DTREE', 'BIC', 'CD', 'CD+FS']
@@ -430,13 +433,13 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  # for name in ['LLVM', 'X264', 'BDBC', 'SQL', 'Apache']:
+  for name in ['LLVM', 'X264', 'BDBC', 'SQL', 'Apache']:
     print('## %s' % (name))
     R = [r for r in fileHandler().main(name, reps=40)]
     rdivDemo(R, isLatex=True)
     # print('```')
 
 if __name__ == '__main__':
-#  deltaCSVwriter0()
-  # _test()
-  eval(cmd())
+  #  deltaCSVwriter0()
+  _test()
+#   eval(cmd())
