@@ -1,10 +1,9 @@
 from __future__ import division
 import sys
 import os
-from _curses import flash
 sys.dont_write_bytecode = True
 # Update PYTHONPATH
-HOME = os.environ['HOME']
+HOME =os.path.expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = os.getcwd()  # Current Directory

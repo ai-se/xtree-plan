@@ -99,23 +99,23 @@ class POM3():
     return pom3().simulate(X)[p3.ndep]
 
 
-def predictor(tbl, Model=XOMO):
+def predictor(tbl, n=0, Model=XOMO()):
   rows = [r.cells for r in tbl._rows]
   out = []
   for elem in rows:
-    if Model == XOMO:
-      out += [Model().model(elem[:-2])]
-    elif Model == POM3:
-      out += [Model().model(elem[:-2])]
+    if Model.__doc__ == "XOMO":
+      out += [Model(n=n).model(elem[:-2])]
+    elif Model.__doc__ == "POM3":
+      out += [Model(n=n).model(elem[:-2])]
   return out
 
 
 def learner(mdl=XOMO, n=0, reps=24, numel=1000):
-  train, test = mdl(n).genData(N=numel)
-  for planner in ['xtrees', 'cart', 'HOW', 'baseln0', 'baseln1']:
+  train, test = mdl(n=0).genData(N=numel)
+  for planner in ['dtree', 'HOW', 'baseln0', 'baseln1']:
     E = [planner]
-    before = array(predictor(Model=mdl, tbl=createTbl(train)))
-    after = lambda newTab: array(predictor(Model=mdl, tbl=newTab))
+    before = array(predictor(Model=mdl, n=n, tbl=createTbl(train)))
+    after = lambda newTab: array(predictor(Model=mdl, n=n, tbl=newTab))
     frac = lambda aft: sum(aft) / sum(before)
     for _ in xrange(reps):
       "Apply Different Planners"
@@ -123,34 +123,28 @@ def learner(mdl=XOMO, n=0, reps=24, numel=1000):
         if mdl == POM3 and n == 1:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           smoteit=False,
-                          majority=True,
-                          Min=False).main()
+                          majority=True).main(which='Best')
         else:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           smoteit=False,
-                          majority=True).main()
-      if planner == 'cart':
+                          majority=True).main(which='Best')
+      if planner == 'dtree':
         if mdl == POM3 and n == 1:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
-                          Min=False,
                           smoteit=False,
-                          majority=False).main()
+                          majority=False).main(which='Best')
         else:
           newTab = xtrees(train=train,
                           test=test,
-                          pos='best',
                           bin=False,
                           smoteit=False,
-                          majority=False).main()
+                          majority=False).main(which='Best')
       if planner == 'HOW':
         newTab = HOW(train=train, test=test).main()
       if planner == 'baseln0':
@@ -169,7 +163,7 @@ def learner(mdl=XOMO, n=0, reps=24, numel=1000):
 def _test():
   for mdl in [POM3, XOMO]:
     print('## %s \n\n' % (mdl.__doc__))
-    ndep = 4 if mdl == XOMO else 2
+    ndep = 4 if mdl == XOMO else 3
     random.seed(0)
     for n in xrange(ndep):
       print('#### %s \n```' % (mdl().depen[n][2:]))

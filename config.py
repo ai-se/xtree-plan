@@ -5,7 +5,7 @@ from __future__ import print_function
 from os import environ
 from os import getcwd
 from os import system
-from os import walk
+from os import walk, path
 from pdb import set_trace
 from random import randint as randi
 from random import sample
@@ -17,7 +17,7 @@ import sys
 import csv
 import numpy as np
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = path.expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
@@ -33,8 +33,6 @@ from Prediction import CART as cart
 from Prediction import formatData
 
 from vapp import test as HOW
-
-from cliffsDelta import cliffs
 from demos import cmd
 from methods1 import *
 from sk import rdivDemo
@@ -264,7 +262,7 @@ class fileHandler():
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
           return np.array(
               np.sum(delta[0], axis=0), dtype='float') / np.size(newTab, axis=0)
-        if planner == 'HOW':
+        if planner == 'BIC':
           newTab = HOW(name, justDeltas=True)
           delta.append(
               [d for d in self.delta1(newTab, train_DF.headers, norm=len(predRows))])
@@ -304,13 +302,13 @@ class fileHandler():
 
   def main(self, name='Apache', reps=20):
     rseed(1)
-    for planner in ['DTREE', 'CD+FS', 'CD', 'HOW']:
+    for planner in ['DTREE', 'CD+FS', 'CD', 'BIC']:
       out = [planner]
       after = lambda newTab: predictor(
           train=train_df,
           test=formatData(newTab)).rforest()
 
-      frac = lambda aft: sum(aft) / sum(before)
+      frac = lambda aft: 1 - sum(aft) / sum(before)
 
       data = self.explorer(name)
       for d in data:
@@ -327,7 +325,6 @@ class fileHandler():
                   test,
                   _smote=False,
                   isBin=False)._rows]
-          set_trace()
           actual = test_df[test_df.columns[-2]].astype('float32').tolist()
           before = predictor(train=train_df, test=test_df).rforest()
           for _ in xrange(reps):
@@ -347,7 +344,7 @@ class fileHandler():
                               name=name).main()
               valid = [isValid(new.cells, name=name) for new in newTab._rows]
 #               set_trace()
-            if planner == 'HOW':
+            if planner == 'BIC':
               newTab = HOW(name)
               valid = [isValid(new.cells, name=name) for new in newTab._rows]
 #               set_trace()
@@ -364,8 +361,8 @@ class fileHandler():
                                 prune=True).main(mode="config")
               valid = [isValid(new.cells, name=name) for new in newTab._rows]
 #               set_trace()
-
-            out.append(frac(after(newTab)))
+            try: out.append(frac(after(newTab)))
+            except: set_trace()
 
       yield out
 
@@ -373,7 +370,7 @@ class fileHandler():
 #     set_trace()
 
 def deltaCSVwriter0():
-  Planners = ['DTREE', 'HOW', 'CD', 'CD+FS']
+  Planners = ['DTREE', 'BIC', 'CD', 'CD+FS']
   print(',%s,%s,%s,%s' % tuple(Planners))
   for name in ['Apache', 'BDBJ', 'LLVM', 'X264', 'BDBC', 'SQL']:
     say(name)
@@ -390,12 +387,12 @@ def deltaCSVwriter0():
 
 
 def deltasTester():
-  Planners = ['DTREE', 'HOW', 'CD', 'CD+FS']
+  Planners = ['DTREE', 'BIC', 'CD', 'CD+FS']
   for name in ['BDBJ']:
     print('##', name)
     delta = []
     f = fileHandler()
-    for plan in ['DTREE', 'HOW', 'CD+FS', 'CD']:
+    for plan in ['DTREE', 'BIC', 'CD+FS', 'CD']:
       delta.append(f.deltas(name, planner=plan))
 
     def getRow(i):
@@ -433,13 +430,12 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  for name in ['BDBJ']:  # , 'Apache', 'LLVM', 'X264', 'BDBC', 'SQL']:
+  for name in ['LLVM', 'X264', 'BDBC', 'SQL']:
     print('## %s \n```' % (name))
-    R = [r for r in fileHandler().main(name, reps=10)]
-    rdivDemo(R, isLatex=False)
+    R = [r for r in fileHandler().main(name, reps=28)]
+    rdivDemo(R, isLatex=True)
     print('```')
-    set_trace()
 
 if __name__ == '__main__':
-  deltaCSVwriter0()
-#  _test()
+#  deltaCSVwriter0()
+  _test()

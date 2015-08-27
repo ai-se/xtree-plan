@@ -1358,8 +1358,7 @@ class B(Range):
 import os
 import sys
 
-
-def coced0(output=os.environ["HOME"] + "/tmp",
+def coced0(output=os.path.expanduser('~') + "/tmp",
            data="./data",
            model=None):
   if not model:

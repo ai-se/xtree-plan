@@ -261,6 +261,8 @@ class xtrees():
       return attr[unq[-1]][0]
     elif pos == 'far':
       return attr[unq[0]][-1]
+    elif pos =='Best':
+      return self.attributes([sorted(best, key=lambda F: F.score)[0]])[0]
 
   def getKey(self):
     keys = {}
@@ -268,7 +270,7 @@ class xtrees():
       keys.update({self.test_DF.headers[i].name[1:]: i})
     return keys
 
-  def main(self, justDeltas=False):
+  def main(self, justDeltas=False, which='near'):
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Main
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -276,7 +278,7 @@ class xtrees():
     testCase = self.test_DF._rows
     for tC in testCase:
       node = deltas(tC, self.myTree)  # A delta instance for the rows
-      node.contrastSet = [self.finder2(node.loc, pos='near')]
+      node.contrastSet = [self.finder2(node.loc, pos=which)]
       patch, change = node.patches(self.keys, N_Patches=1)
       Change.extend(change)
       self.mod.extend(patch[0])

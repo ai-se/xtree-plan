@@ -2,7 +2,7 @@ from _model import *
 import sys
 import pdb
 import os
-_HOME = os.environ["HOME"]
+_HOME = os.path.expanduser('~')
 sys.path.insert(0, _HOME + "/git/ai-se/Rahul/DEADANT")
 # from deadant import *
 import math

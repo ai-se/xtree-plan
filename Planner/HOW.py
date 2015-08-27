@@ -119,7 +119,7 @@ class treatments():
           fSelect=True,
           Prune=False,
           infoPrune=0.5,
-          extent=0.75):
+          extent=0.5):
     self.test, self.train = test, train
     self.extent = extent
     self.fSelect = fSelect

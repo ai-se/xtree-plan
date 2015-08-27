@@ -118,10 +118,10 @@ class run():
         newTab,
         tunings=self.tunedParams,
         smoteit=True)
-    frac = lambda aft: sum([0 if a < 1 else 1 for a in aft]
-                           ) / sum([0 if b < 1 else 1 for b in actual])
+    frac = lambda aft: 1 - (sum([0 if a < 1 else 1 for a in aft]) \
+                            / sum([0 if b < 1 else 1 for b in actual]))
 
-    for planner in ['DTREE', 'HOW', 'baseln0', 'baseln1']:
+    for planner in ['XTREE', 'BIC', 'CD', 'CD+FS']:
       out = [planner]
       for _ in xrange(self.reps):
         predRows = []
@@ -132,19 +132,10 @@ class run():
                            tunings=self.tunedParams,
                            smoteit=True)
 
-        predRows = [
-            row.cells for predicted,
-            row in zip(
-                after(test_df),
-                createTbl(
-                    self.test[
-                        self._n],
-                    isBin=True)._rows) if predicted > 0]
-
-        predRows1 = [row.cells for row in createTbl(
+        predRows = [row.cells for row in createTbl(
             self.test[self._n], isBin=True)._rows if row.cells[-2] > 0]
 
-        predTest = genTable(test_df, rows=predRows1, name='Before_temp')
+        predTest = genTable(test_df, rows=predRows, name='Before_temp')
 
         "Apply Different Planners"
         if planner == 'xtrees':
@@ -154,23 +145,23 @@ class run():
                           majority=True).main()
           genTable(test_df, rows=newRows(newTab), name='After_xtrees')
 #          set_trace()
-        elif planner == 'DTREE' or planner == 'DTREE':
+        elif planner == 'XTREE' or planner == 'XTREE':
           newTab = xtrees(train=self.train[-1],
                           test_DF=predTest,
                           bin=False,
                           majority=False).main()
 
-        elif planner == 'HOW':
+        elif planner == 'BIC':
           newTab = HOW(train=self.train[-1],
                        test=self.test[-1],
                        test_df=predTest).main()
 
-        elif planner == 'baseln0':
+        elif planner == 'CD':
           newTab = strawman(train=self.train[-1], test=self.test[-1]).main()
 
-        elif planner == 'baseln1':
-          newTab = strawman(
-              train=self.train[-1], test=self.test[-1], prune=True).main()
+        elif planner == 'CD+FS':
+          newTab = strawman(train=self.train[-1], test=self.test[-1]
+                            , prune=True).main()
 
         out.append(frac(after(newTab)))
 #      self.logResults(out)
@@ -245,7 +236,7 @@ class run():
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'DTREE' or planner == 'DTREE':
+      elif planner == 'XTREE' or planner == 'XTREE':
         C4_5 = xtrees(train=self.train[-1],
                       test_DF=predTest,
                       bin=False, majority=False).main(justDeltas=True)
@@ -255,7 +246,7 @@ class run():
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'HOW':
+      elif planner == 'BIC':
         how = HOW(train=self.train[-1],
                   test=self.test[-1],
                   test_df=predTest).main(justDeltas=True)
@@ -264,7 +255,7 @@ class run():
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'kNN':
+      elif planner == 'CD':
         baseln = strawman(
             train=self.train[-1], test=self.test[-1]).main(justDeltas=True)
         delta.append(
@@ -272,7 +263,7 @@ class run():
         return (np.sum(
             delta[0], axis=0) / np.array((len(predRows[0]) - 2) * [len(predRows)])).tolist()
 
-      elif planner == 'kNN+FS':
+      elif planner == 'CD+FS':
         baselnFss = strawman(
             train=self.train[-1], test=self.test[-1], prune=True).main(justDeltas=True)
         delta.append(
@@ -284,17 +275,8 @@ class run():
     # set_trace()
 
 
-def _test(file='ant'):
-  for file in ['lucene', 'ivy', 'jedit', 'poi', 'ant']:
-    print('## %s\n```' % (file))
-    R = [r for r in run(dataName=file, reps=10).go()]
-    rdivDemo(R, isLatex=False)
-    print('```')
-    set_trace()
-
-
 def deltaCSVwriter0():
-  Planners = ['DTREE', 'HOW', 'kNN', 'kNN+FS']
+  Planners = ['XTREE', 'BIC', 'CD', 'CD+FS']
   print(',%s,%s,%s,%s' % tuple(Planners))
   for name in ['ant', 'ivy', 'jedit', 'lucene', 'poi']:
     say(name)
@@ -316,7 +298,7 @@ def deltaCSVwriter(type='Indv'):
     for name in ['lucene']:
       print('##', name)
       delta = []
-      Planners = ['DTREE', 'HOW', 'kNN', 'kNN+FS']
+      Planners = ['XTREE', 'BIC', 'CD', 'CD+FS']
       R = run(dataName=name, reps=1)  # Setup Files.
 
       for p in Planners:
@@ -375,12 +357,20 @@ def deltaTest():
     print('##', file)
     R = run(dataName=file, reps=12).deltas()
 
+def _test(file='ant'):
+  for file in ['ivy', 'lucene', 'jedit', 'poi', 'ant']:
+    print('## %s\n```' % (file))
+    R = [r for r in run(dataName=file, reps=40).go()]
+    rdivDemo(R, isLatex=True)
+    print('```')
+#    rdivDemo(R, isLatex=True)
+#    print(40 * ['-'])
 
 if __name__ == '__main__':
-  #   _test()
+    _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
   #   deltaCSVwriter(type='Indv')
-  deltaCSVwriter0()
+#  deltaCSVwriter0()
 #   eval(cmd())

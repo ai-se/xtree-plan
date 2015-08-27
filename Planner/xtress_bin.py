@@ -1,13 +1,13 @@
 #! /Users/rkrsn/anaconda/bin/python
 from __future__ import print_function
 from __future__ import division
-from os import environ, getcwd
+from os import environ, getcwd, path
 from pdb import set_trace
 from random import uniform, randint, shuffle
 import sys
 
 # Update PYTHONPATH
-HOME = environ['HOME']
+HOME = path.expanduser("~")
 axe = HOME + '/git/axe/axe/'  # AXE
 pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
@@ -21,9 +21,6 @@ from sklearn.tree import DecisionTreeClassifier
 from collections import Counter
 
 from _imports import *
-from abcd import _Abcd
-from cliffsDelta import *
-from hist import *
 from smote import *
 import _imports.makeAmodel as mam
 from methods1 import *
@@ -45,17 +42,33 @@ def genTable(tbl, rows):
 
 
 def avoid(name='BDBC'):
-  if name == 'BDBC':
-    for i in range(8, 13) + range(14, 18):
-      yield i
-  if name == 'BDBJ':
-    for i in [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]:
-      yield i
+  if name == 'Apache':
+    return []
+  elif name == 'BDBC':
+    return [7, 13]
+  elif name == 'BDBJ':
+    return [0, 1, 2, 5, 6, 10, 13, 14, 16, 17, 18]
+  elif name == 'LLVM':
+    return [0]
+  elif name == 'X264':
+    return [0, 8, 12]
+  elif name == 'SQL':
+    return [0, 2, 7, 10, 23]
 
 
 def alternates(name='BDBJ'):
+  if name == 'Apache':
+    return []
+  if name == 'BDBC':
+    return [range(8, 13), range(14, 18)]
   if name == 'BDBJ':
     return [[11, 12], [3, 4], [7, 8], [23, 24]]
+  if name == 'LLVM':
+    return []
+  if name == 'X264':
+    return [[9, 10, 11], [13, 14, 15]]
+  if name == 'SQL':
+    return [range(3, 7), [25, 27], [28, 29, 30], [32, 33], range(35, 39)]
 
 
 def flatten(x):
@@ -94,7 +107,7 @@ class deltas():
     self.change = []
 
   def scorer(self, node):
-    return mean([r.cells[-2] for r in node.rows])
+    return np.mean([r.cells[-2] for r in node.rows])
 
   def createNew(self, stuff, keys, N=1):
     newElem = []
@@ -105,6 +118,10 @@ class deltas():
       pos = ss[0].col
       old = tmpRow.cells[pos]
       new = int(lo)
+      """
+      If current pos is in alternates, only one attribute can be True at at
+      a time.
+      """
       if pos in flatten(alternates(self.name)):
         for alts in alternates(self.name):
           if pos in alts:
@@ -167,9 +184,10 @@ class store():
         if el > maxel:
           maxel = el
           id = i
-      return mean([r.cells[-2] for r in node.rows if r.cells[-1] == unq[id]])
+      return np.mean([r.cells[-2]
+                      for r in node.rows if r.cells[-1] == unq[id]])
     else:
-      return mean([r.cells[-2] for r in node.rows])
+      return np.mean([r.cells[-2] for r in node.rows])
 
 
 class xtrees():
@@ -219,7 +237,7 @@ class xtrees():
     """
     Score an leaf node
     """
-    return mean([r.cells[-2] for r in node.rows])
+    return np.mean([r.cells[-2] for r in node.rows])
 
   def isBetter(self, me, others):
     """
