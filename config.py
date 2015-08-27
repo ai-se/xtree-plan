@@ -308,7 +308,7 @@ class fileHandler():
           train=train_df,
           test=formatData(newTab)).rforest()
 
-      frac = lambda aft: 1 - sum(aft) / sum(before)
+      frac = lambda aft: (1 - sum(aft) / sum(before))
 
       data = self.explorer(name)
       for d in data:
@@ -430,12 +430,13 @@ def rdiv():
 
 
 def _test(name='Apache'):
-  for name in ['LLVM', 'X264', 'BDBC', 'SQL']:
-    print('## %s \n```' % (name))
-    R = [r for r in fileHandler().main(name, reps=28)]
+  # for name in ['LLVM', 'X264', 'BDBC', 'SQL', 'Apache']:
+    print('## %s' % (name))
+    R = [r for r in fileHandler().main(name, reps=40)]
     rdivDemo(R, isLatex=True)
-    print('```')
+    # print('```')
 
 if __name__ == '__main__':
 #  deltaCSVwriter0()
-  _test()
+  # _test()
+  eval(cmd())

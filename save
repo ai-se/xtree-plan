@@ -1,2 +1,3 @@
 #! /bin/tcsh
-python defects.py _test $1 > logs/$1.log
+echo $1 $2
+/share/rkrish11/miniconda/bin/python2.7 defects.py _test $1 > logs/$1.log

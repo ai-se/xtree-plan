@@ -358,19 +358,19 @@ def deltaTest():
     R = run(dataName=file, reps=12).deltas()
 
 def _test(file='ant'):
-  for file in ['ivy', 'lucene', 'jedit', 'poi', 'ant']:
-    print('## %s\n```' % (file))
-    R = [r for r in run(dataName=file, reps=40).go()]
-    rdivDemo(R, isLatex=True)
-    print('```')
+  # for file in ['ivy', 'lucene', 'jedit', 'poi', 'ant']:
+  print('## %s\n' % (file))
+  R = [r for r in run(dataName=file, reps=40).go()]
+  rdivDemo(R, isLatex=True)
+    # print('```')
 #    rdivDemo(R, isLatex=True)
 #    print(40 * ['-'])
 
 if __name__ == '__main__':
-    _test()
+    # _test()
   # deltaTest()
   # rdiv()
   # deltaCSVwriter(type='All')
   #   deltaCSVwriter(type='Indv')
 #  deltaCSVwriter0()
-#   eval(cmd())
+  eval(cmd())
