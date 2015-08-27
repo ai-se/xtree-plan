@@ -2,6 +2,8 @@
 from __future__ import print_function, division
 from numpy import array, asarray, mean, median, percentile, size, sum, sqrt
 from pdb import set_trace
+from os import remove as rm
+from random import randint
 from methods1 import createTbl
 from Prediction import rforest, rforest2
 from _imports.weights import weights as W
@@ -222,7 +224,9 @@ class patches():
       self.deltasCSVWriter()
 
     header = [h.name for h in self.test.headers[:-1]]
-    with open('tmp0.csv', 'w') as csvfile:
+    name = str(randint(0, 1e6))
+
+    with open(name + '.csv', 'w') as csvfile:
       writer = csv.writer(csvfile, delimiter=',')
       writer.writerow(header)
       for el in newRows:
@@ -230,7 +234,9 @@ class patches():
 
     if justDeltas == False:
       try:
-        return createTbl(['tmp0.csv'])
+        new = createTbl([name + '.csv'])
+        rm(name + '.csv')
+        return new
       except:
         set_trace()
     else:

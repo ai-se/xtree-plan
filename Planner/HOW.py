@@ -4,6 +4,8 @@ from __future__ import division
 
 from os import environ, getcwd
 from os import walk
+from os import remove as rm
+from random import randint
 from os.path import expanduser
 from pdb import set_trace
 import sys
@@ -45,16 +47,18 @@ class changes():
     if not old == new:
       self.log.update({name: (old, new)})
 
-
 def genTable(tbl, rows):
+  name = str(randint(0, 1e6))
   header = [h.name for h in tbl.headers[:-1]]
-  with open('tmp2.csv', 'w') as csvfile:
+  with open(name + '.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
       writer.writerow(el[:-1])
+  new = createTbl([name + '.csv'])
+  rm(name + '.csv')
+  return new
 
-  return createTbl(['tmp2.csv'])
 
 
 class o:
@@ -119,7 +123,7 @@ class treatments():
           fSelect=True,
           Prune=False,
           infoPrune=0.5,
-          extent=0.5):
+          extent=1):
     self.test, self.train = test, train
     self.extent = extent
     self.fSelect = fSelect
@@ -178,10 +182,10 @@ class treatments():
 
   def fWeight(self, criterion='Variance'):
     lbs = W(use=criterion).weights(self.train_df)
-    sortedLbs = sorted([l / max(lbs[0]) for l in lbs[0]], reverse=True)
+    sortedLbs = sorted([l / sum(lbs[0]) for l in lbs[0]], reverse=True)
     indx = int(self.infoPrune * len(sortedLbs)) - 1 if self.Prune else -1
     cutoff = sortedLbs[indx]
-    L = [l / max(lbs[0]) for l in lbs[0]]
+    L = [l / sum(lbs[0]) for l in lbs[0]]
     return [0 if l < cutoff else l for l in L] if self.Prune else L
 
   def mutate(self, me, others):

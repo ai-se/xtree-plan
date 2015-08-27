@@ -2,6 +2,7 @@
 from __future__ import print_function
 from __future__ import division
 from os import environ, getcwd, path
+from os import remove as rm
 from pdb import set_trace
 from random import uniform, randint, shuffle
 import sys
@@ -31,15 +32,16 @@ import csv
 
 
 def genTable(tbl, rows):
+  name = str(randint(0, 1000))
   header = [h.name for h in tbl.headers[:-1]]
-  with open('tmp3.csv', 'w') as csvfile:
+  with open(name + '.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
       writer.writerow(el[:-1])
-
-  return createTbl(['tmp3.csv'])
-
+  new = createTbl([name + '.csv'])
+  rm(name + '.csv')
+  return new
 
 def avoid(name='BDBC'):
   if name == 'Apache':

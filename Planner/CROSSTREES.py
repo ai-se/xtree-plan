@@ -5,6 +5,7 @@ from __future__ import division
 from pdb import set_trace
 from os import environ, getcwd
 from os import walk
+from os import remove as rm
 from os.path import expanduser
 from pdb import set_trace
 import sys
@@ -38,14 +39,17 @@ import sk
 
 
 def genTable(tbl, rows):
+  name = str(randint(0, 1000))
   header = [h.name for h in tbl.headers[:-1]]
-  with open('tmp0.csv', 'w') as csvfile:
+  with open(name + '.csv', 'w') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
     writer.writerow(header)
     for el in rows:
       writer.writerow(el[:-1])
+  new = createTbl([name + '.csv'])
+  rm(name + '.csv')
+  return new
 
-  return createTbl(['tmp0.csv'])
 
 
 class changes():
@@ -261,7 +265,7 @@ class xtrees():
       return attr[unq[-1]][0]
     elif pos == 'far':
       return attr[unq[0]][-1]
-    elif pos =='Best':
+    elif pos == 'Best':
       return self.attributes([sorted(best, key=lambda F: F.score)[0]])[0]
 
   def getKey(self):
