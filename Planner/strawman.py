@@ -168,7 +168,7 @@ class patches():
       set_trace()
     indx = int(self.B * len(sortedLbs)) - 1 if self.Prune else -1
     if self.name:
-      L = [l / max(0.0001, sum(lbs[0])) if not i in avoid(name=self.name) + flatten(
+      L = [l / max(0.0001, max(lbs[0])) if not i in avoid(name=self.name) + flatten(
           alternates(self.name)) else 0 for i, l in enumerate(lbs[0])]
       cutoff = sorted(L, reverse=True)[indx]
       return array(
