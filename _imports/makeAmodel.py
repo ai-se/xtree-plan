@@ -1,6 +1,5 @@
-import sys
 from table import *
-import smote
+from _imports import smote
 
 
 def say(text):

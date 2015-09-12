@@ -2,28 +2,12 @@
 from __future__ import print_function
 from __future__ import division
 
-import sys
 import csv
-from os import walk
-from pdb import set_trace
 from os import remove as rm
-from os import environ, getcwd
-from os.path import expanduser
-from random import uniform, randint, shuffle
+from random import randint
 
-import numpy as np
-import pandas as pd
-from smote import *
-from methods1 import *
-from _imports import *
+from _imports.methods1 import *
 from dtree.dtree import *
-from collections import Counter
-import _imports.makeAmodel as mam
-
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
 
 
 def genTable(tbl, rows):

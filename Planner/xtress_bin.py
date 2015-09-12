@@ -1,10 +1,9 @@
 #! /Users/rkrsn/anaconda/bin/python
 from __future__ import print_function
 from __future__ import division
-from os import environ, getcwd, path
+from os import getcwd, path
 from os import remove as rm
-from pdb import set_trace
-from random import uniform, randint, shuffle
+from random import randint
 import sys
 
 # Update PYTHONPATH
@@ -14,20 +13,9 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-
-from collections import Counter
-
-from _imports import *
-from smote import *
-import _imports.makeAmodel as mam
-from methods1 import *
+from _imports.smote import *
+from _imports.methods1 import *
 import numpy as np
-import pandas as pd
-import sk
 import csv
 
 

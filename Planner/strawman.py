@@ -1,19 +1,17 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
-from numpy import array, asarray, mean, median, percentile, size, sum, sqrt
-from pdb import set_trace
 from os import remove as rm
 from random import randint
-from methods1 import createTbl
+from os import walk
+from pdb import set_trace
+import csv
+
+from numpy import array, asarray, mean, median, percentile, sum
+
+from _imports.methods1 import createTbl
 from Prediction import rforest, rforest2
 from _imports.weights import weights as W
-from os import environ, getcwd
-from os import walk
-from os.path import expanduser
-from pdb import set_trace
-import sys
-from dtree.table import clone
-import csv
+
 
 def avoid(name='BDBC'):
   if name == 'Apache':

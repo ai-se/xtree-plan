@@ -1,9 +1,6 @@
 from __future__ import division
-from pdb import set_trace
-from os import environ, getcwd
-from os import walk
+from os import getcwd
 from os.path import expanduser
-from pdb import set_trace
 import sys
 
 # Update PYTHONPATH
@@ -13,20 +10,16 @@ pystat = HOME + '/git/pystats/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd])
 
-from scipy.stats.mstats import mode
-from scipy.spatial.distance import euclidean
 from numpy import mean
-from random import choice, uniform as rand
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from smote import *
+from _imports.smote import *
 import pandas as pd
 from abcd import _Abcd
-from methods1 import *
-from sk import rdivDemo
+from _imports.methods1 import *
 
 
 def formatData(tbl):

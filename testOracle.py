@@ -2,8 +2,6 @@
 from __future__ import print_function, division
 
 from os import environ, getcwd
-from os import walk
-from pdb import set_trace
 import sys
 
 # Update PYTHONPATH
@@ -15,14 +13,7 @@ sys.path.extend([axe, pystat, cwd])
 
 from Prediction import *
 from _imports import dEvol
-from abcd import _Abcd
-from demos import cmd
-from methods1 import *
-from sk import rdivDemo
-import numpy as np
-import pandas as pd
-import csv
-from numpy import sum
+from _imports.methods1 import *
 
 
 class counter():

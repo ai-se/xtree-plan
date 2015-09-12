@@ -1,7 +1,5 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
-from os import environ, getcwd
-import sys
 
 # from demos import *
 # from settings import *
@@ -9,9 +7,9 @@ from settingsWhere import *
 from pdb import set_trace
 # from abcd import _Abcd
 from Prediction import rforest, CART, Bugs, where2prd
-from methods1 import explore
-from methods1 import createTbl
-from random import uniform as rand, randint as randi, choice as any
+from _imports.methods1 import explore
+from _imports.methods1 import createTbl
+from random import uniform as rand, choice as any
 
 def say(l):
   sys.stdout.write(str(l))

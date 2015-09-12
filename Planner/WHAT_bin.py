@@ -3,9 +3,6 @@ from __future__ import print_function
 from __future__ import division
 from os import environ
 from os import getcwd
-from pdb import set_trace
-from random import uniform as rand
-from random import randint as randi
 import sys
 
 # Update PYTHONPATH
@@ -15,21 +12,15 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, '../'])
 
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
 from _imports.weights import weights as W
 
 from Prediction import *
 # from _imports.settingsWhere import o
 from cliffsDelta import *
 from hist import *
-from smote import *
-import _imports.makeAmodel as mam
-from methods1 import *
+from _imports.smote import *
+from _imports.methods1 import *
 import numpy as np
-import pandas as pd
 from counts import *
 # import sk
 

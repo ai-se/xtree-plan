@@ -2,39 +2,18 @@
 from __future__ import print_function
 from __future__ import division
 
-from os import environ, getcwd
-from os import walk
 from os import remove as rm
 from random import randint
-from os.path import expanduser
-from pdb import set_trace
-import sys
-from itertools import chain
-
-# Update PYTHONPATH
-HOME = expanduser('~')
-axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystats/'  # PySTAT
-cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
-
-from pdb import set_trace
-from random import uniform as rand
-from random import randint as randi
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from _imports.weights import weights as W
 import csv
 
-from Prediction import *
-from smote import *
-import _imports.makeAmodel as mam
-from methods1 import *
 import numpy as np
-import pandas as pd
-from counts import *
+
+from _imports.weights import weights as W
+from _imports.smote import *
+from _imports.methods1 import *
+from dtree.counts import *
+
+
 # import sk
 
 

@@ -2,20 +2,12 @@
 from __future__ import division
 from __future__ import print_function
 
-from os import environ
 from os import getcwd
-from os import system
-from os import walk, path
-from pdb import set_trace
-from random import randint as randi
+from os import path
 from random import sample
-from random import uniform as rand
 from random import shuffle
-from subprocess import PIPE
-from subprocess import call
 import sys
 import csv
-import numpy as np
 # Update PYTHONPATH
 HOME = path.expanduser('~')
 axe = HOME + '/git/axe/axe/'  # AXE
@@ -23,22 +15,14 @@ pystat = HOME + '/git/pystat/'  # PySTAT
 cwd = getcwd()  # Current Directory
 sys.path.extend([axe, pystat, cwd, './old/VAPP/'])
 
-from collections import Counter
-from numpy import median
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.tree import DecisionTreeRegressor
 import pandas
 
-from Prediction import CART as cart
 from Prediction import formatData
 
 from vapp import test as HOW
-from demos import cmd
-from methods1 import *
+from _imports.methods1 import *
 from sk import rdivDemo
-from sk import scottknott
-from smote import SMOTE
-from table import clone
 
 from Planner.xtress_bin import xtrees
 # from Planner.WHAT_bin import treatments as HOW

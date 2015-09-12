@@ -1,10 +1,8 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
 
-from os import environ, getcwd
-from os import walk
+from os import getcwd
 from os.path import expanduser
-from pdb import set_trace
 import sys
 
 # Update PYTHONPATH
@@ -17,18 +15,11 @@ sys.path.extend([axe, pystat, cwd, './old/Modeller/'])
 
 import csv
 from Prediction import *
-from _imports import *
-from abcd import _Abcd
-from methods1 import *
-import numpy as np
-import pandas as pd
-from pdb import set_trace
+from _imports.methods1 import *
 
-from Models._model import xomod, howMuchEffort
 from Models._XOMO import *
 from numpy import sum, array
 from sk import rdivDemo
-import Models.pom3
 import random
 
 from Planner.CROSSTREES import xtrees

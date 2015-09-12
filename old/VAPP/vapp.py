@@ -2,17 +2,10 @@
 from __future__ import division
 from __future__ import print_function
 
-from os import environ
 from os import getcwd
-from os import system
-from os import walk, path
-from pdb import set_trace
-from random import randint as randi
+from os import path
 from random import sample
-from random import uniform as rand
 from random import shuffle
-from subprocess import PIPE
-from subprocess import call
 import sys
 
 # Update PYTHONPATH
@@ -23,20 +16,15 @@ cwd = getcwd()  # Current Directory
 WHAT = HOME + '/git/Transfer-Learning/old/SOURCE'
 sys.path.extend([axe, pystat, cwd, WHAT])
 
-
-from numpy import median
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
 import pandas
 
-from Prediction import CART as cart
 from Prediction import formatData
 from WHAT import treatments as WHAT
-from demos import cmd
-from methods1 import *
+from _imports.methods1 import *
 from sk import rdivDemo
-from sk import scottknott
-from smote import SMOTE
+from _imports.smote import SMOTE
 from table import clone
 
 
@@ -234,7 +222,7 @@ class fileHandler():
     acc, md, auc = [], [], []
     bef, aft = [], []
     chunks = lambda l, n: [l[i:i + n] for i in range(0, len(l), int(n))]
-    from random import shuffle, sample
+    from random import shuffle
     rows = data._rows
     shuffle(rows)
     sqe = chunks(rows, int(len(rows) / k))
@@ -363,7 +351,7 @@ def postabmle():
 def overlayCurve(
         # w, x, y, z, base, fname=None, ext=None, textbox=False, string=None):
         x, y, base, fname=None, ext=None, textbox=False, string=None):
-  from numpy import linspace, cumsum
+  from numpy import linspace
   import matplotlib.pyplot as plt
   import matplotlib.lines as mlines
   from matplotlib.backends.backend_pdf import PdfPages

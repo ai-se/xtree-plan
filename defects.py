@@ -1,26 +1,15 @@
 #! /Users/rkrsn/miniconda/bin/python
 from __future__ import print_function, division
 
-from os import environ, getcwd
-from os import walk
-from os.path import expanduser
-from pdb import set_trace
-import sys
 from bdb import set_trace
-
-import numpy as np
-import pandas as pd
 import csv
-from random import seed as rseed
-from _imports.dEvol import tuner
-from demos import cmd
-from sk import rdivDemo
+
 from numpy import sum
 
-from _imports import *
+from _imports.dEvol import tuner
+from dtree.sk import rdivDemo
 from Prediction import rforest, Bugs
-from methods1 import *
-
+from _imports.methods1 import *
 from Planner.CROSSTREES import xtrees
 from Planner.HOW import treatments as HOW
 from Planner.strawman import strawman
