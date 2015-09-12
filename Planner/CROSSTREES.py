@@ -2,40 +2,28 @@
 from __future__ import print_function
 from __future__ import division
 
-from pdb import set_trace
-from os import environ, getcwd
-from os import walk
-from os import remove as rm
-from os.path import expanduser
-from pdb import set_trace
 import sys
-
-# Update PYTHONPATH
-HOME = expanduser('~')
-axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystats/'  # PySTAT
-cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
-
-from pdb import set_trace
-from random import uniform, randint, shuffle
 import csv
+from os import walk
+from pdb import set_trace
+from os import remove as rm
+from os import environ, getcwd
+from os.path import expanduser
+from random import uniform, randint, shuffle
 
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-
-from collections import Counter
-
-from _imports import *
-from abcd import _Abcd
-from smote import *
-import _imports.makeAmodel as mam
-from methods1 import *
 import numpy as np
 import pandas as pd
-import sk
+from smote import *
+from methods1 import *
+from _imports import *
+from dtree.dtree import *
+from collections import Counter
+import _imports.makeAmodel as mam
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 
 def genTable(tbl, rows):
@@ -50,8 +38,6 @@ def genTable(tbl, rows):
   rm('tmp0.csv')
   return new
 
-
-
 class changes():
 
   def __init__(self):
@@ -60,7 +46,6 @@ class changes():
   def save(self, name=None, old=None, new=None):
     if not old == new:
       self.log.update({name: (old, new)})
-
 
 class deltas():
 
@@ -293,16 +278,6 @@ class xtrees():
 
 
 def _planningTest():
-  # Test contrast sets
-  n = 0
-  Dir = 'Data/Jureczko/'
-  one, two = explore(Dir)
-  # Training data
-  _ = xtrees(train=one[n],
-             test=two[n],
-             verbose=True,
-             smoteit=False).main()
-
   # <<<<<<<<<<< Debug >>>>>>>>>>>>>>>
   set_trace()
 

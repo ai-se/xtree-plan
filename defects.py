@@ -8,19 +8,10 @@ from pdb import set_trace
 import sys
 from bdb import set_trace
 
-# Update PYTHONPATH
-HOME = expanduser('~')
-axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystats/'  # PySTAT
-cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
-
 import numpy as np
 import pandas as pd
 import csv
 from random import seed as rseed
-from abcd import _Abcd
-#from cliffsDelta import cliffs
 from _imports.dEvol import tuner
 from demos import cmd
 from sk import rdivDemo

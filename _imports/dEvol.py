@@ -3,31 +3,53 @@ from __future__ import print_function, division
 from os import environ, getcwd
 import sys
 
-# Update PYTHONPATH
-cwd = getcwd()  # Current Directory
-axe = cwd + '/axe/'  # AXE
-pystat = cwd + '/pystats/'  # PySTAT
-where = cwd + '/_imports/where2/'  # Where
-sys.path.extend([axe, pystat, cwd, where])
-
-from demos import *
-import sk
-from settings import *
+# from demos import *
+# from settings import *
 from settingsWhere import *
 from pdb import set_trace
-from abcd import _Abcd
+# from abcd import _Abcd
 from Prediction import rforest, CART, Bugs, where2prd
 from methods1 import explore
 from methods1 import createTbl
 from random import uniform as rand, randint as randi, choice as any
-tree = treeings()
-
-# set_trace()
-
 
 def say(l):
   sys.stdout.write(str(l))
 
+class Thing(object):
+  id = -1
+
+  def __init__(i, **fields):
+    i.override(fields)
+    i.newId()
+
+  def newId(i):
+    i._id = Thing.id = Thing.id + 1
+
+  def also(i, **d):
+    return i.override(d)
+
+  def override(i, d):
+    i.__dict__.update(d)
+    return i
+
+  def __hash__(i):
+    return i._id
+
+
+def treeings(**d):
+  return Thing(
+      min=1,
+      infoPrune=0.33,
+      variancePrune=True,
+      debug=False,
+      m=5,
+      n=5,
+      missing='?',
+      better=lambda x: x.better,
+      worse=lambda x: x.worse,
+      cells=lambda x: x.cells,
+      prune=True).override(d)
 
 def settings(**d):
   return o(

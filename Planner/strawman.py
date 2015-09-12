@@ -12,15 +12,7 @@ from os import walk
 from os.path import expanduser
 from pdb import set_trace
 import sys
-
-# Update PYTHONPATH
-HOME = expanduser('~')
-axe = HOME + '/git/axe/axe/'  # AXE
-pystat = HOME + '/git/pystats/'  # PySTAT
-cwd = getcwd()  # Current Directory
-sys.path.extend([axe, pystat, cwd])
-
-from table import clone
+from dtree.table import clone
 import csv
 
 def avoid(name='BDBC'):
