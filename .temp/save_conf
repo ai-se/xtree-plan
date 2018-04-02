@@ -1,2 +1,0 @@
-#! /bin/tcsh
-/share/rkrish11/miniconda/bin/python2.7 config.py _test $1 > logs/$1.log

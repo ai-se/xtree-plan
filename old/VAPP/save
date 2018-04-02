@@ -1,3 +1,0 @@
-#! /bin/tcsh
-mkdir Normalogs/$2
-python vapp.py _test $1 $2 > Normalogs/$2/$1.$3
