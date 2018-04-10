@@ -3,7 +3,8 @@ import sys
 from pdb import set_trace
 from glob import glob
 
-root = os.path.join(os.getcwd().split('project')[0], 'project')
+root = os.path.join(os.getcwd().split(
+    'transfer-learning')[0], 'transfer-learning')
 if root not in sys.path:
     sys.path.append(root)
 
