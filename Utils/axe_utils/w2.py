@@ -22,7 +22,7 @@ if root not in sys.path:
 
 from pdb import set_trace
 
-from Utils.AxeUtils import atom
+from utils.axe_utils import atom
 try:
     from tools.axe import nasa93
 except ImportError:

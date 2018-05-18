@@ -1,29 +1,28 @@
-import os, sys; from pdb import set_trace
-from dectree import *
-import pandas as pd 
-walk = os.walk
-
-def explore(dir):
- datasets = []
- for (dirpath, dirnames, filenames) in walk(dir):
-    datasets.append(dirpath)
-
- training = []
- testing = []
- for k in datasets[1:]:
-  train = [[dirPath, fname] for dirPath, _, fname in walk(k)]
-  test = [train[0][0] + '/' + train[0][1].pop(-1)]
-  training.append([train[0][0] + '/' + p for p in train[0][1] if not p == '.DS_Store']);
-  testing.append(test)
- return training, testing
+import os
+import sys
+from pdb import set_trace
+import pandas as pd
+import fnmatch
 
 
-train, test = explore('./')
-data = [train[i]+test[i] for i in xrange(1,len(test))]
-template=pd.read_csv(data[0][0], header = 0).columns.get_values().tolist();
-for i in data[1:]:
- for k in i:
-  tmp = pd.read_csv(k)
-  tmp.to_csv(path_or_buf = k ,  header = template, index=False)
-set_trace()
-pd.to_csv(data[1][0], header= template)
+def recursive_glob(treeroot, pattern):
+    results = []
+    for base, dirs, files in os.walk(treeroot):
+        goodfiles = fnmatch.filter(files, pattern)
+        results.extend(os.path.join(base, f) for f in goodfiles)
+    return results
+
+
+def change_class_to_bool(fname):
+    old = pd.read_csv(fname)
+    # old.loc[old[old.columns[-1]] > 0, old.columns[-1]] = "T"
+    # old.loc[old[old.columns[-1]] <= 0, old.columns[-1]] = "F"
+    old[old.columns[2:]].to_csv(fname, index=False)
+
+
+if __name__ == "__main__":
+    res = recursive_glob(".", "*.csv")
+    for fname in res:
+        change_class_to_bool(fname)
+
+    set_trace()

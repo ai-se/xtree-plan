@@ -25,13 +25,10 @@ def fWeight(tbl):
     Sort features based on entropy
     """
     clf = CART(criterion='entropy')
-    features = tbl.columns[:-1]
+    features = tbl.columns[1:-1]
     klass = tbl[tbl.columns[-1]]
-    try:
-        clf.fit(tbl[features], [k == True for k in klass])
-        lbs = clf.feature_importances_
-    except ValueError:
-        set_trace()
+    clf.fit(tbl[features], [k == True for k in klass])
+    lbs = clf.feature_importances_
 
     return [tbl.columns[i] for i in np.argsort(lbs)[::-1]]
 

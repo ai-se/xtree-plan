@@ -4,7 +4,7 @@ from pdb import set_trace
 from glob import glob
 
 root = os.path.join(os.getcwd().split(
-    'transfer-learning')[0], 'transfer-learning')
+    'xtree-plan')[0], 'xtree-plan')
 if root not in sys.path:
     sys.path.append(root)
 

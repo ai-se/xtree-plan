@@ -10,7 +10,7 @@ if root not in sys.path:
 
 import pandas as pd
 from random import uniform
-from Utils.StatsUtils.ABCD import abcd
+from utils.stats_utils.abcd import abcd
 from random import uniform as random
 from pdb import set_trace
 import numpy as np
@@ -63,7 +63,7 @@ def apply(changes, row):
         newRow = row
         if thres > 0:
             if newRow[idx] > thres:
-                newRow[idx] = uniform(0, thres)
+                newRow[idx] = (0, thres)
             all.append(newRow)
 
     return all
@@ -74,7 +74,7 @@ def apply2(changes, row):
     for idx, thres in enumerate(changes):
         if thres is not None:
             if new_row[idx] > thres:
-                new_row[idx] = uniform(0, thres)
+                new_row[idx] = (0, thres)
 
     # delta = np.array(new_row) - np.array(row)
     # delta_bool = [1 if a > 0 else -1 if a < 0 else 0 for a in delta]
@@ -89,7 +89,7 @@ def apply3(row, cols, pk_best):
             thres = pk_best[col][1]
             if thres is not None:
                 if newRow[idx] > thres:
-                    newRow[idx] = uniform(0, thres) if random(0, 100) < proba else \
+                    newRow[idx] = 0, thres if random(0, 100) < proba else \
                         newRow[idx]
         except:
             pass

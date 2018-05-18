@@ -11,8 +11,8 @@ if root not in sys.path:
 from pdb import set_trace
 from pandas import read_csv, concat
 from pandas.io.common import EmptyDataError
-from AxeUtils.w2 import where2, prepare, leaves
-from AxeUtils.MakeAModel import MakeAModel
+from axe_utils.w2 import where2, prepare, leaves
+from axe_utils.MakeAModel import MakeAModel
 
 
 def new_table(tbl, headerLabel, Rows):
@@ -24,7 +24,7 @@ def new_table(tbl, headerLabel, Rows):
     return clone(tbl2, rows=Rows)
 
 
-def list2dataframe(lst, reshape=True):
+def list2dataframe(lst, reshape=False):
     """
     Convert a list of paths to pandas dataframe
     """

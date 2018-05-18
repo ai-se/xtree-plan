@@ -1,7 +1,7 @@
 import numpy as np
 from pdb import set_trace
 from Data.DefectPrediction import DefectData
-from Utils.FileUtil import list2dataframe
+from Utils.file_util import list2dataframe
 
 def information_gain(X, y):
 

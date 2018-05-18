@@ -16,9 +16,9 @@ import pandas as pd
 from tools import pyC45
 from pdb import set_trace
 from oracle.smote import SMOTE
-from Utils.MiscUtils import flatten
-from Utils.ExperimentUtils import Changes
-from Utils.FileUtil import list2dataframe
+from utils.misc_utils import flatten
+from utils.experiment_utils import Changes
+from utils.file_util import list2dataframe
 from random import uniform, random as rand
 
 
@@ -81,12 +81,12 @@ class Patches:
         leaves = flatten([i.leaves(_k) for _k in node.kids])
         try:
             if i.config:
-                best = sorted([l for l in leaves if l.score < current.score],
+                best = sorted([l for l in leaves if l.score == 0],
                               key=lambda F: i.howfar(current, F))[0]
             else:
                 best = \
                     sorted(
-                        [l for l in leaves if l.score <= current.score],
+                        [l for l in leaves if l.score == 0 ],
                         key=lambda F: i.howfar(current, F))[0]
                 # set_trace()
         except:
@@ -116,8 +116,8 @@ class Patches:
         for n in xrange(i.testDF.shape[0]):
             if i.testDF.iloc[n][-1] > 0 or i.testDF.iloc[n][-1] == True:
                 newRows.append(i.patchIt(i.testDF.iloc[n]))
-            # else:
-            #     newRows.append(i.testDF.iloc[n].values.tolist())
+            else:
+                newRows.append(i.testDF.iloc[n].values.tolist())
         return pd.DataFrame(newRows, columns=i.testDF.columns)
 
 
