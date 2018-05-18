@@ -1,0 +1,6 @@
+data="arc poi-1.5D tomcat"
+
+for d in $data; do
+	echo $d
+	python  dtree.py snl data/$d.csv
+done
