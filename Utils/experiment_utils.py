@@ -73,8 +73,11 @@ def apply2(changes, row):
     new_row = row
     for idx, thres in enumerate(changes):
         if thres is not None:
-            if new_row[idx] > thres:
-                new_row[idx] = (0, thres)
+            try:
+                if new_row[idx] > thres:
+                    new_row[idx] = (0, thres)
+            except:
+                pass
 
     # delta = np.array(new_row) - np.array(row)
     # delta_bool = [1 if a > 0 else -1 if a < 0 else 0 for a in delta]
@@ -85,11 +88,11 @@ def apply3(row, cols, pk_best):
     newRow = row
     for idx, col in enumerate(cols):
         try:
-            proba = pk_best[col][0]
-            thres = pk_best[col][1]
+            thres = pk_best[col][0]
+            proba = pk_best[col][1]
             if thres is not None:
                 if newRow[idx] > thres:
-                    newRow[idx] = 0, thres if random(0, 100) < proba else \
+                    newRow[idx] = (0, thres) if random(0, 100) < proba else \
                         newRow[idx]
         except:
             pass
