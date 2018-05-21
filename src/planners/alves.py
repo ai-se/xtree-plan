@@ -104,7 +104,6 @@ def alves(train, test):
             modified.append(new_row)
 
         else:
-            if rand() > 0.7:
-                modified.append(test.iloc[n].tolist())
+            modified.append(test.iloc[n].tolist())
 
     return pd.DataFrame(modified, columns=test.columns)

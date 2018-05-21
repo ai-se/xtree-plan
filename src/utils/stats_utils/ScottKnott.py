@@ -586,6 +586,54 @@ def sk_chart(data):
         last = x.rank
 
 
+def sk_latex(data):
+    def z(x):
+        return int(80 * (x - lo) / (hi - lo + 0.00001))
+
+    data = map(lambda lst: Num(lst[0], lst[1:]),
+               data)
+    print ""
+
+    ranks = []
+
+    for x in scottknott(data, useA12=True):
+        ranks += [(x.rank, x.median(), x)]
+
+    all = []
+
+    for _, __, x in sorted(ranks):
+        all += x.quartiles()
+
+    all = sorted(all)
+    lo, hi = all[0], all[-1]
+
+    print r'{\scriptsize \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}'
+    print r'\arrayrulecolor{lightgray}'
+    print r'\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline'
+
+    last = None
+
+    for _, __, x in sorted(ranks):
+        q1, q2, q3 = x.quartiles()
+        pre = ""
+        if not last is None and not last == x.rank:
+            pre = "\\hline"
+        print pre, r'%2s & %12s &    %s  &  %s & \quart{%s}{%s}{%s}{%s} \\' % \
+                   (x.rank + 1,
+                    x.name,
+                    float(q2 / 100),
+                    float((q3 - q1) / 100),
+                    z(q1),
+                    z(q3) - z(q1),
+                    z(q2),
+                    z(100))
+        last = x.rank
+
+    print r"\hline \end{tabular}}"
+
+    return ranks
+
+
 def _test_scottknott():
     a = ["a", 1, 2, 3, 4, 5, 4, 3, 2, 4, 2, 1, 2]
     b = ["b", 3, 4, 5, 4, 3, 4, 3, 2, 6, 7, 5, 6]

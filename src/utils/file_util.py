@@ -24,7 +24,7 @@ def new_table(tbl, headerLabel, Rows):
     return clone(tbl2, rows=Rows)
 
 
-def list2dataframe(lst, reshape=False):
+def list2dataframe(lst, binarize=False):
     """
     Convert a list of paths to pandas dataframe
     """
@@ -32,19 +32,13 @@ def list2dataframe(lst, reshape=False):
     try:
         for elem in lst:
             dframe_temp = read_csv(elem)
-            if reshape:
-                dframe_temp = dframe_temp[dframe_temp.columns[2:]]
-                columns = dframe_temp.columns()
-                columns = [re.sub("[^a-zA-Z0-9]", "", c) for c in columns]
-                dframe_temp.columns = columns
+            if binarize:
+                dframe_temp.loc[dframe_temp['<bug'] > 0, '<bug'] = 1
             data.append(dframe_temp)
     except:
         dframe_temp = read_csv(lst)
-        if reshape:
-            dframe_temp = dframe_temp[dframe_temp.columns[2:]]
-            columns = dframe_temp.columns
-            columns = [re.sub("[^a-zA-Z0-9]", "", c) for c in columns]
-            dframe_temp.columns = columns
+        if binarize:
+            dframe_temp.loc[dframe_temp['<bug'] > 0, '<bug'] = 1
         return dframe_temp
 
     return concat(data, ignore_index=True)

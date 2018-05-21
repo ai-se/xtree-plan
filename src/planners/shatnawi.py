@@ -50,7 +50,6 @@ def shatnawi(train, test):
     """
     "Compute Thresholds"
 
-
     if isinstance(test, list):
         test = list2dataframe(test)
 
@@ -60,7 +59,7 @@ def shatnawi(train, test):
     if isinstance(train, list):
         train = list2dataframe(train)
 
-    changed =[]
+    changed = []
     metrics = [str[1:] for str in train[train.columns[:-1]]]
     ubr = LogisticRegression()  # Init LogisticRegressor
     X = train[
@@ -80,8 +79,6 @@ def shatnawi(train, test):
         if P_Val < 0.05:
             changes[idx] = thresh
 
-    # set_trace()
-
     """
     Apply Plans Sequentially
     """
@@ -92,9 +89,7 @@ def shatnawi(train, test):
             new_row = apply2(changes, test.iloc[n].values.tolist())
             modified.append(new_row)
 
-        # Disable the next two line if you're measuring the number of changes.
         else:
-            if rand() > 0.7:
-                modified.append(test.iloc[n].tolist())
+            modified.append(test.iloc[n].tolist())
 
     return pd.DataFrame(modified, columns=test.columns)

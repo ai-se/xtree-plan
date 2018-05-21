@@ -81,7 +81,7 @@ class Patches:
         leaves = flatten([i.leaves(_k) for _k in node.kids])
         try:
             if i.config:
-                best = sorted([l for l in leaves if l.score <= 0.5 * current.score],
+                best = sorted([l for l in leaves if l.score <= 0.9 * current.score],
                               key=lambda F: i.howfar(current, F))[0]
             else:
                 best = \
