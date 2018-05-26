@@ -57,12 +57,12 @@ def plot_bar(dframe_inc, dframe_dec, save_path=os.path.join(root, "results"), y_
     #  We change the fontsize of minor ticks label
     plt.tick_params(axis='both', which='major', labelsize=20)
 
-    bar_width = 0.1
-    group_sep = 0.025
+    bar_width = 0.3
+    group_sep = 0.1
 
     opacity = 0.7
 
-    index = np.arange(len(dframe_dec['Overlap']))
+    index = np.arange(len(dframe_dec['XTREE']))
 
     plt.bar(index, dframe_dec["XTREE"], bar_width,
             color='#9D1C29', label='XTREE (Decreased)')
@@ -71,23 +71,23 @@ def plot_bar(dframe_inc, dframe_dec, save_path=os.path.join(root, "results"), y_
             label='XTREE (Increased)')
 
 
-    plt.bar(index+2*bar_width+group_sep, dframe_dec["Alves"], bar_width,
-            color='#37002F', label='Alves (Decreased)')
-    plt.bar(index+3*bar_width+group_sep, dframe_inc["XTREE"], bar_width,
-            color='#53174B', alpha=opacity,
-            label='Alves (Increased)')
+#     plt.bar(index+2*bar_width+group_sep, dframe_dec["Alves"], bar_width,
+#             color='#37002F', label='Alves (Decreased)')
+#     plt.bar(index+3*bar_width+group_sep, dframe_inc["XTREE"], bar_width,
+#             color='#53174B', alpha=opacity,
+#             label='Alves (Increased)')
 
-    plt.bar(index+4*bar_width+2*group_sep, dframe_dec["Shatnawi"], bar_width,
-            color='#0E2743', label='Shatw (Decreased)')
-    plt.bar(index+5*bar_width+2*group_sep, dframe_inc["Shatnawi"], bar_width,
-            color='#12355B', alpha=opacity,
-            label='Shatw (Increased)')
+#     plt.bar(index+4*bar_width+2*group_sep, dframe_dec["Shatnawi"], bar_width,
+#             color='#238443', label='Shatw (Decreased)')
+#     plt.bar(index+5*bar_width+2*group_sep, dframe_inc["Shatnawi"], bar_width,
+#             color='#238443', alpha=opacity,
+#             label='Shatw (Increased)')
 
-    plt.bar(index+6*bar_width+3*group_sep, dframe_dec["Oliveira"], bar_width,
-            color='#E8500A', label='Olive (Decreased)')
-    plt.bar(index+7*bar_width+3*group_sep, dframe_inc["Oliveira"], bar_width,
-            color='#FF7536', alpha=opacity,
-            label='Oliveria (Increased)')
+#     plt.bar(index+6*bar_width+3*group_sep, dframe_dec["Oliveira"], bar_width,
+#             color='#E8500A', label='Olive (Decreased)')
+#     plt.bar(index+7*bar_width+3*group_sep, dframe_inc["Oliveira"], bar_width,
+#             color='#FF7536', alpha=opacity,
+#             label='Oliveria (Increased)')
 
     #  Set title, axes labels
     plt.title(title, size=20)

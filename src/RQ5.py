@@ -22,12 +22,13 @@ from planners.shatnawi import shatnawi
 from planners.oliveira import oliveira
 from data.get_data import get_all_projects
 from utils.file_util import list2dataframe
-from utils.plot_util import plot_compare
+from utils.plot_util import plot_compare, plot_bar
 
 
 import warnings
 warnings.filterwarnings("ignore")
 
+OVERLAP_RANGE = range(25, 101, 25)
 
 def effectiveness(dframe, thresh):
     overlap = dframe['Overlap']
@@ -102,14 +103,14 @@ def measure_overlap(test, new, validation):
     results['Overlap'] = overlap
     results['Heeded'] = improve_heeded
 
-    return [effectiveness(results, thresh=t) for t in xrange(10, 100, 10)]
+    return [effectiveness(results, thresh=t) for t in OVERLAP_RANGE]
 
 
 def reshape_to_plot(res_xtree, res_alves, res_shatw, res_olive):
     bugs_increased = []
     bugs_decreased = []
 
-    for thresh, every_res_xtree, every_res_alves, every_res_shatw, every_res_olive in zip(range(10, 100, 10), res_xtree, res_alves, res_shatw, res_olive):
+    for thresh, every_res_xtree, every_res_alves, every_res_shatw, every_res_olive in zip(OVERLAP_RANGE, res_xtree, res_alves, res_shatw, res_olive):
 
         bugs_decreased.append(
             [thresh, every_res_xtree[0], every_res_alves[0], every_res_shatw[0], every_res_olive[0]])
@@ -155,10 +156,9 @@ def planning():
             res_dec, res_inc = reshape_to_plot(res_xtree, res_alves, res_shatw, res_olive)
 
 
-            plot_compare(res_dec, save_path=os.path.join(
-                root, "results", "RQ5", proj), title="{} v{}".format(proj, i), y_lbl="Defects Reduced", postfix="decreased")
-            plot_compare(res_inc, save_path=os.path.join(
-                root, "results", "RQ5", proj), title="{} v{}".format(proj, i), y_lbl="Defects Increased", postfix="increased")
+            # plot_compare(res_dec, save_path=os.path.join(
+            #     root, "results", "RQ5", proj), title="{} v{}".format(proj, i), y_lbl="Defects Reduced", postfix="decreased")
+            plot_bar(res_inc, res_dec, save_path=os.path.join(root, "results", "RQ5", proj), title="{} v{}".format(proj, i), y_lbl="Defects", postfix="")
             
     set_trace()
 
