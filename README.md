@@ -3,7 +3,9 @@
 
 ## Submission 
 
-Submitted to [IEEE Transactions on Software Engineering (TSE) 2018](https://www.computer.org/web/tse). ARXIV Link: https://arxiv.org/abs/1708.05442v2
+Submitted to [IEEE Transactions on Software Engineering (TSE) 2018](https://www.computer.org/web/tse). 
+
+ARXIV Link: https://arxiv.org/abs/1708.05442v2
 
 ## Cite As
 
