@@ -1,0 +1,86 @@
+% \begin{figure*}[!t]
+% 	\arrayrulecolor{lightgray}
+% 	\centering
+% 	\resizebox{\linewidth}{!}{%
+% 		\begin{tabular}{r|l|l}
+% 			wmc & weighted methods per class & \\\hline
+% 			dit & depth of inheritance tree & \\\hline
+% 			noc &  number of children & \\\hline
+% 			cbo & coupling between objects & increased when the methods of one
+% 			class access services of another. \\\hline
+% 			rfc & response for a class &number of  methods invoked in response to
+% 			a message to the object. \\\hline
+% 			lcom & lack of cohesion in methods &number of pairs of methods that do
+% 			not share a reference to an instance variable. \\\hline
+% 			ca & afferent couplings & how many other classes use the specific
+% 			class.  \\\hline
+% 			ce & efferent couplings & how many other classes is used by the
+% 			specific class.  \\\hline
+% 			npm & number of public methods &  \\\hline
+% 			locm3 & another lack of cohesion measure & if $m,a$ are  the number of
+% 			$methods,attributes$
+% 			in a class number and $\mu(a)$  is the number of methods accessing an
+% 			attribute, 
+% 			then
+% 			$lcom3=((\frac{1}{a} \sum_j^a \mu(a_j)) - m)/ (1-m)$.
+% 			\\\hline
+% 			loc & lines of code & \\\hline
+% 			dam & data access & ratio of  private (protected)
+% 			attributes to   total   attributes \\\hline
+% 			moa &  aggregation &  count of the number of data declarations (class
+% 			fields) whose types are user defined classes \\\hline
+% 			mfa & functional abstraction & number of methods inherited by a class
+% 			plus number of methods accessible by member methods of the
+% 			class \\\hline
+% 			cam & cohesion amongst classes & summation of number of different
+% 			types of method parameters in every method divided by a multiplication
+% 			of number of different method parameter types in whole class and
+% 			number of methods.  \\\hline
+% 			ic & inheritance coupling &  number of parent classes to which a given
+% 			class is coupled (includes counts of methods and variables inherited)
+% 			\\\hline
+% 			cbm &coupling between methods &  total number of new/redefined methods
+% 			to which all the inherited methods are coupled \\\hline
+% 			amc & average method complexity & e.g. number of JAVA byte codes \\\hline
+% 			max\_cc & maximum McCabe & maximum McCabe's cyclomatic complexity seen
+% 			in class \\\hline
+% 			avg\_cc & average McCabe & average McCabe's cyclomatic complexity seen
+% 			in class \\\hline
+% 			\rowcolor{lightgray}
+% 			defect & defect & Boolean: where defects found in post-release bug-tracking systems.
+% 		\end{tabular}
+% 	} 
+% 	\caption{Sample static code attributes.}\label{fig:static_metrics}
+% \end{figure*}
+
+\begin{figure}
+	\renewcommand{\baselinestretch}{0.7}\begin{center}
+		\resizebox{0.8\linewidth}{!}{
+			\begin{tabular}{c|l}
+				amc & average method complexity \\\hline
+				avg\, cc & average McCabe \\\hline
+				ca & afferent couplings \\\hline
+				cam & cohesion amongst classes \\\hline
+				cbm & coupling between methods \\\hline
+				cbo & coupling between objects \\\hline
+				ce & efferent couplings \\\hline
+				dam & data access\\\hline
+				dit & depth of inheritance tree\\\hline
+				ic & inheritance coupling\\\hline
+				lcom (lcom3) & 2 measures of lack of cohesion in methods \\\hline
+				loc & lines of code \\\hline
+				max\, cc & maximum McCabe\\\hline
+				mfa & functional abstraction\\\hline
+				moa &  aggregation\\\hline
+				noc &  number of children\\\hline
+				npm & number of public methods\\\hline
+				rfc & response for a class\\\hline
+				wmc & weighted methods per class\\\hline
+				\rowcolor{lightgray}
+				\#defects & raw defect counts\\
+			\end{tabular}
+		}
+	\end{center}
+	\caption{OO code metrics used for all studies in this paper.
+	   Last line, shown in \colorbox{lightgray}{gray}, denotes the dependent variable. For more details, see~\cite{krishna17a}.}\label{fig:static_metrics}
+\end{figure}

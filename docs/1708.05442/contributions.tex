@@ -1,0 +1,18 @@
+\begin{figure}[!b]
+\centering
+\resizebox{0.9\linewidth}{!}{
+\begin{tabular}{clcccl}
+\multicolumn{1}{l}{}                       &                                                  & \multicolumn{3}{c}{Data source}                                                                                                       &  \bigstrut\\ \cline{3-5}
+\multicolumn{1}{l}{}                       & \multicolumn{1}{l|}{}                            & \multicolumn{1}{c|}{Within}                   & \multicolumn{2}{c|}{Cross}                                                     &  \bigstrut\\ \cline{1-5}
+\multicolumn{1}{|c|}{\multirow{5}{*}{Task}} & \multicolumn{1}{l|}{\multirow{3}{*}{Prediction}} & \multicolumn{1}{c|}{\multirow{3}{*}{TSE '07~\cite{menzies07}}} & \multicolumn{1}{l|}{EMSE '09~\cite{turhan09}}  & \multicolumn{1}{c|}{\multirow{3}{*}{TSE '17~\cite{fu18}}} &  \bigstrut\\
+\multicolumn{1}{|c|}{}                      & \multicolumn{1}{l|}{}                            & \multicolumn{1}{c|}{}                         & \multicolumn{1}{l|}{ASE '16~\cite{krishna16}}   & \multicolumn{1}{c|}{}                         &  \bigstrut\\
+\multicolumn{1}{|c|}{}                      & \multicolumn{1}{l|}{}                            & \multicolumn{1}{c|}{}                         & \multicolumn{1}{l|}{TSE '18~\cite{krishna17b}}   & \multicolumn{1}{c|}{}                         &  \bigstrut\\ \cline{2-5}
+\multicolumn{1}{|c|}{}                      & \multicolumn{1}{l|}{Planning}                    & \multicolumn{1}{c|}{IST '17~\cite{krishna17a}}                  &  { \cellcolor{lightgray}This work}    &
+\multicolumn{1}{l|}{Future work} &  \bigstrut\\ \cline{1-5}
+\multicolumn{1}{l}{}                       & \multicolumn{1}{l|}{}                            & \multicolumn{2}{c|}{Homogeneous}                                               & \multicolumn{1}{c|}{Heterogeneous}            &  \bigstrut\\ \cline{3-5}
+\end{tabular}}
+ \caption{Relationship of this paper to our prior research. 
+%Within project trained and tested data miners using data from the same project. Cross projects train on one project, then test on another. Homogeneous learning requires the attribute names to be identical in the training and test set. Heterogeneous learning relaxes that requirement; i.e. the attribute names might change from the training to the test set.
+}
+\label{fig:analytics}
+ \end{figure}
