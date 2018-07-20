@@ -1,5 +1,6 @@
 # BEETLE: **BELL**WETHER + **XTREE**
 <img width="200" alt="portfolio_view" src="https://s3.amazonaws.com/images.static.steveweissmusic.com/products/images/uploads/popup/SW-450.jpg">
+
 ## Submission 
 
 Submitted to [IEEE Transactions on Software Engineering (TSE) 2018](https://www.computer.org/web/tse). ARXIV Link: https://arxiv.org/abs/1708.05442v2
