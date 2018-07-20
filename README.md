@@ -21,13 +21,11 @@ Eprint = {arXiv:1708.05442v2},
 
 + Rahul Krishna
   + North Carolina State University, USA
-  + vivekaxl@gmail.com
+  + rkrish11@ncsu.edu  
   + i.m.ralk@gmail.com
-  + tim.menzies@gmail.com
 + Tim Menzies
   + North Carolina State University, USA
-  + vivekaxl@gmail.com
-  + i.m.ralk@gmail.com
+  + tim@ieee.org  
   + tim.menzies@gmail.com
 
 ## Data
