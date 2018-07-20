@@ -31,7 +31,7 @@
 *.log
 
 # PYC files
-*.pyc 
+*.pyc
 
 # Error and Output directories
 err/
@@ -48,3 +48,6 @@ Backup[ ]of[ ]*.numbers/
 # Mac finder files and hidden folders
 .DS_Store
 
+# Idea
+.idea
+.idea/*
