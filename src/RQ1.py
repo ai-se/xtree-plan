@@ -1,5 +1,5 @@
 """
-Compare Bellwether XTREEs with other threshold based learners.
+Compare actual changes implemented vs. changes recommended by the bellwethers
 """
 
 from __future__ import print_function, division
@@ -29,34 +29,13 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def effectiveness(dframe, thresh):
-    overlap = dframe['Overlap']
-    heeded = dframe['Heeded']
-
-    a, b, c, d = 0, 0, 0, 0
-
-    for over, heed in zip(overlap, heeded):
-        if 0 < over <= thresh and heed >= 0:
-            a += 1
-        if 0 < over <= thresh and heed < 0:
-            b += 1
-        if over == 0 and heed < 0:
-            c += 1
-        if over == 0 and heed >= 0:
-            d += 1
-
-    return a, b, c, d
-
-
-def measure_overlap(test, new, validation):
-    results = pd.DataFrame()
-
+def measure_overlap(new, validation):
+    
     "Find modules that appear both in test and validation datasets"
     common_modules = pd.merge(
-        test, validation, how='inner', on=['Name'])['Name']
+        new, validation, how='inner', on=['Name'])['Name']
 
     "Intitialize variables to hold information"
-    improve_heeded = []
     overlap = []
 
     for module_name in common_modules:
@@ -91,15 +70,10 @@ def measure_overlap(test, new, validation):
 
         # There are 20 metrics, so, find % of overlap for the class.
         overlap.append(int(same / 20 * 100))
-        heeded = test_value['<bug'].values[0] - \
-            validate_value['<bug'].values[0]  # Find the change in the number of bugs between the test version and the validation version for that class.
-
-        improve_heeded.append(heeded)
-
+        
     "Save the results ... "
 
     results['Overlap'] = overlap
-    results['Heeded'] = improve_heeded
 
     return [effectiveness(results, thresh=t) for t in xrange(10, 100, 10)]
 

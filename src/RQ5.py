@@ -2,6 +2,7 @@
 Compare Bellwether XTREEs with other threshold based learners.
 """
 
+
 from __future__ import print_function, division
 
 import os
@@ -23,12 +24,17 @@ from planners.oliveira import oliveira
 from data.get_data import get_all_projects
 from utils.file_util import list2dataframe
 from utils.plot_util import plot_compare, plot_bar
-
-
+from utils.stats_utils.auec import compute_auec
+from utils.stats_utils.ScottKnott import sk_chart
+import random
 import warnings
+
 warnings.filterwarnings("ignore")
 
+TAXI_CAB = 1729
 OVERLAP_RANGE = range(25, 101, 25)
+random.seed(TAXI_CAB)
+
 
 def effectiveness(dframe, thresh):
     overlap = dframe['Overlap']
@@ -75,7 +81,8 @@ def measure_overlap(test, new, validation):
             try:
                 if isinstance(plan_value[col].values[0], str):
                     "If the change recommended by XTREE lie's in a range of values"
-                    if eval(plan_value[col].values[0])[0] <= validate_value[col].values[0] <= eval(plan_value[col].values[0])[1]:
+                    if eval(plan_value[col].values[0])[0] <= validate_value[col].values[0] <= \
+                            eval(plan_value[col].values[0])[1]:
                         "If the actual change lies withing the recommended change, then increment the count of heeded values by 1"
                         same += 1
                 if isinstance(plan_value[col].values[0], tuple):
@@ -84,8 +91,8 @@ def measure_overlap(test, new, validation):
                         "If the actual change lies withing the recommended change, then increment the count of heeded values by 1"
                         same += 1
                 elif plan_value[col].values[0] == validate_value[col].values[0]:
-                        "If the XTREE recommends no change and developers didn't change anything, that also counts as an overlap"
-                        same += 1
+                    "If the XTREE recommends no change and developers didn't change anything, that also counts as an overlap"
+                    same += 1
 
             except IndexError:
                 "Catch instances where classes don't match"
@@ -94,7 +101,8 @@ def measure_overlap(test, new, validation):
         # There are 20 metrics, so, find % of overlap for the class.
         overlap.append(int(same / 20 * 100))
         heeded = test_value['<bug'].values[0] - \
-            validate_value['<bug'].values[0]  # Find the change in the number of bugs between the test version and the validation version for that class.
+            validate_value['<bug'].values[
+            0]  # Find the change in the number of bugs between the test version and the validation version for that class.
 
         improve_heeded.append(heeded)
 
@@ -110,57 +118,75 @@ def reshape_to_plot(res_xtree, res_alves, res_shatw, res_olive):
     bugs_increased = []
     bugs_decreased = []
 
-    for thresh, every_res_xtree, every_res_alves, every_res_shatw, every_res_olive in zip(OVERLAP_RANGE, res_xtree, res_alves, res_shatw, res_olive):
-
+    for thresh, every_res_xtree, every_res_alves, every_res_shatw, every_res_olive in zip(OVERLAP_RANGE, res_xtree,
+                                                                                          res_alves, res_shatw,
+                                                                                          res_olive):
         bugs_decreased.append(
             [thresh, every_res_xtree[0], every_res_alves[0], every_res_shatw[0], every_res_olive[0]])
 
         bugs_increased.append(
             [thresh, every_res_xtree[1], every_res_alves[1], every_res_shatw[1], every_res_olive[1]])
-    
+
     bugs_decreased = pd.DataFrame(bugs_decreased)
     bugs_increased = pd.DataFrame(bugs_increased)
-    bugs_decreased.columns = ["Overlap", "XTREE", "Alves", "Shatnawi", "Oliveira"]
-    bugs_increased.columns = ["Overlap", "XTREE", "Alves", "Shatnawi", "Oliveira"]
-    
+    bugs_decreased.columns = ["Overlap",
+                              "XTREE", "Alves", "Shatnawi", "Oliveira"]
+    bugs_increased.columns = ["Overlap",
+                              "XTREE", "Alves", "Shatnawi", "Oliveira"]
+
     return bugs_decreased, bugs_increased
 
 
-def planning():
+def planning(n_reps=1, verbose=True):
     data = get_all_projects()
+
+    "Extract the bellwether"
     bellw = data.pop('lucene').data
+
+    if verbose:
+        print("Dataset, Within-project, Cross-project")
+
     for proj, paths in data.iteritems():
         i = 0
-        all_results = dict()
-        for test, validation in zip(paths.data[0:-1], paths.data[1:]):
+
+        for test, validation in zip(paths.data[:-1], paths.data[1:]):
             i += 1
-            bugs_increased = []
-            bugs_decreased = []
 
             "Convert to pandas type dataframe"
-            train = list2dataframe(bellw)
+            bell_ = list2dataframe(bellw)
             test = list2dataframe(test)
             validation = list2dataframe(validation)
 
             "Recommend changes with XTREE"
-            patched_xtree = xtree(train[train.columns[1:]], test)
-            patched_alves = alves(train[train.columns[1:]], test)
-            patched_shatw = shatnawi(train[train.columns[1:]], test)
-            patched_olive = oliveira(train[train.columns[1:]], test)
-            
+            patched_alves = alves(bell_[bell_.columns[1:]], test)
+            patched_shatw = shatnawi(bell_[bell_.columns[1:]], test)
+            patched_olive = oliveira(bell_[bell_.columns[1:]], test)
+            patched_xtree = xtree(bell_[bell_.columns[1:]], test)
+
             res_xtree = measure_overlap(test, patched_xtree, validation)
             res_alves = measure_overlap(test, patched_alves, validation)
             res_shatw = measure_overlap(test, patched_shatw, validation)
             res_olive = measure_overlap(test, patched_olive, validation)
 
-            res_dec, res_inc = reshape_to_plot(res_xtree, res_alves, res_shatw, res_olive)
+            res_dec, res_inc = reshape_to_plot(
+                res_xtree, res_alves, res_shatw, res_olive)
 
-
-            # plot_compare(res_dec, save_path=os.path.join(
-            #     root, "results", "RQ5", proj), title="{} v{}".format(proj, i), y_lbl="Defects Reduced", postfix="decreased")
-            plot_bar(res_inc, res_dec, save_path=os.path.join(root, "results", "RQ5", proj), title="{} v{}".format(proj, i), y_lbl="Defects", postfix="")
+            y_max = max(res_dec.max(axis=0).values)
+            y_min = max(res_dec.min(axis=0).values)
             
-    set_trace()
+            "Decrease AUC"
+            xtree_dec_auc = compute_auec(res_dec[["Overlap", "XTREE"]], y_max, y_min)
+            alves_dec_auc = compute_auec(res_dec[["Overlap", "Alves"]], y_max, y_min)
+            shatw_dec_auc = compute_auec(res_dec[["Overlap", "Shatnawi"]], y_max, y_min)
+            olive_dec_auc = compute_auec(res_dec[["Overlap", "Oliveira"]], y_max, y_min)
+
+            if verbose:
+                print("{}-{},{},{},{},{}".format(proj, i, 
+                                                    xtree_dec_auc,
+                                                    alves_dec_auc, 
+                                                    shatw_dec_auc, 
+                                                    olive_dec_auc))
+
 
 
 if __name__ == "__main__":
