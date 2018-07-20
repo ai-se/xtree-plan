@@ -1,4 +1,4 @@
-# BEETLE: **BELL**WETHER + **XTREE**
+# BELLTREE: **BELL**WETHER + **XTREE**
 <img width="200" alt="portfolio_view" src="https://s3.amazonaws.com/images.static.steveweissmusic.com/products/images/uploads/popup/SW-450.jpg">
 
 ## Submission 
@@ -24,7 +24,7 @@ Eprint = {arXiv:1708.05442v2},
   + vivekaxl@gmail.com
   + i.m.ralk@gmail.com
   + tim.menzies@gmail.com
-+  Tim Menzies
++ Tim Menzies
   + North Carolina State University, USA
   + vivekaxl@gmail.com
   + i.m.ralk@gmail.com
