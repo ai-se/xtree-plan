@@ -34,7 +34,8 @@ def research_question_1_3(decrease=True, verbose=True, plot_results=True):
         Compute AUPEC for defects reduced.
     verbose: Bool
         Display results on the console
-    plot_results:
+    plot_results: Bool
+        Save barcharts of overlap vs. defects increased/decreased
     """
 
     data = get_all_projects()
