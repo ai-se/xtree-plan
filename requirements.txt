@@ -1,0 +1,5 @@
+pandas
+sklearn
+tabulate
+scipy
+numpy
