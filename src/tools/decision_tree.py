@@ -1,33 +1,26 @@
-"""
-XTREE
-"""
-import os
 import sys
-# Update path
-root = os.path.join(os.getcwd().split('src')[0], 'src')
-if root not in sys.path:
-    sys.path.append(root)
+from collections import Counter
+from pdb import set_trace
 
 import numpy as np
 import pandas as pd
-from pdb import set_trace
-from collections import Counter
 
-from tools.containers import Thing
-from sklearn.base import BaseEstimator
+from containers import Thing
+from misc import explore, csv2DF
 from tools.Discretize import discretize, fWeight
+from sklearn.base import BaseEstimator
 
-class XTREE(BaseEstimator):
+class DecisionTree(BaseEstimator):
     def __init__(self, opt=None):
-        self.min=1
-        self.klass=-1
-        self.prune=False
-        self.debug=True
+        self.min=1,
+        self.max_level=10,
+        self.infoPrune=0.5,
+        self.klass=-1,
+        self.prune=True,
+        self.debug=True,
         self.verbose=True
-        self.max_level=10
-        self.infoPrune=1
 
-    def _show(self, tree=None, lvl=-1):        
+    def show(self, tree=None, lvl=-1):        
         if tree is None:
             tree = self.tree
         if tree.f:
@@ -35,36 +28,23 @@ class XTREE(BaseEstimator):
         if tree.kids:
             print('')
             for k in tree.kids:
-                self._show(k, lvl + 1)
+                self.show(k, lvl + 1)
         else:
             print("")
 
-    def _nodes(self, tree, lvl=0):
+    def nodes(self, tree, lvl=0):
         if tree:
             yield tree, lvl
             for kid in tree.kids:
                 lvl1 = lvl
-                for sub, lvl1 in self._nodes(kid, lvl1 + 1):
+                for sub, lvl1 in self.nodes(kid, lvl1 + 1):
                     yield sub, lvl1
 
-    def _leaves(self, tree):
-        for node, _ in self._nodes(tree):
+    def leaves(self, tree):
+        for node, _ in self.nodes(tree):
             # print "K>", tree.kids[0].__dict__.keys()
             if not node.kids:
                 yield node
-
-    def _find(self,  test_instance, tree_node=None):
-        if tree_node is None:
-            tree_node = self.tree
-
-        if len(tree_node.kids) == 0:
-            return tree_node
-    
-        for kid in tree_node.kids:
-            if kid.val[0] <= test_instance[kid.f] < kid.val[1]:
-                return self._find(test_instance, kid)
-            elif kid.val[1] == test_instance[kid.f] == self.tree.t.describe()[kid.f]['max']:
-                return self._find(test_instance, kid)
 
     def _tree_builder(self, tbl, rows=None, lvl=-1, asIs=10 ** 32, up=None, klass=-1, branch=[],
             f=None, val=None, opt=None):
@@ -129,11 +109,5 @@ class XTREE(BaseEstimator):
         self.tree = self._tree_builder(raw_data)
         return self
 
-    def predict(self, Xt, yt):
-        new_df = pd.DataFrame(columns=Xt.columns)
-        for row_num in range(len(Xt)):
-            if yt.iloc[row_num]: 
-                old_row = Xt.iloc[row_num]
-                pos = self._find(old_row)
-                set_trace()
+    def predict(self, Xt):
         return self
