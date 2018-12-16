@@ -22,11 +22,9 @@ if root not in sys.path:
 
 from pdb import set_trace
 
-from utils.axe_utils import atom
-try:
-    from tools.axe import nasa93
-except ImportError:
-    set_trace()
+from tools.axe.demos import atom
+from tools.axe import nasa93
+
 
 from tools.axe.settingsWhere import *
 
@@ -53,7 +51,7 @@ def pairs(lst):
 def somepairs(m, data):
     reps = 1
     cmax = -10e32
-    for _ in xrange(reps):
+    for _ in range(reps):
         one = any(data)
         two = furthest(m, one, data)
         three = furthest(m, two, data)
@@ -544,7 +542,7 @@ def _where(m=nasa93):
          print(dist,id(near) % 1000,' ',end='')
         print("")
       print(n)
-    
+
       filter = lambda z: id(z) % 1000
       for node,_ in leaves(tree):
         print(filter(node),

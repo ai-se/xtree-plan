@@ -11,7 +11,7 @@ Dougherty, James, Ron Kohavi, and Mehran Sahami. "Supervised and unsupervised di
 """
 from __future__ import division, print_function
 
-from misc import *
+from .misc import *
 import numpy as np
 import pandas as pd
 from pdb import set_trace
@@ -74,7 +74,7 @@ def discretize(feature, klass, atleast=-1, discrete=False):
             E = measure(klass)
             N = len(klass)
             T = []  # Record boundaries of splits
-            for k in xrange(len(feature)):
+            for k in range(len(feature)):
                 west, east = feature[:k], feature[k:]
                 k_w, k_e = klass[:k], klass[k:]
                 N_w, N_e = len(west), len(east)
@@ -132,13 +132,13 @@ def discreteTbl(tbl, B=0.33, Prune=True):
     Discretize a table
     ``````````````````
     Columns 1 to N-1 represent the independent attributes, column N the dependent.
-  
+
     Parameters:
-  
+
     tbl   - A Pandas data.dat Frame
     B     - Cutoff for Pruning Columns (float between 0,1)
     Prune - Prune (True/False)
-  
+
     Returns:
     Pandas data.dat Frame: Discretized table
     """

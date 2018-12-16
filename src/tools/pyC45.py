@@ -17,9 +17,9 @@ from pdb import set_trace
 import numpy as np
 import pandas as pd
 
-from containers import Thing
-from misc import explore, csv2DF
-from tools.Discretize import discretize, fWeight
+from .containers import Thing
+from .misc import explore, csv2DF
+from .Discretize import discretize, fWeight
 
 
 def dtree(tbl, rows=None, lvl=-1, asIs=10 ** 32, up=None, klass=-1, branch=[],

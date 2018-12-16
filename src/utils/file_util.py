@@ -11,8 +11,8 @@ if root not in sys.path:
 from pdb import set_trace
 from pandas import read_csv, concat
 from pandas.io.common import EmptyDataError
-from axe_utils.w2 import where2, prepare, leaves
-from axe_utils.MakeAModel import MakeAModel
+from .axe_utils.w2 import where2, prepare, leaves
+from .axe_utils.MakeAModel import MakeAModel
 
 
 def new_table(tbl, headerLabel, Rows):

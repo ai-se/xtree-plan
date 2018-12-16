@@ -8,7 +8,7 @@ Standard header:
 from __future__ import division,print_function
 import  sys
 sys.dont_write_bytecode = True
-from lib import *
+from .lib import *
 """
 
 data.dat:
@@ -16,11 +16,11 @@ data.dat:
 """
 def nasa93():
   vl=1;l=2;n=3;h=4;vh=5;xh=6
-  return data(indep= [ 
+  return data(indep= [
      # 0..8
      'Prec', 'Flex', 'Resl', 'Team', 'Pmat', 'rely', 'data.dat', 'cplx', 'ruse',
      # 9 .. 17
-     'docu', 'time', 'stor', 'pvol', 'acap', 'pcap', 'pcon', 'aexp', 'plex',  
+     'docu', 'time', 'stor', 'pvol', 'acap', 'pcap', 'pcon', 'aexp', 'plex',
      # 18 .. 25
      'ltex', 'tool', 'site', 'sced', 'kloc'],
     less = ['effort', 'defects', 'months'],
@@ -127,4 +127,3 @@ Demo code:
 def _nasa93(): print(nasa93.__name__)
 #_nasa93()
 #if __name__ == '__main__': eval(todo('_nasa93()'))
-

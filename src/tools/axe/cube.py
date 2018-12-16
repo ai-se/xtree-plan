@@ -92,7 +92,7 @@ def loo(tbl1,some=None):
   rows = map(lambda x :x.cells,tbl1._rows)
   if some:
     rows = shuffle(rows)[:some]
-  for n in xrange(len(rows)):
+  for n in range(len(rows)):
     tbl2=clone(tbl1, rows[:n] + rows[n+1:])
     yield Row(rows[n]),tbl2
 

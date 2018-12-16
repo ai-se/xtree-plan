@@ -20,7 +20,7 @@ from utils.misc_utils import flatten
 from utils.experiment_utils import Changes
 from utils.file_util import list2dataframe
 from random import uniform, random as rand
-
+from data.get_data import get_all_projects
 
 class Patches:
     def __init__(i, train, test, trainDF, testDF, tree=None, config=False):
@@ -113,7 +113,7 @@ class Patches:
 
     def main(i):
         newRows = []
-        for n in xrange(i.testDF.shape[0]):
+        for n in range(i.testDF.shape[0]):
             if i.testDF.iloc[n][-1] > 0 or i.testDF.iloc[n][-1] == True:
                 newRows.append(i.patchIt(i.testDF.iloc[n]))
             else:
@@ -128,12 +128,14 @@ def xtree(train_df, test_df):
         train_df = list2dataframe(train_df)  # create a pandas dataframe of training data.dat
     if isinstance(test_df, list):
         test_df = list2dataframe(test_df)  # create a pandas dataframe of testing data.dat
-    if isinstance(test_df, basestring):
+    if isinstance(test_df, str):
         test_df = list2dataframe([test_df])  # create a pandas dataframe of testing data.dat
 
     # train_df = SMOTE(train_df, atleast=1000, atmost=1001)
 
     tree = pyC45.dtree(train_df)  # Create a decision tree
+
+    set_trace()
 
     patch = Patches(train=None, test=None, trainDF=train_df, testDF=test_df,
                     tree=tree)
@@ -144,4 +146,10 @@ def xtree(train_df, test_df):
 
 
 if __name__ == '__main__':
-    pass
+    projects = get_all_projects()
+    ant = projects['ant']
+    test_df = pd.read_csv(ant.data[-1])
+    train_df = pd.concat([pd.read_csv(version) for version in ant.data[:-1]])
+    train_df.loc[train_df[train_df.columns[-1]] > 0, train_df.columns[-1]] = 1
+    train_df = train_df[train_df.columns[1:]] 
+    xtree(train_df, test_df)

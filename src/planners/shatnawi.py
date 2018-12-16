@@ -74,7 +74,7 @@ def shatnawi(train, test):
 
     "Find Thresholds using VARL"
     for Coeff, P_Val, idx in zip(coef, pVal,
-                                 range(len(metrics))):  # xrange(len(metrics)):
+                                 range(len(metrics))):  # range(len(metrics)):
         thresh = VARL(Coeff, inter, p0=0.005)  # VARL p0=0.05 (95% CI)
         if P_Val < 0.05:
             changes[idx] = thresh
@@ -84,7 +84,7 @@ def shatnawi(train, test):
     """
 
     modified = []
-    for n in xrange(test.shape[0]):
+    for n in range(test.shape[0]):
         if test.iloc[n][-1] > 0 or test.iloc[n][-1] == True:
             new_row = apply2(changes, test.iloc[n].values.tolist())
             modified.append(new_row)

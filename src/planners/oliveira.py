@@ -121,7 +121,7 @@ def oliveira(train, test):
     """
 
     modified = []
-    for n in xrange(test.shape[0]):
+    for n in range(test.shape[0]):
         if test.iloc[n][-1] > 0 or test.iloc[n][-1] == True:
             new_row = apply3(test.iloc[n].values.tolist(), test.columns, pk_best)
             modified.append(new_row)

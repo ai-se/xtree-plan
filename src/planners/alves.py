@@ -82,7 +82,7 @@ def alves(train, test):
         for idx, val in enumerate(array):
             if val > 0.95: return idx
 
-    for idx in xrange(len(train.columns[:-1])):
+    for idx in range(len(train.columns[:-1])):
         # Setup Cumulative Dist. Func.
         name = train.columns[idx]
         loc = train[loc_key].values
@@ -98,7 +98,7 @@ def alves(train, test):
     """
 
     modified = []
-    for n in xrange(test.shape[0]):
+    for n in range(test.shape[0]):
         if test.iloc[n][-1] > 0 or test.iloc[n][-1] is True:
             new_row = apply2(cutoff, test.iloc[n].values.tolist())
             modified.append(new_row)

@@ -36,8 +36,8 @@ class rf:
 
   def generate(i,n):
     return [[uniform(i.dec_lim[indx][0]
-                     , i.dec_lim[indx][1]) for indx in xrange(i.n_dec)
-             ] for _ in xrange(n)]
+                     , i.dec_lim[indx][1]) for indx in range(i.n_dec)
+             ] for _ in range(n)]
 
   def solve(i,dec):
     # t=time()

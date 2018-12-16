@@ -47,11 +47,11 @@ def SMOTE(data=None, atleast=50, atmost=100, a=None,b=None, k=5, resample=False)
     newData = [dd.tolist() for dd in data]
     if atleast-len(newData)<0:
       try:
-        return [choice(newData) for _ in xrange(atleast)]
+        return [choice(newData) for _ in range(atleast)]
       except:
         set_trace()
     else:
-      for _ in xrange(atleast-len(newData)):
+      for _ in range(atleast-len(newData)):
         one = choice(data)
         neigh = knn(one, data)[1:k + 1]
         try:
@@ -63,7 +63,7 @@ def SMOTE(data=None, atleast=50, atmost=100, a=None,b=None, k=5, resample=False)
 
   def populate2(data1, data2):
     newData = []
-    for _ in xrange(atleast):
+    for _ in range(atleast):
       for one in data1:
         neigh = kfn(one, data)[1:k + 1]
         try:
@@ -71,17 +71,17 @@ def SMOTE(data=None, atleast=50, atmost=100, a=None,b=None, k=5, resample=False)
         except IndexError:
           two = one
         newData.append(extrapolate(one, two))
-    return [choice(newData) for _ in xrange(atleast)]
+    return [choice(newData) for _ in range(atleast)]
 
   def depopulate(data):
     # if resample:
     #   newer = []
-    #   for _ in xrange(atmost):
+    #   for _ in range(atmost):
     #     orig = choice(data.dat)
     #     newer.append(extrapolate(orig, knn(orig, data.dat)[1]))
     #   return newer
     # else:
-      return [choice(data).tolist() for _ in xrange(atmost)]
+      return [choice(data).tolist() for _ in range(atmost)]
 
   newCells = []
   # rseed(1)
