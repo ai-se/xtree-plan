@@ -1,5 +1,5 @@
 """
-XTREE
+X_testREE
 """
 import os
 import sys
@@ -16,6 +16,7 @@ from collections import Counter
 from tools.containers import Thing
 from sklearn.base import BaseEstimator
 from tools.Discretize import discretize, fWeight
+from frequent_items.item_sets import ItemSetLearner
 
 class XTREE(BaseEstimator):
     def __init__(self, opt=None):
@@ -24,18 +25,49 @@ class XTREE(BaseEstimator):
         self.prune=False
         self.debug=True
         self.verbose=True
-        self.max_level=10
+        self.max_levels=10
         self.infoPrune=1
+        self.alpha = 0.66
 
-    def _show(self, tree=None, lvl=-1):        
+    @staticmethod
+    def _entropy(x):
+            counts = Counter(x)
+            N = len(x)
+            return sum([-counts[n] / N * np.log(counts[n] / N) for n in counts.keys()])
+
+    @staticmethod
+    def pairs(lst):
+        while len(lst) > 1:
+            yield (lst.pop(0), lst[0])
+
+    @staticmethod
+    def best_plans(better_nodes, item_sets):
+        max_intersection = float("-inf")
+
+        def jaccard_similarity_score(set1, set2):
+            intersect_length = len(set1.intersection(set2))
+            set1_length = len(set1)
+            set2_length = len(set2)
+            return intersect_length / (set1_length + set2_length - intersect_length) 
+
+        for node in better_nodes:
+            change_set = set([bb[0] for bb in node.branch])
+            for item_set in item_sets:
+                jaccard_index = jaccard_similarity_score(item_set, change_set)
+                if 0 < jaccard_index >= max_intersection:
+                    best_path = (node, jaccard_index)
+                    max_intersection = jaccard_index
+        return best_path
+
+    def pretty_print(self, tree=None, lvl=-1):        
         if tree is None:
             tree = self.tree
         if tree.f:
-            print(('|..' * lvl) + str(tree.f) + "=" + "(%0.2f, %0.2f)" % tree.val + "\t:" + "%0.2f" % (tree.score), end="")
+            print(('|...' * lvl) + str(tree.f) + "=" + "(%0.2f, %0.2f)" % tree.val + "\t:" + "%0.2f" % (tree.score), end="")
         if tree.kids:
             print('')
             for k in tree.kids:
-                self._show(k, lvl + 1)
+                self.pretty_print(k, lvl + 1)
         else:
             print("")
 
@@ -47,10 +79,9 @@ class XTREE(BaseEstimator):
                 for sub, lvl1 in self._nodes(kid, lvl1 + 1):
                     yield sub, lvl1
 
-    def _leaves(self, tree):
-        for node, _ in self._nodes(tree):
-            # print "K>", tree.kids[0].__dict__.keys()
-            if not node.kids:
+    def _leaves(self, thresh=float("inf")):
+        for node, _ in self._nodes(self.tree): 
+            if not node.kids and node.score < thresh:
                 yield node
 
     def _find(self,  test_instance, tree_node=None):
@@ -66,38 +97,34 @@ class XTREE(BaseEstimator):
             elif kid.val[1] == test_instance[kid.f] == self.tree.t.describe()[kid.f]['max']:
                 return self._find(test_instance, kid)
 
-    def _tree_builder(self, tbl, rows=None, lvl=-1, asIs=10 ** 32, up=None, klass=-1, branch=[],
+    def _tree_builder(self, dframe, rows=None, lvl=-1, as_is=float("inf"), up=None, klass=-1, branch=[],
             f=None, val=None, opt=None):
         
-        here = Thing(t=tbl, kids=[], f=f, val=val, up=up, lvl=lvl
-                    , rows=rows, modes={}, branch=branch)
+        current = Thing(t=dframe, kids=[], f=f, val=val, up=up, lvl=lvl, rows=rows, modes={}, branch=branch)
 
-        features = fWeight(tbl)
+        features = fWeight(dframe)
 
         if self.prune and lvl < 0:
-            features = fWeight(tbl)[:int(len(features) * self.infoPrune)]
+            features = fWeight(dframe)[:int(len(features) * self.infoPrune)]
 
         name = features.pop(0)
-        remaining = tbl[features + [tbl.columns[self.klass]]]
-        feature = tbl[name].values
-        klass = tbl[tbl.columns[self.klass]].values
+        remaining = dframe[features + [dframe.columns[self.klass]]]
+        feature = dframe[name].values
+        klass = dframe[dframe.columns[self.klass]].values
         N = len(klass)
-        here.score = np.mean(klass)
+        current.score = np.mean(klass)
         splits = discretize(feature, klass)
-        lo, hi = min(feature), max(feature)
+        low = min(feature) 
+        high = max(feature) 
 
-        def _pairs(lst):
-            while len(lst) > 1:
-                yield (lst.pop(0), lst[0])
+        cutoffs = [t for t in self.pairs(sorted(list(set(splits + [low, high]))))]
 
-        cutoffs = [t for t in _pairs(sorted(list(set(splits + [lo, hi]))))]
-
-        if lvl > (self.max_level if self.prune else int(len(features) * self.infoPrune)):
-            return here
-        if asIs == 0:
-            return here
+        if lvl > (self.max_levels if self.prune else int(len(features) * self.infoPrune)):
+            return current
+        if as_is == 0:
+            return current
         if len(features) < 1:
-            return here
+            return current
 
         def _rows():
             for span in cutoffs:
@@ -105,35 +132,45 @@ class XTREE(BaseEstimator):
                 for f, row in zip(feature, remaining.values.tolist()):
                     if span[0] <= f < span[1]:
                         new.append(row)
-                    elif f == span[1] == hi:
+                    elif f == span[1] == high:
                         new.append(row)
                 yield pd.DataFrame(new, columns=remaining.columns), span
 
-        def _entropy(x):
-            C = Counter(x)
-            N = len(x)
-            return sum([-C[n] / N * np.log(C[n] / N) for n in C.keys()])
-
         for child, span in _rows():
             n = child.shape[0]
-            toBe = _entropy(child[child.columns[self.klass]])
+            to_be = self._entropy(child[child.columns[self.klass]])
             if self.min <= n < N:
-                here.kids += [self._tree_builder(child, lvl=lvl + 1, asIs=toBe, up=here
+                current.kids += [self._tree_builder(child, lvl=lvl + 1, as_is=to_be, up=current
                                     , branch=branch + [(name, span)]
                                     , f=name, val=span, opt=opt)]
 
-        return here
+        return current
 
-    def fit(self, X, y):
-        raw_data = pd.concat([X,y], axis=1)
-        self.tree = self._tree_builder(raw_data)
+    def fit(self, X_train):
+        self.tree = self._tree_builder(X_train)
         return self
 
-    def predict(self, Xt, yt):
-        new_df = pd.DataFrame(columns=Xt.columns)
-        for row_num in range(len(Xt)):
-            if yt.iloc[row_num]: 
-                old_row = Xt.iloc[row_num]
+    def predict(self, X_test):
+        new_df = pd.DataFrame(columns=X_test.columns)
+        X = X_test[X_test.columns[:-1]]
+        y = X_test[X_test.columns[-1]]
+        
+        "Itemset Learning"
+        # Instantiate item set learning
+        isl = ItemSetLearner()
+        # Fit the data to itemset learner
+        isl.fit(X, y)
+        # Transform into itemsets
+        item_sets = isl.transform()
+
+        for row_num in range(len(X_test)):
+            if X_test.iloc[row_num]["<bug"]: 
+                old_row = X_test.iloc[row_num]
+                "Find the location of the current test instance on the tree"
                 pos = self._find(old_row)
+                "Find all the leaf nodes on the tree that atleast alpha times smaller that current test instance"
+                better_nodes = [leaf for leaf in self._leaves(thresh=self.alpha * pos.score)]
+                best_path = self.best_plans(better_nodes, item_sets) 
+                # ---- DEBUG -----
                 set_trace()
         return self

@@ -13,7 +13,7 @@ if root not in sys.path:
     sys.path.append(root)
 
 from data.get_data import get_all_projects
-from fp_growth import find_frequent_itemsets
+from .fp_growth import find_frequent_itemsets
 
 class ItemSetLearner(BaseEstimator):
     def __init__(self):
@@ -40,7 +40,7 @@ class ItemSetLearner(BaseEstimator):
             A list (or a numpy array) of discrete class labels.    
         """
 
-        est = KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='kmeans')
+        est = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='kmeans')
         Xt = est.fit_transform(X, y)
         Xt = pd.DataFrame(Xt, columns=X.columns)
         self._x_transformed = Xt
@@ -57,7 +57,7 @@ class ItemSetLearner(BaseEstimator):
         """
         
         transactions = self._get_transactions(self._x_transformed)
-        self.frequent_items = [set(item) for item in find_frequent_itemsets(transactions, minimum_support=50) if len(item) > 1])
+        self.frequent_items = [set(item) for item in find_frequent_itemsets(transactions, minimum_support=50) if len(item) > 1]
         return self.frequent_items
     
     def fit_transform(self, X, y):
