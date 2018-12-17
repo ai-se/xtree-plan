@@ -1,5 +1,5 @@
 """
-X_testREE
+XTREE
 """
 import os
 import sys
@@ -18,33 +18,144 @@ from sklearn.base import BaseEstimator
 from tools.Discretize import discretize, fWeight
 from frequent_items.item_sets import ItemSetLearner
 
+__author__ = 'Rahul Krishna <i.m.ralk@gmail.com>'
+__copyright__ = 'Copyright (c) 2018 Rahul Krishna'
+__license__ = 'MIT License'
+
 class XTREE(BaseEstimator):
-    def __init__(self, opt=None):
-        self.min=1
-        self.klass=-1
-        self.prune=False
-        self.debug=True
-        self.verbose=True
-        self.max_levels=10
-        self.infoPrune=1
-        self.alpha = 0.66
+    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0.66, bins = 3, support_min = 50):
+        """
+        XTREE Planner 
+
+        Parameters
+        ----------
+        min: int (default 1)
+            Minimum tree depth
+        dependent_var_col_id: int (default -1)
+            Column index of the dependent variable
+        prune: bool (default False)
+            Prune to keep only top freatures
+        max_levels: int (default 10) 
+            Maximum depth of the tree
+        info_prune: float (default 1.0)
+            Maximum fraction of features to keep. Note: Only relevant if prune==True.
+        alpha: float (default 0.66)
+            A destination node is considered "better" it is alpha time lower than current node
+        bins: int (default 3)
+            Number of bins to discretize data into
+        support_min: int (default 50)
+            Minimum support for mining frequent item sets
+        """
+
+        self.min_levels = min_levels
+        self.klass = dependent_var_col_id
+        self.prune = prune
+        self.max_levels = max_levels
+        self.info_prune = info_prune
+        self.alpha = alpha
+        self.bins = bins
+        self.support_min = support_min
 
     @staticmethod
     def _entropy(x):
-            counts = Counter(x)
-            N = len(x)
-            return sum([-counts[n] / N * np.log(counts[n] / N) for n in counts.keys()])
+        """
+        Compute entropy
+
+        Parameters
+        ----------
+        x: List[int]
+            A list of discrete values
+        
+        Returns
+        -------
+        float:
+            Entropy of the elements in a list
+        """
+        counts = Counter(x)
+        N = len(x)
+        return sum([-counts[n] / N * np.log(counts[n] / N) for n in counts.keys()])
 
     @staticmethod
     def pairs(lst):
+        """
+        Return pairs of values form a list
+
+        Parameters
+        ----------
+        lst: list
+            A list of values
+
+        Yields
+        ------
+        tuple:
+            Pair of values
+        
+        Example
+        -------
+        lst = [1,2,3,5]
+        ..
+        returns -> 1,2
+        lst = [2,3,5]
+        ..
+        returns -> 2,3
+        lst = [3,5]
+        ..
+        returns -> 3,5
+        lst = []
+        """
         while len(lst) > 1:
             yield (lst.pop(0), lst[0])
 
     @staticmethod
     def best_plans(better_nodes, item_sets):
+        """
+        Obtain the best plan that has the maximum jaccard index with elements in an item set.
+
+        Parameters
+        ----------
+        better_nodes: List[Thing]
+            A list of terminal nodes that are "better" than the node which the current test instance lands on.
+        item_set: List[set]
+            A list containing all the frequent itemsets.
+        
+        Returns
+        -------
+        Thing:
+            Best leaf node
+
+        Note
+        ---- 
+        + Thing is a generic container, in this case it represents a node in the tree. 
+        + You'll find it in <src.tools.containers>
+        """
         max_intersection = float("-inf")
 
         def jaccard_similarity_score(set1, set2):
+            """
+            Jaccard similarity index
+
+            Parameters
+            ----------
+            set1: set
+                First set
+            set2: set
+                Second set
+
+            Returns
+            -------
+            float:
+                Jaccards similarity index
+            
+            Notes
+            -----
+            + Jaccard's measure is computed as follows
+
+                                      |A <intersection> B|
+                Jaccard Index = --------------------------------
+                                |A| + |B| - |A <intersection> B|
+
+            + See https://en.wikipedia.org/wiki/Jaccard_index 
+            """
             intersect_length = len(set1.intersection(set2))
             set1_length = len(set1)
             set2_length = len(set2)
@@ -59,7 +170,23 @@ class XTREE(BaseEstimator):
                     max_intersection = jaccard_index
         return best_path
 
-    def pretty_print(self, tree=None, lvl=-1):        
+    def pretty_print(self, tree=None, lvl=-1):
+        """
+        Print tree on console as an ASCII
+
+        Parameters
+        ----------
+        tree: Thing (default None)
+            Tree node
+        lvl: int (default -1)
+            Tree level
+
+        Note
+        ---- 
+        + Thing is a generic container, in this case it represents a node in the tree. 
+        + You'll find it in <src.tools.containers>        
+        """        
+
         if tree is None:
             tree = self.tree
         if tree.f:
@@ -72,6 +199,29 @@ class XTREE(BaseEstimator):
             print("")
 
     def _nodes(self, tree, lvl=0):
+        """
+        Enumerates all the nodes in the tree
+
+        Parameters
+        ----------
+        tree: Thing
+            Tree node
+        lvl: int (default 0)
+            Tree level
+
+        Yields
+        ------
+        Thing:
+            Current child node
+        int:
+            Level of current child node
+        
+        Note
+        ---- 
+        + Thing is a generic container, in this case it represents a node in the tree. 
+        + You'll find it in <src.tools.containers>
+        """
+
         if tree:
             yield tree, lvl
             for kid in tree.kids:
@@ -80,11 +230,49 @@ class XTREE(BaseEstimator):
                     yield sub, lvl1
 
     def _leaves(self, thresh=float("inf")):
+        """
+        Enumerate all leaf nodes
+
+        Parameters
+        ----------
+        thresh: float (optional)
+            When provided. Only leaves with values less than thresh are returned
+        
+        Yields
+        ------
+        Thing:
+            Leaf node
+
+        Note
+        ---- 
+        + Thing is a generic container, in this case it represents a node in the tree. 
+        + You'll find it in <src.tools.containers>
+        """
+
         for node, _ in self._nodes(self.tree): 
             if not node.kids and node.score < thresh:
                 yield node
 
     def _find(self,  test_instance, tree_node=None):
+        """
+        Find the leaf node that a given row falls in.
+
+        Parameters
+        ----------
+        test_instance: <pandas.frame.Series>
+            Test instance
+        
+        Returns
+        -------
+        Thing:
+            Node where the test instance falls
+
+        Note
+        ---- 
+        + Thing is a generic container, in this case it represents a node in the tree. 
+        + You'll find it in <src.tools.containers>       
+        """
+
         if tree_node is None:
             tree_node = self.tree
 
@@ -105,7 +293,7 @@ class XTREE(BaseEstimator):
         features = fWeight(dframe)
 
         if self.prune and lvl < 0:
-            features = fWeight(dframe)[:int(len(features) * self.infoPrune)]
+            features = fWeight(dframe)[:int(len(features) * self.info_prune)]
 
         name = features.pop(0)
         remaining = dframe[features + [dframe.columns[self.klass]]]
@@ -119,7 +307,7 @@ class XTREE(BaseEstimator):
 
         cutoffs = [t for t in self.pairs(sorted(list(set(splits + [low, high]))))]
 
-        if lvl > (self.max_levels if self.prune else int(len(features) * self.infoPrune)):
+        if lvl > (self.max_levels if self.prune else int(len(features) * self.info_prune)):
             return current
         if as_is == 0:
             return current
@@ -139,25 +327,27 @@ class XTREE(BaseEstimator):
         for child, span in _rows():
             n = child.shape[0]
             to_be = self._entropy(child[child.columns[self.klass]])
-            if self.min <= n < N:
+            if self.min_levels <= n < N:
                 current.kids += [self._tree_builder(child, lvl=lvl + 1, as_is=to_be, up=current
                                     , branch=branch + [(name, span)]
                                     , f=name, val=span, opt=opt)]
 
         return current
 
-    def fit(self, X_train):
+    def fit(self, train_df):
+        X_train = train_df[train_df.columns[1:]] 
         self.tree = self._tree_builder(X_train)
         return self
 
     def predict(self, X_test):
         new_df = pd.DataFrame(columns=X_test.columns)
-        X = X_test[X_test.columns[:-1]]
         y = X_test[X_test.columns[-1]]
+        X = X_test[X_test.columns[1:-1]]
+        col_name = X_test[X_test.columns[0]]
         
         "Itemset Learning"
         # Instantiate item set learning
-        isl = ItemSetLearner()
+        isl = ItemSetLearner(bins=self.bins, support_min=self.support_min)
         # Fit the data to itemset learner
         isl.fit(X, y)
         # Transform into itemsets

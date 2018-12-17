@@ -16,7 +16,19 @@ from data.get_data import get_all_projects
 from .fp_growth import find_frequent_itemsets
 
 class ItemSetLearner(BaseEstimator):
-    def __init__(self):
+    def __init__(self, bins=3, support_min=50):
+        """
+        Frequent itemset learner based on FPgrowth algorithm
+
+        Parameters
+        ----------
+        support_min: int (default 50)
+            Minimum support for FPGrowth
+        bins: int (default 3)
+            Number of discrete bins
+        """
+        self.support_min = support_min
+        self.bins = bins
         self._x_transformed = None
 
     @staticmethod
@@ -40,7 +52,7 @@ class ItemSetLearner(BaseEstimator):
             A list (or a numpy array) of discrete class labels.    
         """
 
-        est = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='kmeans')
+        est = KBinsDiscretizer(n_bins=self.bins, encode='ordinal', strategy='kmeans')
         Xt = est.fit_transform(X, y)
         Xt = pd.DataFrame(Xt, columns=X.columns)
         self._x_transformed = Xt
@@ -57,7 +69,7 @@ class ItemSetLearner(BaseEstimator):
         """
         
         transactions = self._get_transactions(self._x_transformed)
-        self.frequent_items = [set(item) for item in find_frequent_itemsets(transactions, minimum_support=50) if len(item) > 1]
+        self.frequent_items = [set(item) for item in find_frequent_itemsets(transactions, minimum_support=self.support_min) if len(item) > 1]
         return self.frequent_items
     
     def fit_transform(self, X, y):
