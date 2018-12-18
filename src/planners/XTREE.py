@@ -1,29 +1,26 @@
-"""
-XTREE
-"""
+from frequent_items.item_sets import ItemSetLearner
+from tools.Discretize import discretize, fWeight
+from sklearn.base import BaseEstimator
+from tools.containers import Thing
+from collections import Counter
+from pdb import set_trace
+import pandas as pd
+import numpy as np
 import os
 import sys
-# Update path
 root = os.path.join(os.getcwd().split('src')[0], 'src')
 if root not in sys.path:
     sys.path.append(root)
 
-import numpy as np
-import pandas as pd
-from pdb import set_trace
-from collections import Counter
-
-from tools.containers import Thing
-from sklearn.base import BaseEstimator
-from tools.Discretize import discretize, fWeight
-from frequent_items.item_sets import ItemSetLearner
 
 __author__ = 'Rahul Krishna <i.m.ralk@gmail.com>'
 __copyright__ = 'Copyright (c) 2018 Rahul Krishna'
 __license__ = 'MIT License'
 
+
 class XTREE(BaseEstimator):
-    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0.66, bins = 3, support_min = 50):
+    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False,
+            max_levels=10, info_prune=1, alpha=0.66, bins=3, support_min=50):
         """
         XTREE Planner 
 
@@ -38,9 +35,10 @@ class XTREE(BaseEstimator):
         max_levels: int (default 10) 
             Maximum depth of the tree
         info_prune: float (default 1.0)
-            Maximum fraction of features to keep. Note: Only relevant if prune==True.
+            Maximum fraction of features to keep. Only used if prune==True.
         alpha: float (default 0.66)
-            A destination node is considered "better" it is alpha time lower than current node
+            A destination node is considered "better" it is alpha times 
+            lower than current node
         bins: int (default 3)
             Number of bins to discretize data into
         support_min: int (default 50)
@@ -73,7 +71,8 @@ class XTREE(BaseEstimator):
         """
         counts = Counter(x)
         N = len(x)
-        return sum([-counts[n] / N * np.log(counts[n] / N) for n in counts.keys()])
+        return sum([-counts[n] / N * np.log(
+            counts[n] / N) for n in counts.keys()])
 
     @staticmethod
     def pairs(lst):
@@ -92,6 +91,9 @@ class XTREE(BaseEstimator):
         
         Example
         -------
+        
+        BEGIN
+        ..
         lst = [1,2,3,5]
         ..
         returns -> 1,2
@@ -102,6 +104,8 @@ class XTREE(BaseEstimator):
         ..
         returns -> 3,5
         lst = []
+        ..
+        END
         """
         while len(lst) > 1:
             yield (lst.pop(0), lst[0])
@@ -109,12 +113,14 @@ class XTREE(BaseEstimator):
     @staticmethod
     def best_plans(better_nodes, item_sets):
         """
-        Obtain the best plan that has the maximum jaccard index with elements in an item set.
+        Obtain the best plan that has the maximum jaccard index 
+        with elements in an item set.
 
         Parameters
         ----------
         better_nodes: List[Thing]
-            A list of terminal nodes that are "better" than the node which the current test instance lands on.
+            A list of terminal nodes that are "better" than the node 
+            which the current test instance lands on.
         item_set: List[set]
             A list containing all the frequent itemsets.
         
@@ -125,7 +131,7 @@ class XTREE(BaseEstimator):
 
         Note
         ---- 
-        + Thing is a generic container, in this case it represents a node in the tree. 
+        + Thing is a generic container, in this case its a node in the tree. 
         + You'll find it in <src.tools.containers>
         """
         max_intersection = float("-inf")
@@ -159,7 +165,8 @@ class XTREE(BaseEstimator):
             intersect_length = len(set1.intersection(set2))
             set1_length = len(set1)
             set2_length = len(set2)
-            return intersect_length / (set1_length + set2_length - intersect_length) 
+            return intersect_length / (
+                set1_length + set2_length - intersect_length)
 
         for node in better_nodes:
             change_set = set([bb[0] for bb in node.branch])
@@ -183,14 +190,15 @@ class XTREE(BaseEstimator):
 
         Note
         ---- 
-        + Thing is a generic container, in this case it represents a node in the tree. 
+        + Thing is a generic container, in this case its a node in the tree. 
         + You'll find it in <src.tools.containers>        
-        """        
+        """
 
         if tree is None:
             tree = self.tree
         if tree.f:
-            print(('|...' * lvl) + str(tree.f) + "=" + "(%0.2f, %0.2f)" % tree.val + "\t:" + "%0.2f" % (tree.score), end="")
+            print(('|...' * lvl) + str(tree.f) + "=" + "(%0.2f, %0.2f)" %
+                  tree.val + "\t:" + "%0.2f" % (tree.score), end="")
         if tree.kids:
             print('')
             for k in tree.kids:
@@ -218,7 +226,7 @@ class XTREE(BaseEstimator):
         
         Note
         ---- 
-        + Thing is a generic container, in this case it represents a node in the tree. 
+        + Thing is a generic container, in this case its a node in the tree. 
         + You'll find it in <src.tools.containers>
         """
 
@@ -245,11 +253,11 @@ class XTREE(BaseEstimator):
 
         Note
         ---- 
-        + Thing is a generic container, in this case it represents a node in the tree. 
+        + Thing is a generic container, in this case its a node in the tree. 
         + You'll find it in <src.tools.containers>
         """
 
-        for node, _ in self._nodes(self.tree): 
+        for node, _ in self._nodes(self.tree):
             if not node.kids and node.score < thresh:
                 yield node
 
@@ -269,7 +277,7 @@ class XTREE(BaseEstimator):
 
         Note
         ---- 
-        + Thing is a generic container, in this case it represents a node in the tree. 
+        + Thing is a generic container, in this case its a node in the tree. 
         + You'll find it in <src.tools.containers>       
         """
 
@@ -278,17 +286,49 @@ class XTREE(BaseEstimator):
 
         if len(tree_node.kids) == 0:
             return tree_node
-    
+
         for kid in tree_node.kids:
             if kid.val[0] <= test_instance[kid.f] < kid.val[1]:
                 return self._find(test_instance, kid)
-            elif kid.val[1] == test_instance[kid.f] == self.tree.t.describe()[kid.f]['max']:
+            elif kid.val[1] == test_instance[kid.f] \
+                            == self.tree.t.describe()[kid.f]['max']:
                 return self._find(test_instance, kid)
 
-    def _tree_builder(self, dframe, rows=None, lvl=-1, as_is=float("inf"), up=None, klass=-1, branch=[],
-            f=None, val=None, opt=None):
+    def _tree_builder(self, dframe, lvl=-1, as_is=float("inf"),
+            parent=None, branch=[], f=None, val=None):
+        """
+        Construct decision tree
+
+        Parameters
+        ----------
+        dframe: <pandas.core.Frame.DataFrame>
+            Raw data as a dataframe
+        lvl: int (default -1)
+            Level of the tree
+        as_is: float (defaulf "inf")
+            Entropy of the class variable in the current rows
+        parent: Thing (default None)
+            Parent Node
+        branch: List[Thing] (default [])
+            Parent nodes visitied to reach current node
+        f: str (default None)
+            Name of the attribute represented by the current node
+        val: Tuple(low, high)
+            The minimum and maximum range of the attribute in the current node
+
+        Returns
+        -------
+        Thing:
+            The root node of the tree
         
-        current = Thing(t=dframe, kids=[], f=f, val=val, up=up, lvl=lvl, rows=rows, modes={}, branch=branch)
+        Notes
+        -----
+        + Thing is a generic container, in this case its a node in the tree. 
+        + You'll find it in <src.tools.containers>              
+        """
+
+        current = Thing(t=dframe, kids=[], f=f, val=val,
+                        parent=parent, lvl=lvl, branch=branch)
 
         features = fWeight(dframe)
 
@@ -298,16 +338,18 @@ class XTREE(BaseEstimator):
         name = features.pop(0)
         remaining = dframe[features + [dframe.columns[self.klass]]]
         feature = dframe[name].values
-        klass = dframe[dframe.columns[self.klass]].values
-        N = len(klass)
-        current.score = np.mean(klass)
-        splits = discretize(feature, klass)
-        low = min(feature) 
-        high = max(feature) 
+        dependent_var = dframe[dframe.columns[self.klass]].values
+        N = len(dependent_var)
+        current.score = np.mean(dependent_var)
+        splits = discretize(feature, dependent_var)
+        low = min(feature)
+        high = max(feature)
 
-        cutoffs = [t for t in self.pairs(sorted(list(set(splits + [low, high]))))]
+        cutoffs = [t for t in self.pairs(
+            sorted(list(set(splits + [low, high]))))]
 
-        if lvl > (self.max_levels if self.prune else int(len(features) * self.info_prune)):
+        if lvl > (self.max_levels if self.prune else int(
+                            len(features) * self.info_prune)):
             return current
         if as_is == 0:
             return current
@@ -328,24 +370,53 @@ class XTREE(BaseEstimator):
             n = child.shape[0]
             to_be = self._entropy(child[child.columns[self.klass]])
             if self.min_levels <= n < N:
-                current.kids += [self._tree_builder(child, lvl=lvl + 1, as_is=to_be, up=current
-                                    , branch=branch + [(name, span)]
-                                    , f=name, val=span, opt=opt)]
+                current.kids += [
+                    self._tree_builder(child, lvl=lvl + 1, as_is=to_be,
+                    parent=current, branch=branch + [(name, span)],
+                    f=name, val=span)
+                ]
 
         return current
 
     def fit(self, train_df):
-        X_train = train_df[train_df.columns[1:]] 
+        """
+        Fit the current data to generate a decision tree
+
+        Parameter
+        ---------
+        train_df: <pandas.core.frame.DataFrame>
+            Training data
+        
+        Return
+        ------
+        self:
+            Pointer to self
+        """
+        X_train = train_df[train_df.columns[1:]]
         self.tree = self._tree_builder(X_train)
         return self
 
     def predict(self, X_test):
+        """
+        Recommend plans for a test data
+
+        Parameters
+        ----------
+        test_df: <pandas.core.frame.DataFrame>
+            Testing data
+        
+        Returns
+        -------
+        <pandas.core.frame.DataFrame>:
+            Recommended changes
+        """
+
         new_df = pd.DataFrame(columns=X_test.columns)
         y = X_test[X_test.columns[-1]]
         X = X_test[X_test.columns[1:-1]]
         col_name = X_test[X_test.columns[0]]
-        
-        "Itemset Learning"
+
+        # ----- Itemset Learning -----
         # Instantiate item set learning
         isl = ItemSetLearner(bins=self.bins, support_min=self.support_min)
         # Fit the data to itemset learner
@@ -353,14 +424,17 @@ class XTREE(BaseEstimator):
         # Transform into itemsets
         item_sets = isl.transform()
 
+        # ----- Obtain changes -----
         for row_num in range(len(X_test)):
-            if X_test.iloc[row_num]["<bug"]: 
+            if X_test.iloc[row_num]["<bug"]:
                 old_row = X_test.iloc[row_num]
-                "Find the location of the current test instance on the tree"
+                # Find the location of the current test instance on the tree
                 pos = self._find(old_row)
-                "Find all the leaf nodes on the tree that atleast alpha times smaller that current test instance"
-                better_nodes = [leaf for leaf in self._leaves(thresh=self.alpha * pos.score)]
-                best_path = self.best_plans(better_nodes, item_sets) 
+                # Find all the leaf nodes on the tree that atleast alpha
+                # times smaller that current test instance"
+                better_nodes = [leaf for leaf in self._leaves(
+                    thresh=self.alpha * pos.score)]
+                best_path = self.best_plans(better_nodes, item_sets)
                 # ---- DEBUG -----
                 set_trace()
         return self
