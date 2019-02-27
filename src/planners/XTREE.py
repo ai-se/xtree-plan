@@ -2,12 +2,13 @@ from frequent_items.item_sets import ItemSetLearner
 from tools.Discretize import discretize, fWeight
 from sklearn.base import BaseEstimator
 from tools.containers import Thing
-from collections import Counter
-from pdb import set_trace
-import pandas as pd
-import numpy as np
 import os
 import sys
+import numpy as np
+import pandas as pd
+from pdb import set_trace
+from collections import Counter
+
 root = os.path.join(os.getcwd().split('src')[0], 'src')
 if root not in sys.path:
     sys.path.append(root)
@@ -19,10 +20,9 @@ __license__ = 'MIT License'
 
 
 class XTREE(BaseEstimator):
-    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False,
-            max_levels=10, info_prune=1, alpha=0.66, bins=3, support_min=50):
+    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0, bins=3, support_min=50):
         """
-        XTREE Planner 
+        XTREE Planner
 
         Parameters
         ----------
@@ -32,12 +32,12 @@ class XTREE(BaseEstimator):
             Column index of the dependent variable
         prune: bool (default False)
             Prune to keep only top freatures
-        max_levels: int (default 10) 
+        max_levels: int (default 10)
             Maximum depth of the tree
         info_prune: float (default 1.0)
             Maximum fraction of features to keep. Only used if prune==True.
         alpha: float (default 0.66)
-            A destination node is considered "better" it is alpha times 
+            A destination node is considered "better" it is alpha times
             lower than current node
         bins: int (default 3)
             Number of bins to discretize data into
@@ -63,7 +63,7 @@ class XTREE(BaseEstimator):
         ----------
         x: List[int]
             A list of discrete values
-        
+
         Returns
         -------
         float:
@@ -88,10 +88,10 @@ class XTREE(BaseEstimator):
         ------
         tuple:
             Pair of values
-        
+
         Example
         -------
-        
+
         BEGIN
         ..
         lst = [1,2,3,5]
@@ -113,25 +113,25 @@ class XTREE(BaseEstimator):
     @staticmethod
     def best_plans(better_nodes, item_sets):
         """
-        Obtain the best plan that has the maximum jaccard index 
+        Obtain the best plan that has the maximum jaccard index
         with elements in an item set.
 
         Parameters
         ----------
         better_nodes: List[Thing]
-            A list of terminal nodes that are "better" than the node 
+            A list of terminal nodes that are "better" than the node
             which the current test instance lands on.
         item_set: List[set]
             A list containing all the frequent itemsets.
-        
+
         Returns
         -------
         Thing:
             Best leaf node
 
         Note
-        ---- 
-        + Thing is a generic container, in this case its a node in the tree. 
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
         + You'll find it in <src.tools.containers>
         """
         max_intersection = float("-inf")
@@ -151,7 +151,7 @@ class XTREE(BaseEstimator):
             -------
             float:
                 Jaccards similarity index
-            
+
             Notes
             -----
             + Jaccard's measure is computed as follows
@@ -160,21 +160,27 @@ class XTREE(BaseEstimator):
                 Jaccard Index = --------------------------------
                                 |A| + |B| - |A <intersection> B|
 
-            + See https://en.wikipedia.org/wiki/Jaccard_index 
+            + See https://en.wikipedia.org/wiki/Jaccard_index
             """
             intersect_length = len(set1.intersection(set2))
             set1_length = len(set1)
             set2_length = len(set2)
-            return intersect_length / (
-                set1_length + set2_length - intersect_length)
+            return intersect_length / (set1_length + set2_length - intersect_length)
 
+        better_nodes.sort(key=lambda X: X.score)
+
+        # Initialize the best path
+        best_path = better_nodes[0]
+
+        # Try and find a better path, with a higher overlap with item sets
         for node in better_nodes:
             change_set = set([bb[0] for bb in node.branch])
             for item_set in item_sets:
                 jaccard_index = jaccard_similarity_score(item_set, change_set)
                 if 0 < jaccard_index >= max_intersection:
-                    best_path = (node, jaccard_index)
+                    best_path = node
                     max_intersection = jaccard_index
+
         return best_path
 
     def pretty_print(self, tree=None, lvl=-1):
@@ -189,9 +195,9 @@ class XTREE(BaseEstimator):
             Tree level
 
         Note
-        ---- 
-        + Thing is a generic container, in this case its a node in the tree. 
-        + You'll find it in <src.tools.containers>        
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
+        + You'll find it in <src.tools.containers>
         """
 
         if tree is None:
@@ -200,7 +206,7 @@ class XTREE(BaseEstimator):
             print(('|...' * lvl) + str(tree.f) + "=" + "(%0.2f, %0.2f)" %
                   tree.val + "\t:" + "%0.2f" % (tree.score), end="")
         if tree.kids:
-            print('')
+            print("")
             for k in tree.kids:
                 self.pretty_print(k, lvl + 1)
         else:
@@ -223,10 +229,10 @@ class XTREE(BaseEstimator):
             Current child node
         int:
             Level of current child node
-        
+
         Note
-        ---- 
-        + Thing is a generic container, in this case its a node in the tree. 
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
         + You'll find it in <src.tools.containers>
         """
 
@@ -245,23 +251,23 @@ class XTREE(BaseEstimator):
         ----------
         thresh: float (optional)
             When provided. Only leaves with values less than thresh are returned
-        
+
         Yields
         ------
         Thing:
             Leaf node
 
         Note
-        ---- 
-        + Thing is a generic container, in this case its a node in the tree. 
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
         + You'll find it in <src.tools.containers>
         """
 
         for node, _ in self._nodes(self.tree):
-            if not node.kids and node.score < thresh:
+            if not node.kids and node.score <= thresh:
                 yield node
 
-    def _find(self,  test_instance, tree_node=None):
+    def _find(self, test_instance, tree_node=None):
         """
         Find the leaf node that a given row falls in.
 
@@ -269,33 +275,33 @@ class XTREE(BaseEstimator):
         ----------
         test_instance: <pandas.frame.Series>
             Test instance
-        
+
         Returns
         -------
         Thing:
             Node where the test instance falls
 
         Note
-        ---- 
-        + Thing is a generic container, in this case its a node in the tree. 
-        + You'll find it in <src.tools.containers>       
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
+        + You'll find it in <src.tools.containers>
         """
 
-        if tree_node is None:
-            tree_node = self.tree
-
         if len(tree_node.kids) == 0:
-            return tree_node
+            found = tree_node
+        else:
+            for kid in tree_node.kids:
+                found = kid
+                if kid.val[0] <= test_instance[kid.f] < kid.val[1]:
+                    found = self._find(test_instance, kid)
+                elif kid.val[1] == test_instance[kid.f] \
+                                == self.tree.t.describe()[kid.f]['max']:
+                    found = self._find(test_instance, kid)
 
-        for kid in tree_node.kids:
-            if kid.val[0] <= test_instance[kid.f] < kid.val[1]:
-                return self._find(test_instance, kid)
-            elif kid.val[1] == test_instance[kid.f] \
-                            == self.tree.t.describe()[kid.f]['max']:
-                return self._find(test_instance, kid)
+        return found
 
     def _tree_builder(self, dframe, lvl=-1, as_is=float("inf"),
-            parent=None, branch=[], f=None, val=None):
+                      parent=None, branch=[], f=None, val=None):
         """
         Construct decision tree
 
@@ -320,11 +326,11 @@ class XTREE(BaseEstimator):
         -------
         Thing:
             The root node of the tree
-        
+
         Notes
         -----
-        + Thing is a generic container, in this case its a node in the tree. 
-        + You'll find it in <src.tools.containers>              
+        + Thing is a generic container, in this case its a node in the tree.
+        + You'll find it in <src.tools.containers>
         """
 
         current = Thing(t=dframe, kids=[], f=f, val=val,
@@ -349,7 +355,7 @@ class XTREE(BaseEstimator):
             sorted(list(set(splits + [low, high]))))]
 
         if lvl > (self.max_levels if self.prune else int(
-                            len(features) * self.info_prune)):
+                len(features) * self.info_prune)):
             return current
         if as_is == 0:
             return current
@@ -372,8 +378,9 @@ class XTREE(BaseEstimator):
             if self.min_levels <= n < N:
                 current.kids += [
                     self._tree_builder(child, lvl=lvl + 1, as_is=to_be,
-                    parent=current, branch=branch + [(name, span)],
-                    f=name, val=span)
+                                       parent=current, branch=branch
+                                       + [(name, span)],
+                                       f=name, val=span)
                 ]
 
         return current
@@ -386,7 +393,7 @@ class XTREE(BaseEstimator):
         ---------
         train_df: <pandas.core.frame.DataFrame>
             Training data
-        
+
         Return
         ------
         self:
@@ -404,7 +411,7 @@ class XTREE(BaseEstimator):
         ----------
         test_df: <pandas.core.frame.DataFrame>
             Testing data
-        
+
         Returns
         -------
         <pandas.core.frame.DataFrame>:
@@ -414,7 +421,6 @@ class XTREE(BaseEstimator):
         new_df = pd.DataFrame(columns=X_test.columns)
         y = X_test[X_test.columns[-1]]
         X = X_test[X_test.columns[1:-1]]
-        col_name = X_test[X_test.columns[0]]
 
         # ----- Itemset Learning -----
         # Instantiate item set learning
@@ -426,15 +432,22 @@ class XTREE(BaseEstimator):
 
         # ----- Obtain changes -----
         for row_num in range(len(X_test)):
-            if X_test.iloc[row_num]["<bug"]:
-                old_row = X_test.iloc[row_num]
+            cur = X_test.iloc[row_num]
+            if cur["<bug"] == 1:
                 # Find the location of the current test instance on the tree
-                pos = self._find(old_row)
+                pos = self._find(cur, tree_node=self.tree)
                 # Find all the leaf nodes on the tree that atleast alpha
-                # times smaller that current test instance"
+                # times smaller that current test instance
                 better_nodes = [leaf for leaf in self._leaves(
                     thresh=self.alpha * pos.score)]
+                # Find the path with the highest overlap with itemsets
                 best_path = self.best_plans(better_nodes, item_sets)
-                # ---- DEBUG -----
-                set_trace()
-        return self
+                for entities in best_path.branch:
+                    cur[entities[0]] = entities[1]
+
+            new_df = new_df.append(cur)
+
+            # ----- DEBUG -----
+            # set_trace()
+
+        return new_df

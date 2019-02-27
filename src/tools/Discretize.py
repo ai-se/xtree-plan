@@ -20,6 +20,7 @@ from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier as CART
 
+
 def fWeight(tbl):
     """
     Sort features based on entropy
@@ -31,7 +32,6 @@ def fWeight(tbl):
     lbs = clf.feature_importances_
 
     return [tbl.columns[i] for i in np.argsort(lbs)[::-1]]
-
 
 
 def discretize(feature, klass, atleast=-1, discrete=False):
@@ -92,9 +92,9 @@ def discretize(feature, klass, atleast=-1, discrete=False):
 
                 delta = np.log2(float(3 ** count(k) - 2)) - (
                     count(k) * measure(k) - count(k_l) * measure(k_l) - count(
-                        k_r) * measure(k_r))
-                # print(gain, (np.log2(N-1)+delta)/N)
-                return gain < (np.log2(N - 1) + delta) / N or T_min == 0
+                        k_r)*measure(k_r))
+
+                return T_min == 0 or gain < (np.log2(N - 1) + delta) / N
 
             if stop(klass, k_l, k_r) and lvl >= atleast:
                 if discrete:
@@ -132,13 +132,13 @@ def discreteTbl(tbl, B=0.33, Prune=True):
     Discretize a table
     ``````````````````
     Columns 1 to N-1 represent the independent attributes, column N the dependent.
-  
+
     Parameters:
-  
+
     tbl   - A Pandas data.dat Frame
     B     - Cutoff for Pruning Columns (float between 0,1)
     Prune - Prune (True/False)
-  
+
     Returns:
     Pandas data.dat Frame: Discretized table
     """
