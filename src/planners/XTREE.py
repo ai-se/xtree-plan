@@ -380,8 +380,7 @@ class XTREE(BaseEstimator):
                     self._tree_builder(child, lvl=lvl + 1, as_is=to_be,
                                        parent=current, branch=branch
                                        + [(name, span)],
-                                       f=name, val=span)
-                ]
+                                       f=name, val=span)]
 
         return current
 
