@@ -234,7 +234,7 @@ def todo(com="print(The._logo,'WHERE (2.0) you at?')"):
     if len(sys.argv) < 2: return com
 
     def strp(x):
-        return isinstance(x, basestring)
+        return isinstance(x, str)
 
     def wrap(x):
         return "'%s'" % x if strp(x) else str(x)

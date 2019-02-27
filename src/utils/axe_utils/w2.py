@@ -19,15 +19,7 @@ import sys
 root = os.path.join(os.getcwd().split('src')[0], 'src')
 if root not in sys.path:
     sys.path.append(root)
-
-from pdb import set_trace
-
 from utils.axe_utils import atom
-try:
-    from tools.axe import nasa93
-except ImportError:
-    set_trace()
-
 from tools.axe.settingsWhere import *
 
 sys.dont_write_bytecode = True
@@ -53,7 +45,7 @@ def pairs(lst):
 def somepairs(m, data):
     reps = 1
     cmax = -10e32
-    for _ in xrange(reps):
+    for _ in range(reps):
         one = any(data)
         two = furthest(m, one, data)
         three = furthest(m, two, data)

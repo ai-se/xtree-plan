@@ -20,7 +20,7 @@ __license__ = 'MIT License'
 
 
 class XTREE(BaseEstimator):
-    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0, bins=3, support_min=50):
+    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0.33, bins=3, support_min=50):
         """
         XTREE Planner
 
@@ -378,8 +378,8 @@ class XTREE(BaseEstimator):
             if self.min_levels <= n < N:
                 current.kids += [
                     self._tree_builder(child, lvl=lvl + 1, as_is=to_be,
-                                       parent=current, branch=branch
-                                       + [(name, span)],
+                                       parent=current, branch=branch +
+                                       [(name, span)],
                                        f=name, val=span)]
 
         return current
@@ -417,7 +417,7 @@ class XTREE(BaseEstimator):
             Recommended changes
         """
 
-        new_df = pd.DataFrame(columns=X_test.columns)
+        new = []
         y = X_test[X_test.columns[-1]]
         X = X_test[X_test.columns[1:-1]]
 
@@ -430,23 +430,27 @@ class XTREE(BaseEstimator):
         item_sets = isl.transform()
 
         # ----- Obtain changes -----
+
         for row_num in range(len(X_test)):
-            cur = X_test.iloc[row_num]
-            if cur["<bug"] == 1:
+            if X_test.iloc[row_num]["<bug"] == 1:
+                cur = X_test.iloc[row_num]
                 # Find the location of the current test instance on the tree
                 pos = self._find(cur, tree_node=self.tree)
                 # Find all the leaf nodes on the tree that atleast alpha
                 # times smaller that current test instance
                 better_nodes = [leaf for leaf in self._leaves(
                     thresh=self.alpha * pos.score)]
-                # Find the path with the highest overlap with itemsets
-                best_path = self.best_plans(better_nodes, item_sets)
-                for entities in best_path.branch:
-                    cur[entities[0]] = entities[1]
-
-            new_df = new_df.append(cur)
-
+                # TODO: Check this
+                if better_nodes:
+                    # Find the path with the highest overlap with itemsets
+                    best_path = self.best_plans(better_nodes, item_sets)
+                    for entities in best_path.branch:
+                        cur[entities[0]] = entities[1]
+                    new.append(cur.values.tolist())
+            else:
+                new.append(X_test.iloc[row_num].values.tolist())
             # ----- DEBUG -----
             # set_trace()
 
-        return new_df
+        new = pd.DataFrame(new, columns=X_test.columns)
+        return new

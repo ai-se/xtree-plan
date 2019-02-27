@@ -34,14 +34,14 @@ def _ent_weight(X, scale):
         except KeyError:
             loc = X["$CountLineCode"]
 
-    return X.multiply(loc, axis="index")/scale
+    return X.multiply(loc, axis="index") / scale
 
 
 def alves(train, test):
     if isinstance(test, list):
         test = list2dataframe(test)
 
-    if isinstance(test, basestring):
+    if isinstance(test, str):
         test = list2dataframe([test])
 
     if isinstance(train, list):
@@ -61,7 +61,6 @@ def alves(train, test):
 
     loc_key = "loc"
     tot_loc = train.sum()["loc"]
-
     X = _ent_weight(X, scale=tot_loc)
 
     """
@@ -76,13 +75,14 @@ def alves(train, test):
     y = train[train.columns[-1]]  # Dependent Feature (Bugs)
     pVal = f_classif(X, y)[1]  # P-Values
     cutoff = []
-    cumsum = lambda vals: [sum(vals[:i]) for i, __ in enumerate(vals)]
+    def cumsum(vals): return [sum(vals[:i]) for i, __ in enumerate(vals)]
 
     def point(array):
         for idx, val in enumerate(array):
-            if val > 0.95: return idx
+            if val > 0.95:
+                return idx
 
-    for idx in xrange(len(train.columns[:-1])):
+    for idx in range(len(train.columns[:-1])):
         # Setup Cumulative Dist. Func.
         name = train.columns[idx]
         loc = train[loc_key].values
@@ -91,19 +91,16 @@ def alves(train, test):
         cumulative = [sum(vals[:i]) for i, __ in enumerate(sorted(vals))]
         cutpoint = point(cumulative)
         cutoff.append(vals[sorted_ids[cutpoint]] * tot_loc / loc[
-        sorted_ids[cutpoint]] * denom[idx])
+            sorted_ids[cutpoint]] * denom[idx])
 
     """
     Apply Plans Sequentially
     """
 
     modified = []
-    for n in xrange(test.shape[0]):
+    for n in range(test.shape[0]):
         if test.iloc[n][-1] > 0 or test.iloc[n][-1] is True:
             new_row = apply2(cutoff, test.iloc[n].values.tolist())
             modified.append(new_row)
-
-        else:
-            modified.append(test.iloc[n].tolist())
 
     return pd.DataFrame(modified, columns=test.columns)

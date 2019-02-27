@@ -1,7 +1,7 @@
 from __future__ import print_function, division
-
 import pandas as pd
 import random
+from pdb import set_trace
 
 TAXI_CAB = 1729
 OVERLAP_RANGE = range(25, 101, 25)
@@ -40,7 +40,7 @@ def measure_overlap(test, new, validation):
 
     for module_name in common_modules:
         "For every common class, do the following ... "
-        same = 0  #  Keep track of features that follow XTREE's recommendations
+        same = 0  # Keep track of features that follow XTREE's recommendations
         "Metric values of classes in the test set"
         test_value = test.loc[test['Name'] == module_name]
         "Metric values of classes in the XTREE's planned changes"
@@ -73,7 +73,8 @@ def measure_overlap(test, new, validation):
         "There are 20 metrics, so, find % of overlap for the class."
         overlap.append(int(same / 20 * 100))
         "Find the change in the number of bugs between the test version and the validation version for that class."
-        heeded = test_value['<bug'].values[0] - validate_value['<bug'].values[0]
+        heeded = test_value['<bug'].values[0] - \
+            validate_value['<bug'].values[0]
 
         improve_heeded.append(heeded)
 
@@ -100,7 +101,9 @@ def reshape(res_xtree, res_alves, res_shatw, res_olive):
 
     bugs_decreased = pd.DataFrame(bugs_decreased)
     bugs_increased = pd.DataFrame(bugs_increased)
-    bugs_decreased.columns = ["Overlap", "XTREE", "Alves", "Shatnawi", "Oliveira"]
-    bugs_increased.columns = ["Overlap", "XTREE", "Alves", "Shatnawi", "Oliveira"]
+    bugs_decreased.columns = ["Overlap",
+                              "XTREE", "Alves", "Shatnawi", "Oliveira"]
+    bugs_increased.columns = ["Overlap",
+                              "XTREE", "Alves", "Shatnawi", "Oliveira"]
 
     return bugs_decreased, bugs_increased

@@ -243,8 +243,8 @@ def _a12():
     def f2(): return a12(l1, l2)
 
     for n in [100, 200, 400, 800, 1600, 3200, 6400]:
-        l1 = [rand() for _ in xrange(n)]
-        l2 = [rand() for _ in xrange(n)]
+        l1 = [rand() for _ in range(n)]
+        l2 = [rand() for _ in range(n)]
         t1 = msecs(f1)
         t2 = msecs(f2)
         print n, g(f1()), g(f2()), int((t1 / t2))

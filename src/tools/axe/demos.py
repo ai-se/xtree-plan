@@ -11,7 +11,7 @@ def atom(x):
 def cmd(com="demo('-h')"):
   "Convert command line to a function call."
   if len(sys.argv) < 2: return com
-  def strp(x): return isinstance(x,basestring)
+  def strp(x): return isinstance(x,str)
   def wrap(x): return "'%s'"%x if strp(x) else str(x)
   words = map(wrap,map(atom,sys.argv[2:]))
   return sys.argv[1] + '(' + ','.join(words) + ')'

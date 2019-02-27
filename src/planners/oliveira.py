@@ -58,7 +58,6 @@ def oliveira(train, test):
     """
     "Helper Functions"
 
-
     def compliance_rate(k, train_columns):
         return \
             len([t for t in train_columns if t <= k]) / len(train_columns)
@@ -67,7 +66,7 @@ def oliveira(train, test):
 
         comply = Min - compliance
         if comply >= 0:
-                return (Min - comply) / Min
+            return (Min - comply) / Min
         else:
             return 0
 
@@ -82,7 +81,7 @@ def oliveira(train, test):
     if isinstance(test, list):
         test = list2dataframe(test)
 
-    if isinstance(test, basestring):
+    if isinstance(test, str):
         test = list2dataframe([test])
 
     if isinstance(train, list):
@@ -90,7 +89,7 @@ def oliveira(train, test):
 
     lo, hi = train.min(), train.max()
     quantile_array = get_percentiles(train)
-    changes =[]
+    changes = []
 
     pk_best = dict()
 
@@ -105,7 +104,7 @@ def oliveira(train, test):
                     penalty1 = penalty_1(p, k, compliance=compliance, Min=0.9)
                     penalty2 = penalty_2(k, med)
                     comply_rate_penalty = penalty1 + penalty2
-                    vals[p_id,k_id] = comply_rate_penalty
+                    vals[p_id, k_id] = comply_rate_penalty
 
                     if comply_rate_penalty <= min_comply:
                         min_comply = comply_rate_penalty
@@ -121,9 +120,10 @@ def oliveira(train, test):
     """
 
     modified = []
-    for n in xrange(test.shape[0]):
+    for n in range(test.shape[0]):
         if test.iloc[n][-1] > 0 or test.iloc[n][-1] == True:
-            new_row = apply3(test.iloc[n].values.tolist(), test.columns, pk_best)
+            new_row = apply3(
+                test.iloc[n].values.tolist(), test.columns, pk_best)
             modified.append(new_row)
 
     return pd.DataFrame(modified, columns=test.columns)

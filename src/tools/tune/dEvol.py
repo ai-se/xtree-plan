@@ -20,7 +20,7 @@ def flatten(x):
   """
   result = []
   for el in x:
-    if hasattr(el, "__iter__") and not isinstance(el, basestring):
+    if hasattr(el, "__iter__") and not isinstance(el, str):
       result.extend(flatten(el))
     else:
       result.append(el)
@@ -77,7 +77,7 @@ def de0(model, new=[], pop=int(1e4), iter=1000, lives=5, settings=settings):
     xbestVal = model.solve(xbest)
     iter-=1
     # print(iter)
-    for pos in xrange(len(frontier)):
+    for pos in range(len(frontier)):
       # print(len(frontier), pos)
       lives -= 1
       # t=time()

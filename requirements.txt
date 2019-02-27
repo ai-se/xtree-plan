@@ -3,3 +3,4 @@ sklearn
 tabulate
 scipy
 numpy
+matplotlib
