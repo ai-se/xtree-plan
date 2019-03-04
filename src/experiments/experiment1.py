@@ -11,19 +11,20 @@ root = Path(os.path.abspath(os.path.join(os.getcwd().split("src")[0], 'src')))
 if root not in sys.path:
     sys.path.append(str(root))
 
+import pandas as pd
 from data.get_data import get_all_projects
 from planners.XTREE import XTREE
 from planners.alves import alves
 from planners.shatnawi import shatnawi
 from planners.oliveira import oliveira
 from utils.rq_utils import measure_overlap, reshape
-from utils.plot_util import plot_bar
+from utils.plot_util import plot_bar, plot_compare
 from utils.stats_utils.auec import compute_auec
 from utils.rq_utils import measure_overlap, reshape
 
 
 class Experiment1:
-    def __init__(self, plot_results=True, decrease=False, verbose=True):
+    def __init__(self, plot_results=True, decrease=True, verbose=True):
         self.plot_results = plot_results
         self.decrease = decrease
         self.verbose = verbose
@@ -59,19 +60,21 @@ class Experiment1:
                 res_shatw = measure_overlap(test_df, patched_shatw, valdn_df)
                 res_olive = measure_overlap(test_df, patched_olive, valdn_df)
 
-                # -- AUPEC of defects decreased/increased --
+                # -- Summary of defects decreased/increased --
                 res_dec, res_inc = reshape(
                     res_xtree, res_alves, res_shatw, res_olive)
 
                 # -- Plot the results --
                 if self.plot_results:
-                    plot_bar(res_inc, res_dec, save_path=os.path.join(
-                        root, "results", "RQ1", proj), title="{} v{}".format(proj, i), y_lbl="Defects",
-                        postfix="")
+                    plot_compare(res_dec, save_path=os.path.join(root, "results", "RQ1", proj), title="{} v{}".format(
+                        proj, i), y_lbl="# Defects Removed", postfix="dec")
+
+                    plot_compare(res_inc, save_path=os.path.join(root, "results", "RQ1", proj), title="{} v{}".format(
+                        proj, i), y_lbl="# Defects Added", postfix="inc")
 
                 # -- Max/Min to normalize AUPEC --
                 y_max = max(res_dec.max(axis=0).values)
-                y_min = max(res_dec.min(axis=0).values)
+                y_min = min(res_dec.min(axis=0).values)
 
                 if self.decrease:
                     # -- Decrease AUC --

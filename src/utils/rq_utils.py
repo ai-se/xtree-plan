@@ -4,7 +4,7 @@ import random
 from pdb import set_trace
 
 TAXI_CAB = 1729
-OVERLAP_RANGE = range(25, 101, 25)
+OVERLAP_RANGE = range(0, 101, 25)
 random.seed(TAXI_CAB)
 
 

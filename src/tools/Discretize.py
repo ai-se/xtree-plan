@@ -92,7 +92,7 @@ def discretize(feature, klass, atleast=-1, discrete=False):
 
                 delta = np.log2(float(3 ** count(k) - 2)) - (
                     count(k) * measure(k) - count(k_l) * measure(k_l) - count(
-                        k_r)*measure(k_r))
+                        k_r) * measure(k_r))
 
                 return T_min == 0 or gain < (np.log2(N - 1) + delta) / N
 
@@ -110,70 +110,3 @@ def discretize(feature, klass, atleast=-1, discrete=False):
     redo(feature, klass, lvl=0)
     # set_trace()
     return splits
-
-
-def _test0():
-    "A Test Function"
-    test = np.random.normal(0, 10, 1000).tolist()
-    klass = [int(abs(i)) for i in np.random.normal(0, 1, 1000)]
-    splits = discretize(feature=test, klass=klass)
-    set_trace()
-
-
-def _test1():
-    tbl_loc = explore(name='ant')[0]
-    tbl = csv2DF(tbl_loc)
-    new = discreteTbl(tbl)
-    set_trace()
-
-
-def discreteTbl(tbl, B=0.33, Prune=True):
-    """
-    Discretize a table
-    ``````````````````
-    Columns 1 to N-1 represent the independent attributes, column N the dependent.
-
-    Parameters:
-
-    tbl   - A Pandas data.dat Frame
-    B     - Cutoff for Pruning Columns (float between 0,1)
-    Prune - Prune (True/False)
-
-    Returns:
-    Pandas data.dat Frame: Discretized table
-    """
-    dtable = []
-    fweight = fWeight(tbl)
-    for i, name in enumerate(tbl.columns[:-1]):
-        new = []
-        feature = tbl[name].values
-        klass = tbl[tbl.columns[-1]].values
-        splits = discretize(feature, klass)
-        LO, HI = min(feature), max(feature)
-        cutoffs = sorted(list(set(splits + [LO, HI])))
-
-        def pairs(lst):
-            while len(lst) > 1:
-                yield (lst.pop(0), lst[0])
-
-        cutoffs = [t for t in pairs(sorted(list(set(splits + [LO, HI]))))]
-        for f in feature:
-            for n in cutoffs:
-                if n[0] <= f < n[1]:
-                    new.append(n)
-                elif f == n[1] == HI:
-                    new.append((n[0], HI))
-        dtable.append(new)
-    dtable.append(klass.tolist())
-    dtable = pd.DataFrame(dtable).T
-    dtable.columns = tbl.columns
-    ranks = fWeight(tbl)
-    if Prune:
-        return dtable[ranks[:int(len(ranks) * B)] + [tbl.columns[-1]]]
-    else:
-        return dtable[ranks + [tbl.columns[-1]]]
-
-
-if __name__ == '__main__':
-    _test0()
-    pass

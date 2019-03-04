@@ -14,10 +14,11 @@ if root not in sys.path:
 
 from data.get_data import get_all_projects
 from .fp_growth import find_frequent_itemsets
+from tools.Discretize import discretize
 
 
 class ItemSetLearner(BaseEstimator):
-    def __init__(self, bins=3, support_min=50):
+    def __init__(self, bins=3, support_min=90):
         """
         Frequent itemset learner based on FPgrowth algorithm
 
@@ -42,6 +43,35 @@ class ItemSetLearner(BaseEstimator):
             transactions.append(tuple(change_set))
         return transactions
 
+    @staticmethod
+    def discretize_dframe(X, y):
+        """ Discretize a DataFrame
+
+        Parameters
+        ----------
+        <pandas.core.frame.DataFrame>:
+            Numeric Table
+
+        Returns
+        --------
+        <pandas.core.frame.DataFrame>: 
+            Discretized table
+        """
+        discrete_ndarray = [
+            [0 for _ in range(len(X.columns))] for __ in range(len(X))]
+        for col_id, name in enumerate(X.columns):
+            indep = X[name].values
+            depen = y.values
+            splits = discretize(indep, depen)
+            col_min, col_max = min(indep), max(indep)
+            cutoffs = sorted(list(set(splits + [col_min, col_max])))
+            for i, (range_lo, range_hi) in enumerate(zip(cutoffs[:-1], cutoffs[1:])):
+                for row_id, val in enumerate(indep):
+                    if range_lo <= val <= range_hi:
+                        discrete_ndarray[row_id][col_id] = i
+        discrete_ndarray = pd.DataFrame(discrete_ndarray, columns=X.columns)
+        return discrete_ndarray
+
     def fit(self, X, y):
         """ 
         Fit data by binning into data into discrete intervals.
@@ -54,10 +84,12 @@ class ItemSetLearner(BaseEstimator):
             A list (or a numpy array) of discrete class labels.    
         """
 
-        est = KBinsDiscretizer(
-            n_bins=self.bins, encode='ordinal', strategy='kmeans')
-        Xt = est.fit_transform(X, y)
-        Xt = pd.DataFrame(Xt, columns=X.columns)
+        # est = KBinsDiscretizer(
+        #     n_bins=self.bins, encode='ordinal', strategy='kmeans')
+        # Xt = est.fit_transform(X, y)
+        # Xt = pd.DataFrame(Xt, columns=X.columns)
+
+        Xt = self.discretize_dframe(X, y)
         self._x_transformed = Xt
         return self
 
@@ -95,16 +127,3 @@ class ItemSetLearner(BaseEstimator):
 
         self.fit(X, y)
         return self.transform()
-
-
-if __name__ == "__main__":
-    projects = get_all_projects()
-    ant = projects['camel']
-    ant_df = pd.concat([pd.read_csv(ant_file) for ant_file in ant.data])
-    ant_df = ant_df[ant_df.columns[1:]]
-    ant_df.loc[ant_df[ant_df.columns[-1]] > 0, ant_df.columns[-1]] = 1
-    X = ant_df[ant_df.columns[:-1]]
-    y = ant_df[ant_df.columns[-1]]
-    isl = ItemSetLearner()
-    frequent_items = isl.fit_transform(X, y)
-    set_trace()

@@ -1,7 +1,3 @@
-from frequent_items.item_sets import ItemSetLearner
-from tools.Discretize import discretize, fWeight
-from sklearn.base import BaseEstimator
-from tools.containers import Thing
 import os
 import sys
 import numpy as np
@@ -12,6 +8,11 @@ from collections import Counter
 root = os.path.join(os.getcwd().split('src')[0], 'src')
 if root not in sys.path:
     sys.path.append(root)
+
+from frequent_items.item_sets import ItemSetLearner
+from tools.Discretize import discretize, fWeight
+from sklearn.base import BaseEstimator
+from tools.containers import Thing
 
 
 __author__ = 'Rahul Krishna <i.m.ralk@gmail.com>'
@@ -329,7 +330,7 @@ class XTREE(BaseEstimator):
 
         Notes
         -----
-        + Thing is a generic container, in this case its a node in the tree.
+        + Thing is a generic container, in this case it's a node in the tree.
         + You'll find it in <src.tools.containers>
         """
 

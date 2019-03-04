@@ -3,6 +3,7 @@ warnings.filterwarnings('ignore')
 from sklearn.metrics import auc
 from pdb import set_trace
 
+
 def compute_auec(dframe, y_max, y_min):
     x = dframe[dframe.columns[0]]
     y = dframe[dframe.columns[1]]
@@ -10,4 +11,4 @@ def compute_auec(dframe, y_max, y_min):
     [overlap_min, _] = dframe.min(axis=0).values
     area_norm = (overlap_max - overlap_min) * (y_max - y_min)
     auec_raw = auc(x, y, reorder=True)
-    return round(auec_raw / area_norm, 2)
+    return round(100 * auec_raw / area_norm, 2)
