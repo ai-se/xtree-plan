@@ -15,6 +15,7 @@ if root not in sys.path:
 from data.get_data import get_all_projects
 from .fp_growth import find_frequent_itemsets
 
+
 class ItemSetLearner(BaseEstimator):
     def __init__(self, bins=3, support_min=50):
         """
@@ -36,14 +37,15 @@ class ItemSetLearner(BaseEstimator):
         cols = Xt.columns.tolist()
         transactions = []
         for i in range(len(Xt)):
-            change_set = [cols[j] for j, val in enumerate(Xt.iloc[i]) if val > 0] 
+            change_set = [cols[j]
+                          for j, val in enumerate(Xt.iloc[i]) if val > 0]
             transactions.append(tuple(change_set))
         return transactions
 
     def fit(self, X, y):
         """ 
         Fit data by binning into data into discrete intervals.
-        
+
         Parameters
         ----------
         X: array_like (n x m)
@@ -52,12 +54,13 @@ class ItemSetLearner(BaseEstimator):
             A list (or a numpy array) of discrete class labels.    
         """
 
-        est = KBinsDiscretizer(n_bins=self.bins, encode='ordinal', strategy='kmeans')
+        est = KBinsDiscretizer(
+            n_bins=self.bins, encode='ordinal', strategy='kmeans')
         Xt = est.fit_transform(X, y)
         Xt = pd.DataFrame(Xt, columns=X.columns)
         self._x_transformed = Xt
         return self
-    
+
     def transform(self):
         """ 
         Transform input data into a list of frequent items
@@ -67,11 +70,12 @@ class ItemSetLearner(BaseEstimator):
         List[tuple]:
             A list of frequent items.
         """
-        
+
         transactions = self._get_transactions(self._x_transformed)
-        self.frequent_items = [set(item) for item in find_frequent_itemsets(transactions, minimum_support=self.support_min) if len(item) > 1]
+        self.frequent_items = [set(item) for item in find_frequent_itemsets(
+            transactions, minimum_support=self.support_min) if len(item) > 1]
         return self.frequent_items
-    
+
     def fit_transform(self, X, y):
         """
         Fit to data, then transform it.
@@ -82,7 +86,7 @@ class ItemSetLearner(BaseEstimator):
             A list (or an array) of continuous attributes
         y: array_like (n X 1)
             A list (or a numpy array) of discrete class labels.    
-        
+
         Returns
         -------
         List[tuple]:
@@ -91,7 +95,7 @@ class ItemSetLearner(BaseEstimator):
 
         self.fit(X, y)
         return self.transform()
-    
+
 
 if __name__ == "__main__":
     projects = get_all_projects()
@@ -102,8 +106,5 @@ if __name__ == "__main__":
     X = ant_df[ant_df.columns[:-1]]
     y = ant_df[ant_df.columns[-1]]
     isl = ItemSetLearner()
-    frequent_items  = isl.fit_transform(X, y)
+    frequent_items = isl.fit_transform(X, y)
     set_trace()
-    
-
-        
