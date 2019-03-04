@@ -24,7 +24,7 @@ from utils.rq_utils import measure_overlap, reshape
 
 
 class Experiment1:
-    def __init__(self, plot_results=True, decrease=True, verbose=True):
+    def __init__(self, plot_results=False, decrease=True, verbose=True):
         self.plot_results = plot_results
         self.decrease = decrease
         self.verbose = verbose
