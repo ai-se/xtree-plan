@@ -85,7 +85,7 @@ def shatnawi(train, test):
 
     modified = []
     for n in range(test.shape[0]):
-        if test.iloc[n][-1] > 0 or test.iloc[n][-1] == True:
+        if test.iloc[n][-1] > 0 and rand() > 0.5:
             new_row = apply2(changes, test.iloc[n].values.tolist())
             modified.append(new_row)
 

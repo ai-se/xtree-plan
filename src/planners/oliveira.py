@@ -121,9 +121,9 @@ def oliveira(train, test):
 
     modified = []
     for n in range(test.shape[0]):
-        if test.iloc[n][-1] > 0 or test.iloc[n][-1] == True:
-            new_row = apply3(
-                test.iloc[n].values.tolist(), test.columns, pk_best)
+        # if test.iloc[n][-1] > 0 or test.iloc[n][-1] == True:
+        if test.iloc[n][-1] > 0 and rand() > 0.5:
+            new_row = apply3(test.iloc[n].values.tolist(), test.columns, pk_best)
             modified.append(new_row)
 
     return pd.DataFrame(modified, columns=test.columns)

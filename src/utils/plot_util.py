@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import seaborn as sns
 from pdb import set_trace
 from collections import Counter
 from scipy.stats import ttest_ind
@@ -26,7 +26,7 @@ def plot_compare(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
     plot.tick_params(axis='both', which='major', labelsize=12)
 
     #  Plot Data
-    plt.plot(dframe["Overlap"], dframe["XTREE"],
+    plt.plot(dframe["Overlap"], dframe["XTREEv1"],
              color='#a50f15', linewidth=1)
     plt.plot(dframe["Overlap"], dframe["Alves"],
              color='#2c7fb8', linewidth=1)

@@ -21,7 +21,7 @@ __license__ = 'MIT License'
 
 
 class XTREE(BaseEstimator):
-    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0.33, bins=3, support_min=50):
+    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0.33, bins=3, support_min=90, strategy="itemset"):
         """
         XTREE Planner
 
@@ -54,6 +54,7 @@ class XTREE(BaseEstimator):
         self.alpha = alpha
         self.bins = bins
         self.support_min = support_min
+        self.strategy = strategy
 
     @staticmethod
     def _entropy(x):
@@ -74,115 +75,6 @@ class XTREE(BaseEstimator):
         N = len(x)
         return sum([-counts[n] / N * np.log(
             counts[n] / N) for n in counts.keys()])
-
-    @staticmethod
-    def pairs(lst):
-        """
-        Return pairs of values form a list
-
-        Parameters
-        ----------
-        lst: list
-            A list of values
-
-        Yields
-        ------
-        tuple:
-            Pair of values
-
-        Example
-        -------
-
-        BEGIN
-        ..
-        lst = [1,2,3,5]
-        ..
-        returns -> 1,2
-        lst = [2,3,5]
-        ..
-        returns -> 2,3
-        lst = [3,5]
-        ..
-        returns -> 3,5
-        lst = []
-        ..
-        END
-        """
-        while len(lst) > 1:
-            yield (lst.pop(0), lst[0])
-
-    @staticmethod
-    def best_plans(better_nodes, item_sets):
-        """
-        Obtain the best plan that has the maximum jaccard index
-        with elements in an item set.
-
-        Parameters
-        ----------
-        better_nodes: List[Thing]
-            A list of terminal nodes that are "better" than the node
-            which the current test instance lands on.
-        item_set: List[set]
-            A list containing all the frequent itemsets.
-
-        Returns
-        -------
-        Thing:
-            Best leaf node
-
-        Note
-        ----
-        + Thing is a generic container, in this case its a node in the tree.
-        + You'll find it in <src.tools.containers>
-        """
-        max_intersection = float("-inf")
-
-        def jaccard_similarity_score(set1, set2):
-            """
-            Jaccard similarity index
-
-            Parameters
-            ----------
-            set1: set
-                First set
-            set2: set
-                Second set
-
-            Returns
-            -------
-            float:
-                Jaccards similarity index
-
-            Notes
-            -----
-            + Jaccard's measure is computed as follows
-
-                                      |A <intersection> B|
-                Jaccard Index = --------------------------------
-                                |A| + |B| - |A <intersection> B|
-
-            + See https://en.wikipedia.org/wiki/Jaccard_index
-            """
-            intersect_length = len(set1.intersection(set2))
-            set1_length = len(set1)
-            set2_length = len(set2)
-            return intersect_length / (set1_length + set2_length - intersect_length)
-
-        better_nodes.sort(key=lambda X: X.score)
-
-        # Initialize the best path
-        best_path = better_nodes[0]
-
-        # Try and find a better path, with a higher overlap with item sets
-        for node in better_nodes:
-            change_set = set([bb[0] for bb in node.branch])
-            for item_set in item_sets:
-                jaccard_index = jaccard_similarity_score(item_set, change_set)
-                if 0 < jaccard_index >= max_intersection:
-                    best_path = node
-                    max_intersection = jaccard_index
-
-        return best_path
 
     def pretty_print(self, tree=None, lvl=-1):
         """
@@ -243,6 +135,24 @@ class XTREE(BaseEstimator):
                 lvl1 = lvl
                 for sub, lvl1 in self._nodes(kid, lvl1 + 1):
                     yield sub, lvl1
+    @staticmethod
+    def _path_from_root(node):
+        """
+        All the attributes in the path from root to node
+        
+        Parameters
+        ----------
+        node : Thing
+            The tree node object
+        
+        Returns
+        -------
+        list:
+            A list of all the attributes from root to node
+        """
+        
+        path_names = [keys for keys in map(lambda x: x[0], node.branch)]
+        return path_names
 
     def _leaves(self, thresh=float("inf")):
         """
@@ -403,6 +313,153 @@ class XTREE(BaseEstimator):
         self.tree = self._tree_builder(X_train)
         return self
 
+    @staticmethod
+    def pairs(lst):
+        """
+        Return pairs of values form a list
+
+        Parameters
+        ----------
+        lst: list
+            A list of values
+
+        Yields
+        ------
+        tuple:
+            Pair of values
+
+        Example
+        -------
+
+        BEGIN
+        ..
+        lst = [1,2,3,5]
+        ..
+        returns -> 1,2
+        lst = [2,3,5]
+        ..
+        returns -> 2,3
+        lst = [3,5]
+        ..
+        returns -> 3,5
+        lst = []
+        ..
+        END
+        """
+        while len(lst) > 1:
+            yield (lst.pop(0), lst[0])
+
+    @staticmethod
+    def jaccard_similarity_score(set1, set2):
+            """
+            Jaccard similarity index
+            Parameters
+            ----------
+            set1: set
+                First set
+            set2: set
+                Second set
+            Returns
+            -------
+            float:
+                Jaccards similarity index
+            Notes
+            -----
+            + Jaccard's measure is computed as follows
+                                      |A <intersection> B|
+                Jaccard Index = --------------------------------
+                                |A| + |B| - |A <intersection> B|
+            + See https://en.wikipedia.org/wiki/Jaccard_index
+            """
+            # -- If we have lists, convert them to sets --
+            if isinstance(set1, list):
+                set1 = set(set1)
+            if isinstance(set2, list):
+                set2 = set(set2)
+
+            # -- Compute the Jaccard score --
+            intersect_length = len(set1.intersection(set2))
+            set1_length = len(set1)
+            set2_length = len(set2)
+            return intersect_length / (set1_length + set2_length - intersect_length)
+
+    def best_plan(self, better_nodes, item_sets):
+        """
+        Obtain the best plan that has the maximum jaccard index
+        with elements in an item set.
+
+        Parameters
+        ----------
+        better_nodes: List[Thing]
+            A list of terminal nodes that are "better" than the node
+            which the current test instance lands on.
+        item_set: List[set]
+            A list containing all the frequent itemsets.
+
+        Returns
+        -------
+        Thing:
+            Best leaf node
+
+        Note
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
+        + You'll find it in <src.tools.containers>
+        """
+        max_intersection = float("-inf")
+
+        # Sort better nodes by score
+        better_nodes.sort(key=lambda X: X.score)
+
+        # Initialize the best path
+        best_path = better_nodes[0]
+
+        # Try and find a better path, with a higher overlap with item sets
+        for node in better_nodes:
+            change_set = set([bb[0] for bb in node.branch])
+            for item_set in item_sets:
+                jaccard_index = self.jaccard_similarity_score(item_set, change_set)
+                if 0 < jaccard_index >= max_intersection:
+                    best_path = node
+                    max_intersection = jaccard_index
+
+        return best_path
+
+    def best_plan_closest(self, better_nodes, current_node):
+        """
+        Obtain the best plan by picking a node from better nodes that is 
+        closest to the current_node
+        
+        Parameters
+        ----------
+        better_nodes: List[Thing]
+            A list of terminal nodes that are "better" than the node
+            which the current test instance lands on.
+        current_node : [type]
+            The node where the current test case falls into
+        
+        Returns
+        -------
+        Thing:
+            Best leaf node
+
+        Note
+        ----
+        + Thing is a generic container, in this case its a node in the tree.
+        + You'll find it in <src.tools.containers>
+        """
+        current_path_components = self._path_from_root(current_node)
+        min_dist = float("inf")
+        best_path = current_node
+        for other_path in better_nodes:
+            other_path_components = self._path_from_root(other_path)
+            jaccard_index = self.jaccard_similarity_score(
+                current_path_components, other_path_components)
+            if jaccard_index <= min_dist:
+                min_dist = jaccard_index
+                best_path = other_path
+        return best_path
+
     def predict(self, X_test):
         """
         Recommend plans for a test data
@@ -423,15 +480,15 @@ class XTREE(BaseEstimator):
         X = X_test[X_test.columns[1:-1]]
 
         # ----- Itemset Learning -----
-        # Instantiate item set learning
-        isl = ItemSetLearner(bins=self.bins, support_min=self.support_min)
-        # Fit the data to itemset learner
-        isl.fit(X, y)
-        # Transform into itemsets
-        item_sets = isl.transform()
+        if self.strategy == "itemset":
+            # -- Instantiate item set learning --
+            isl = ItemSetLearner(bins=self.bins, support_min=self.support_min)
+            # -- Fit the data to itemset learner --
+            isl.fit(X, y)
+            # -- Transform into itemsets --
+            item_sets = isl.transform()
 
         # ----- Obtain changes -----
-
         for row_num in range(len(X_test)):
             if X_test.iloc[row_num]["<bug"] == 1:
                 cur = X_test.iloc[row_num]
@@ -443,15 +500,22 @@ class XTREE(BaseEstimator):
                     thresh=self.alpha * pos.score)]
                 # TODO: Check this
                 if better_nodes:
-                    # Find the path with the highest overlap with itemsets
-                    best_path = self.best_plans(better_nodes, item_sets)
+                    # - Find the path with the highest overlap with itemsets -
+                    # -- Choose the startegy based on how we want to do it --
+                    # ---- Use item sets ----
+                    if self.strategy == "itemset":
+                        best_path = self.best_plan(better_nodes, item_sets)
+                    # ---- Find the closest ----
+                    elif self.strategy == "closest":
+                        best_path = self.best_plan_closest(better_nodes, pos)
+                    else:
+                        raise ValueError("Invalid argument for. Use either \"itemset\" or \"closest\" ")
+
                     for entities in best_path.branch:
                         cur[entities[0]] = entities[1]
                     new.append(cur.values.tolist())
             else:
                 new.append(X_test.iloc[row_num].values.tolist())
-            # ----- DEBUG -----
-            # set_trace()
 
         new = pd.DataFrame(new, columns=X_test.columns)
         return new

@@ -8,16 +8,16 @@ OVERLAP_RANGE = range(0, 101, 25)
 random.seed(TAXI_CAB)
 
 
-def _effectiveness(dframe, thresh):
+def _effectiveness(dframe, thresh_min, thresh_max):
     overlap = dframe['Overlap']
     heeded = dframe['Heeded']
 
     a, b, c, d = 0, 0, 0, 0
 
     for over, heed in zip(overlap, heeded):
-        if 0 < over <= thresh and heed >= 0:
+        if thresh_min < over <= thresh_max and heed >= 0:
             a += 1
-        if 0 < over <= thresh and heed < 0:
+        if thresh_min <= over <= thresh_max and heed < 0:
             b += 1
         if over == 0 and heed < 0:
             c += 1
@@ -77,33 +77,37 @@ def measure_overlap(test, new, validation):
             validate_value['<bug'].values[0]
 
         improve_heeded.append(heeded)
-
+    
     "Save the results ... "
+    validation_common = validation.loc[validation["Name"].isin(common_modules)]
 
     results['Overlap'] = overlap
     results['Heeded'] = improve_heeded
 
-    return [_effectiveness(results, thresh=t) for t in OVERLAP_RANGE]
+    return [_effectiveness(results, thresh_min=lo, thresh_max=hi) for lo, hi in zip(OVERLAP_RANGE[:-1], OVERLAP_RANGE[1:])]
+    # return [tuple(map(lambda x: int(100*x/len(validation_common['<bug'].tolist())), _effectiveness(results, thresh_min=lo, thresh_max=hi))) for lo, hi in zip(OVERLAP_RANGE[:-1], OVERLAP_RANGE[1:])]
 
 
 def reshape(res_xtree, res_alves, res_shatw, res_olive):
     bugs_increased = []
     bugs_decreased = []
 
-    for thresh, every_res_xtree, every_res_alves, every_res_shatw, every_res_olive in zip(OVERLAP_RANGE, res_xtree,
-                                                                                          res_alves, res_shatw,
-                                                                                          res_olive):
-        bugs_decreased.append(
-            [thresh, every_res_xtree[0], every_res_alves[0], every_res_shatw[0], every_res_olive[0]])
+    for thresh, every_res_xtree, every_res_alves, every_res_shatw, every_res_olive in zip(OVERLAP_RANGE[1:], res_xtree, res_alves, res_shatw, res_olive):
+        # -- Decrease --
+        bugs_decreased.append([thresh, every_res_xtree[0], 'XTREE'])
+        bugs_decreased.append([thresh, every_res_alves[0], 'ALVES'])
+        bugs_decreased.append([thresh, every_res_shatw[0], 'SHATW'])
+        bugs_decreased.append([thresh, every_res_olive[0], 'OLIVE'])
+        
+        # -- Increase --
+        bugs_increased.append([thresh, every_res_xtree[1], 'XTREE'])
+        bugs_increased.append([thresh, every_res_alves[1], 'ALVES'])
+        bugs_increased.append([thresh, every_res_shatw[1], 'SHATW'])
+        bugs_increased.append([thresh, every_res_olive[1], 'OLIVE'])
 
-        bugs_increased.append(
-            [thresh, every_res_xtree[1], every_res_alves[1], every_res_shatw[1], every_res_olive[1]])
-
-    bugs_decreased = pd.DataFrame(bugs_decreased)
-    bugs_increased = pd.DataFrame(bugs_increased)
-    bugs_decreased.columns = ["Overlap",
-                              "XTREE", "Alves", "Shatnawi", "Oliveira"]
-    bugs_increased.columns = ["Overlap",
-                              "XTREE", "Alves", "Shatnawi", "Oliveira"]
+    bugs_decreased = pd.DataFrame(bugs_decreased, columns=[
+                                  "Overlap", "Num", "Method"])
+    bugs_increased = pd.DataFrame(bugs_increased, columns=[
+                                  "Overlap", "Num", "Method"])
 
     return bugs_decreased, bugs_increased
