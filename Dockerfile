@@ -14,4 +14,4 @@ RUN apt-get install -y \
     python3-tk
 COPY . /
 RUN pip3 install -r requirements.txt
-CMD ["python3", "run_experiments.py"]
+CMD ["python3", "xtree_plan.py"]
