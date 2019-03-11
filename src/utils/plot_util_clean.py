@@ -24,15 +24,14 @@ def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title
     #  We define a fake subplot that is in fact only the plot.
     g = plt.figure(figsize=(6, 4)).add_subplot(111)
 
-
     #  We change the fontsize of minor ticks label
     g.tick_params(axis='both', which='major', labelsize=10)
 
     # Covert the Numerical axis to
     dframe['Num'] = dframe['Num'].astype('float')
-    g = sns.catplot(x="Overlap", y="Num", hue="Method", palette=flatui, kind='violin', inner='point', data=dframe, linewidth=0.25, legend=False)
+    g = sns.catplot(x="Overlap", y="Num", hue="Method", palette=flatui,
+                    kind='violin', inner='point', data=dframe, linewidth=0.25, legend=False)
     # g = sns.catplot(x="Overlap", y="Num", hue="Method", palette=flatui, kind='swarm', inner=None, data=dframe, linewidth=0.25, legend=False)
-
 
     sns.despine(offset=10, trim=True)
 
@@ -46,9 +45,9 @@ def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title
         " ", "_", title).lower() + "_" + postfix + ".png")
 
     g.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(6, 4),
-                orientation='portrait', papertype=None, format=None,
-                transparent=True, bbox_inches="tight", pad_inches=0.1,
-                frameon=None)
+              orientation='portrait', papertype=None, format=None,
+              transparent=True, bbox_inches="tight", pad_inches=0.1,
+              frameon=None)
 
 
 def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", title="", postfix=None, factorplot=False):
@@ -65,7 +64,8 @@ def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
 
     # Covert the Numerical axis to
     dframe['Num'] = dframe['Num'].astype('float')
-    sns.catplot(x="Overlap", y="Num", hue="Method", palette=flatui, data=dframe, linewidth=0.25, kind="bar", legend=False, errwidth=1, ci="sd")
+    sns.catplot(x="Overlap", y="Num", hue="Method", palette=flatui, data=dframe,
+                linewidth=0.25, kind="bar", legend=False, errwidth=1, ci="sd")
 
     sns.despine(offset=10)
 
@@ -76,7 +76,7 @@ def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
     plt.legend(loc="best", fontsize=10, frameon=False, shadow=False)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + "_" + postfix + ".png")
+        " ", "_", title).lower() + postfix + ".png")
 
     plt.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(4, 3),
                 orientation='portrait', papertype=None, format=None,

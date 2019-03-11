@@ -135,22 +135,23 @@ class XTREE(BaseEstimator):
                 lvl1 = lvl
                 for sub, lvl1 in self._nodes(kid, lvl1 + 1):
                     yield sub, lvl1
+
     @staticmethod
     def _path_from_root(node):
         """
         All the attributes in the path from root to node
-        
+
         Parameters
         ----------
         node : Thing
             The tree node object
-        
+
         Returns
         -------
         list:
             A list of all the attributes from root to node
         """
-        
+
         path_names = [keys for keys in map(lambda x: x[0], node.branch)]
         return path_names
 
@@ -289,8 +290,8 @@ class XTREE(BaseEstimator):
             if self.min_levels <= n < N:
                 current.kids += [
                     self._tree_builder(child, lvl=lvl + 1, as_is=to_be,
-                                       parent=current, branch=branch +
-                                       [(name, span)],
+                                       parent=current, branch=branch
+                                       + [(name, span)],
                                        f=name, val=span)]
 
         return current
@@ -351,37 +352,37 @@ class XTREE(BaseEstimator):
 
     @staticmethod
     def jaccard_similarity_score(set1, set2):
-            """
-            Jaccard similarity index
-            Parameters
-            ----------
-            set1: set
-                First set
-            set2: set
-                Second set
-            Returns
-            -------
-            float:
-                Jaccards similarity index
-            Notes
-            -----
-            + Jaccard's measure is computed as follows
-                                      |A <intersection> B|
-                Jaccard Index = --------------------------------
-                                |A| + |B| - |A <intersection> B|
-            + See https://en.wikipedia.org/wiki/Jaccard_index
-            """
-            # -- If we have lists, convert them to sets --
-            if isinstance(set1, list):
-                set1 = set(set1)
-            if isinstance(set2, list):
-                set2 = set(set2)
+        """
+        Jaccard similarity index
+        Parameters
+        ----------
+        set1: set
+            First set
+        set2: set
+            Second set
+        Returns
+        -------
+        float:
+            Jaccards similarity index
+        Notes
+        -----
+        + Jaccard's measure is computed as follows
+                                  |A <intersection> B|
+            Jaccard Index = --------------------------------
+                            |A| + |B| - |A <intersection> B|
+        + See https://en.wikipedia.org/wiki/Jaccard_index
+        """
+        # -- If we have lists, convert them to sets --
+        if isinstance(set1, list):
+            set1 = set(set1)
+        if isinstance(set2, list):
+            set2 = set(set2)
 
-            # -- Compute the Jaccard score --
-            intersect_length = len(set1.intersection(set2))
-            set1_length = len(set1)
-            set2_length = len(set2)
-            return intersect_length / (set1_length + set2_length - intersect_length)
+        # -- Compute the Jaccard score --
+        intersect_length = len(set1.intersection(set2))
+        set1_length = len(set1)
+        set2_length = len(set2)
+        return intersect_length / (set1_length + set2_length - intersect_length)
 
     def best_plan(self, better_nodes, item_sets):
         """
@@ -418,8 +419,9 @@ class XTREE(BaseEstimator):
         for node in better_nodes:
             change_set = set([bb[0] for bb in node.branch])
             for item_set in item_sets:
-                jaccard_index = self.jaccard_similarity_score(item_set, change_set)
-                if 0 < jaccard_index >= max_intersection:
+                jaccard_index = self.jaccard_similarity_score(
+                    item_set, change_set)
+                if 0 < jaccard_index >= max_intersection:  # TODO: Check
                     best_path = node
                     max_intersection = jaccard_index
 
@@ -429,7 +431,7 @@ class XTREE(BaseEstimator):
         """
         Obtain the best plan by picking a node from better nodes that is 
         closest to the current_node
-        
+
         Parameters
         ----------
         better_nodes: List[Thing]
@@ -437,7 +439,7 @@ class XTREE(BaseEstimator):
             which the current test instance lands on.
         current_node : [type]
             The node where the current test case falls into
-        
+
         Returns
         -------
         Thing:
@@ -509,7 +511,8 @@ class XTREE(BaseEstimator):
                     elif self.strategy == "closest":
                         best_path = self.best_plan_closest(better_nodes, pos)
                     else:
-                        raise ValueError("Invalid argument for. Use either \"itemset\" or \"closest\" ")
+                        raise ValueError(
+                            "Invalid argument for. Use either \"itemset\" or \"closest\" ")
 
                     for entities in best_path.branch:
                         cur[entities[0]] = entities[1]

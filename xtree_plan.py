@@ -9,10 +9,8 @@ if __name__ == "__main__":
     # -- Get CPU core count --
     n_proc = mp.cpu_count()
     # -- Initialize the experiment --
-    exp = Experiment1(verbose=True, plot_results=True, decrease=False)
+    exp = Experiment1(verbose=True, plot_results=False, decrease=False)
     # -- Run asynchronously --
     # -- Create a pool object --
     with mp.Pool(processes=n_proc) as pool:
         tasks = pool.starmap(exp.main, tuple(data.items()))
-
-    # output = [task.get() for task in tasks]
