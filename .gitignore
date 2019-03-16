@@ -51,3 +51,8 @@ Backup[ ]of[ ]*.numbers/
 # Idea
 .idea
 .idea/*
+
+#.vscode
+.vscode
+.vscode/*
+
