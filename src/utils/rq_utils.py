@@ -84,7 +84,7 @@ def measure_overlap(test, new, validation):
     results['Overlap'] = overlap
     results['Heeded'] = improve_heeded
 
-    return [_effectiveness(results, thresh_min=lo, thresh_max=hi) for lo, hi in zip(OVERLAP_RANGE[:-1], OVERLAP_RANGE[1:])]
+    return results, [_effectiveness(results, thresh_min=lo, thresh_max=hi) for lo, hi in zip(OVERLAP_RANGE[:-1], OVERLAP_RANGE[1:])]
     # return [tuple(map(lambda x: int(100*x/len(validation_common['<bug'].tolist())), _effectiveness(results, thresh_min=lo, thresh_max=hi))) for lo, hi in zip(OVERLAP_RANGE[:-1], OVERLAP_RANGE[1:])]
 
 
@@ -98,7 +98,7 @@ def reshape(res_xtree, res_alves, res_shatw, res_olive):
         bugs_decreased.append([thresh, every_res_alves[0], 'ALVES'])
         bugs_decreased.append([thresh, every_res_shatw[0], 'SHATW'])
         bugs_decreased.append([thresh, every_res_olive[0], 'OLIVE'])
-        
+
         # -- Increase --
         bugs_increased.append([thresh, every_res_xtree[1], 'XTREE'])
         bugs_increased.append([thresh, every_res_alves[1], 'ALVES'])
@@ -111,3 +111,29 @@ def reshape(res_xtree, res_alves, res_shatw, res_olive):
                                   "Overlap", "Num", "Method"])
 
     return bugs_decreased, bugs_increased
+
+
+def reshape_overlap(res_xtree, res_alves, res_shatw, res_olive):
+    counts = []
+
+    def count_helper(dframe, lo, hi):
+        range_hi = dframe['Overlap'].loc[dframe['Overlap'] >= lo].count()
+        range_lo = dframe['Overlap'].loc[dframe['Overlap'] > hi].count()
+        return range_hi - range_lo
+
+    for thresh_min, thresh_max in zip(OVERLAP_RANGE[:-1], OVERLAP_RANGE[1:]):
+        # -- XTREE --
+        counts.append([thresh_max, count_helper(res_xtree, thresh_min, thresh_max), 'XTREE'])
+        
+        # -- ALVES --
+        counts.append([thresh_max, count_helper(res_alves, thresh_min, thresh_max), 'ALVES'])
+        
+        # -- SHATW --
+        counts.append([thresh_max, count_helper(res_shatw, thresh_min, thresh_max), 'SHATW'])
+        
+        # -- OLIVE --
+        counts.append([thresh_max, count_helper(res_olive, thresh_min, thresh_max), 'OLIVE'])
+        
+    counts = pd.DataFrame(counts, columns=["Overlap", "Num", "Method"])
+
+    return counts

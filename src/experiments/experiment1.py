@@ -19,7 +19,7 @@ from planners.oliveira import oliveira
 from utils.rq_utils import measure_overlap, reshape
 from utils.plot_util_clean import plot_violin, plot_catplot
 from utils.stats_utils.auec import compute_auec
-from utils.rq_utils import measure_overlap, reshape
+from utils.rq_utils import measure_overlap, reshape, reshape_overlap
 from sklearn.model_selection import train_test_split
 
 
@@ -42,6 +42,7 @@ class Experiment1:
             columns = ["Overlap", "Num", "Method"]
             decrease = pd.DataFrame(columns=columns)
             increase = pd.DataFrame(columns=columns)
+            counts = pd.DataFrame(columns=columns)
 
             # -- Create a dataframe for train and test --
             test_df_full = pd.read_csv(test)
@@ -54,7 +55,7 @@ class Experiment1:
 
             # --------------------------------------------------------------
             # -- Repeat 10 times with 90% samples --
-            for repeats in range(30):
+            for repeats in range(10):
                 # -- Split the test data --
                 test_df, __ = train_test_split(
                     test_df_full, test_size=0.1, random_state=1729)
@@ -70,22 +71,28 @@ class Experiment1:
                 patched_olive = oliveira(train_df[train_df.columns[1:]], test)
 
                 # -- Compute overlap with developers changes --
-                res_xtree = measure_overlap(test_df, patched_xtree, valdn_df)
-                res_alves = measure_overlap(test_df, patched_alves, valdn_df)
-                res_shatw = measure_overlap(test_df, patched_shatw, valdn_df)
-                res_olive = measure_overlap(test_df, patched_olive, valdn_df)
+                overlap_xtree, res_xtree = measure_overlap(test_df, patched_xtree, valdn_df)
+                overlap_alves, res_alves = measure_overlap(test_df, patched_alves, valdn_df)
+                overlap_shatw, res_shatw = measure_overlap(test_df, patched_shatw, valdn_df)
+                overlap_olive, res_olive = measure_overlap(test_df, patched_olive, valdn_df)
 
                 # -- Summary of defects decreased/increased --
                 res_dec, res_inc = reshape(
                     res_xtree, res_alves, res_shatw, res_olive)
 
+                # -- Summary of Overlap counts --
+                overlap_counts = reshape_overlap(overlap_xtree, overlap_alves, overlap_shatw, overlap_olive)
+
                 decrease = decrease.append(res_dec, ignore_index=True)
                 increase = increase.append(res_inc, ignore_index=True)
+                counts = counts.append(overlap_counts, ignore_index=True)
 
             decrease.to_csv(os.path.join(
                 save_path, plot_title + "_dec.csv"), index=False)
             increase.to_csv(os.path.join(
                 save_path, plot_title + "_inc.csv"), index=False)
+            counts.to_csv(os.path.join(
+                save_path, plot_title + "_counts.csv"), index=False)
 
             # --------------------------------------------------------------
             # -- Plot the results --
