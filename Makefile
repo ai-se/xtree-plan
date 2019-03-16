@@ -10,8 +10,8 @@ test:
 
 clean:
 	@echo "Cleaning *.pyc, *.DS_Store, and other junk files..."
-	@- find . -name '*.pyc' -exec rm --force {} +
-	@- find . -name '*.pyo' -exec rm --force {} +
+	@- find . -name '*.pyc' -exec rm -f {} +
+	@- find . -name '*.pyo' -exec rm -f {} +
 	@echo ""
 
 git: clean
