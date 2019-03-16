@@ -14,7 +14,7 @@ if root not in sys.path:
 # Set plot style
 flatui = ["#FC9D9A", "#F9CDAD", "#C8C8A9", "#83AF9B"]
 sns.palplot(sns.color_palette(flatui))
-sns.set_context("talk")
+sns.set_context("paper")
 
 
 def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title="", postfix=None):
@@ -42,10 +42,10 @@ def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title
     plt.legend(loc="best", fontsize=10)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + "_" + postfix + ".png")
+        " ", "_", title).lower() + "_" + postfix + ".eps")
 
     g.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(6, 4),
-              orientation='portrait', papertype=None, format=None,
+              orientation='portrait', papertype=None, format=None, format='eps',
               transparent=True, bbox_inches="tight", pad_inches=0.1,
               frameon=None)
 
@@ -76,9 +76,9 @@ def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
     plt.legend(loc="best", fontsize=10, frameon=False, shadow=False)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + postfix + ".png")
+        " ", "_", title).lower() + postfix + ".eps")
 
     plt.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(4, 3),
-                orientation='portrait', papertype=None, format=None,
+                orientation='portrait', papertype=None, format=None, format='eps',
                 transparent=True, bbox_inches="tight", pad_inches=0.1,
                 frameon=None)
