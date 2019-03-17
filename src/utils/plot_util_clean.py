@@ -12,8 +12,9 @@ if root not in sys.path:
     sys.path.append(root)
 
 # Set plot style
-flatui = ["#FC9D9A", "#F9CDAD", "#C8C8A9", "#83AF9B"]
-sns.palplot(sns.color_palette(flatui))
+flatui = ["#FF948D", "#FFC991", "#C5C593", "#67B193"]
+greyui = sns.color_palette('Greys_r', 4)
+sns.palplot(flatui)
 sns.set_context("paper")
 
 
@@ -36,16 +37,16 @@ def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title
     sns.despine(offset=10, trim=True)
 
     #  Set title, axes labels
-    g.set_titles(title, size=10)
-    g.set_ylabels(y_lbl, size=10)
-    g.set_xlabels("Overlap", size=10)
+    g.set_titles(title, size=12)
+    g.set_ylabels(y_lbl, size=12)
+    g.set_xlabels("Overlap", size=12)
     plt.legend(loc="best", fontsize=10)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + "_" + postfix + ".eps")
+        " ", "_", title).lower() + "_" + postfix + ".png")
 
     g.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(6, 4),
-              orientation='portrait', papertype=None, format=None, format='eps',
+              orientation='portrait', papertype=None, format='png',
               transparent=True, bbox_inches="tight", pad_inches=0.1,
               frameon=None)
 
@@ -76,9 +77,9 @@ def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
     plt.legend(loc="best", fontsize=10, frameon=False, shadow=False)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + postfix + ".eps")
+        " ", "_", title).lower() + postfix + ".png")
 
     plt.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(4, 3),
-                orientation='portrait', papertype=None, format=None, format='eps',
+                orientation='portrait', papertype=None, format='png',
                 transparent=True, bbox_inches="tight", pad_inches=0.1,
                 frameon=None)
