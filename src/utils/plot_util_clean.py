@@ -14,7 +14,8 @@ if root not in sys.path:
 # Set plot style
 flatui = ["#FC9D9A", "#F9CDAD", "#C8C8A9", "#83AF9B"]
 sns.palplot(sns.color_palette(flatui))
-sns.set_context("paper")
+sns.set(font_scale=2.5, style="ticks")
+sns.set_context("talk")
 
 
 def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title="", postfix=None):
@@ -22,7 +23,7 @@ def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title
     plt.clf()
 
     #  We define a fake subplot that is in fact only the plot.
-    g = plt.figure(figsize=(6, 4)).add_subplot(111)
+    g = plt.figure(figsize=(4, 3)).add_subplot(111)
 
     #  We change the fontsize of minor ticks label
     g.tick_params(axis='both', which='major', labelsize=10)
@@ -42,10 +43,10 @@ def plot_violin(dframe, save_path=os.path.join(root, "results"), y_lbl="", title
     plt.legend(loc="best", fontsize=10)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + "_" + postfix + ".eps")
+        " ", "_", title).lower() + "_" + postfix + ".png")
 
-    g.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(6, 4),
-              orientation='portrait', papertype=None, format=None, format='eps',
+    g.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(4, 3),
+              orientation='portrait', papertype=None, format='png',
               transparent=True, bbox_inches="tight", pad_inches=0.1,
               frameon=None)
 
@@ -56,29 +57,29 @@ def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
 
     #  We define a fake subplot that is in fact only the plot.
     plot = plt.figure(figsize=(4, 3)).add_subplot(111)
-    plot.axhline(linewidth=2)
-    plot.axvline(linewidth=2)
+    # plot.axhline(linewidth=2)
+    # plot.axvline(linewidth=2)
 
     #  We change the fontsize of minor ticks label
-    plot.tick_params(axis='both', which='major', labelsize=12)
+    plot.tick_params(axis='both', which='major', labelsize=20)
 
     # Covert the Numerical axis to
     dframe['Num'] = dframe['Num'].astype('float')
     sns.catplot(x="Overlap", y="Num", hue="Method", palette=flatui, data=dframe,
-                linewidth=0.25, kind="bar", legend=False, errwidth=1, ci="sd")
+                linewidth=1, kind="bar", legend=False, errwidth=1, ci="sd")
 
     sns.despine(offset=10)
 
     #  Set title, axes labels
-    plt.title(title, size=12)
-    plt.ylabel(y_lbl, size=12)
-    plt.xlabel("Overlap", size=12)
-    plt.legend(loc="best", fontsize=10, frameon=False, shadow=False)
+    plt.title(title)
+    plt.ylabel(y_lbl)
+    plt.xlabel("Overlap")
+    plt.legend(loc="best", frameon=False, shadow=False)
 
     fname = os.path.join(save_path, re.sub(
-        " ", "_", title).lower() + postfix + ".eps")
+        " ", "_", title).lower() + postfix + ".png")
 
     plt.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(4, 3),
-                orientation='portrait', papertype=None, format=None, format='eps',
+                orientation='portrait', papertype=None, format='png',
                 transparent=True, bbox_inches="tight", pad_inches=0.1,
                 frameon=None)
