@@ -12,7 +12,7 @@ if root not in sys.path:
     sys.path.append(root)
 
 # Set plot style
-flatui = ["#FC9D9A", "#F9CDAD", "#C8C8A9", "#83AF9B"]
+flatui = ["#FF948D", "#FFC991", "#C5C593", "#67B193"]
 sns.palplot(sns.color_palette(flatui))
 sns.set(font_scale=2.5, style="ticks")
 sns.set_context("talk")

@@ -53,7 +53,7 @@ class Experiment1:
             train_df.loc[train_df[train_df.columns[-1]] >
                          0, train_df.columns[-1]] = 1
 
-            # --------------------------------------------------------------
+            # ------------------------------------------------------------------
             # -- Repeat 10 times with 90% samples --
             for repeats in range(10):
                 # -- Split the test data --
@@ -94,7 +94,7 @@ class Experiment1:
             counts.to_csv(os.path.join(
                 save_path, plot_title + "_counts.csv"), index=False)
 
-            # --------------------------------------------------------------
+            # ------------------------------------------------------------------
             # -- Plot the results --
             if self.plot_results:
                 # --- Violin plots ---
