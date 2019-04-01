@@ -21,7 +21,9 @@ __license__ = 'MIT License'
 
 
 class XTREE(BaseEstimator):
-    def __init__(self, min_levels=1, dependent_var_col_id=-1, prune=False, max_levels=10, info_prune=1, alpha=0.33, bins=3, support_min=90, strategy="itemset"):
+    def __init__(self, min_levels=1, dependent_var_col_id=-1,
+                 prune=False, max_levels=10, info_prune=1, alpha=0.33,
+                 bins=3, support_min=90, strategy="itemset"):
         """
         XTREE Planner
 
@@ -290,8 +292,8 @@ class XTREE(BaseEstimator):
             if self.min_levels <= n < N:
                 current.kids += [
                     self._tree_builder(child, lvl=lvl + 1, as_is=to_be,
-                                       parent=current, branch=branch
-                                       + [(name, span)],
+                                       parent=current, branch=branch +
+                                       [(name, span)],
                                        f=name, val=span)]
 
         return current

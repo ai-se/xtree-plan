@@ -14,7 +14,7 @@ if root not in sys.path:
 # Set plot style
 flatui = ["#FF948D", "#FFC991", "#C5C593", "#67B193"]
 sns.palplot(sns.color_palette(flatui))
-sns.set(font_scale=2.5, style="ticks")
+sns.set(font_scale=3.33, style="ticks")
 sns.set_context("talk")
 
 
@@ -71,15 +71,15 @@ def plot_catplot(dframe, save_path=os.path.join(root, "results"), y_lbl="", titl
     sns.despine(offset=10)
 
     #  Set title, axes labels
-    plt.title(title)
+    # plt.title(title)
     plt.ylabel(y_lbl)
     plt.xlabel("Overlap")
-    plt.legend(loc="best", frameon=False, shadow=False)
+    # plt.legend(loc="best", frameon=False, shadow=False)
 
     fname = os.path.join(save_path, re.sub(
         " ", "_", title).lower() + postfix + ".png")
 
     plt.savefig(fname, dpi=300, facecolor='w', edgecolor='w', figsize=(4, 3),
                 orientation='portrait', papertype=None, format='png',
-                transparent=True, bbox_inches="tight", pad_inches=0.1,
+                transparent=True, bbox_inches="tight", pad_inches=0,
                 frameon=None)

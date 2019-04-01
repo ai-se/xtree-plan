@@ -50,8 +50,8 @@ class Experiment1:
             valdn_df = pd.read_csv(validation)
 
             # -- Binarize training data labels --
-            train_df.loc[train_df[train_df.columns[-1]] >
-                         0, train_df.columns[-1]] = 1
+            train_df.loc[train_df[train_df.columns[-1]]
+                         > 0, train_df.columns[-1]] = 1
 
             # ------------------------------------------------------------------
             # -- Repeat 10 times with 90% samples --
@@ -71,17 +71,22 @@ class Experiment1:
                 patched_olive = oliveira(train_df[train_df.columns[1:]], test)
 
                 # -- Compute overlap with developers changes --
-                overlap_xtree, res_xtree = measure_overlap(test_df, patched_xtree, valdn_df)
-                overlap_alves, res_alves = measure_overlap(test_df, patched_alves, valdn_df)
-                overlap_shatw, res_shatw = measure_overlap(test_df, patched_shatw, valdn_df)
-                overlap_olive, res_olive = measure_overlap(test_df, patched_olive, valdn_df)
+                overlap_xtree, res_xtree = measure_overlap(
+                    test_df, patched_xtree, valdn_df)
+                overlap_alves, res_alves = measure_overlap(
+                    test_df, patched_alves, valdn_df)
+                overlap_shatw, res_shatw = measure_overlap(
+                    test_df, patched_shatw, valdn_df)
+                overlap_olive, res_olive = measure_overlap(
+                    test_df, patched_olive, valdn_df)
 
                 # -- Summary of defects decreased/increased --
                 res_dec, res_inc = reshape(
                     res_xtree, res_alves, res_shatw, res_olive)
 
                 # -- Summary of Overlap counts --
-                overlap_counts = reshape_overlap(overlap_xtree, overlap_alves, overlap_shatw, overlap_olive)
+                overlap_counts = reshape_overlap(
+                    overlap_xtree, overlap_alves, overlap_shatw, overlap_olive)
 
                 decrease = decrease.append(res_dec, ignore_index=True)
                 increase = increase.append(res_inc, ignore_index=True)
