@@ -97,7 +97,7 @@ class Experiment1:
             # --------------------------------------------------------------
             # -- Plot the results --
             if self.plot_results:
-                # --- Violin plots ---
+                # --- Plot Bar Plots ---
 
                 # -- Decreased --
                 plot_catplot(decrease, save_path=save_path, title=plot_title,
@@ -106,42 +106,6 @@ class Experiment1:
                 plot_catplot(increase, save_path=save_path, title=plot_title,
                              y_lbl="# Defects Added", postfix="inc")
 
-            # -- Pause execution --
-            # set_trace()
-
-            # # -- Max/Min to normalize AUPEC --
-            # y_max = max(res_dec.max(axis=0).values)
-            # y_min = min(res_dec.min(axis=0).values)
-
-            # if self.decrease:
-            #     # -- Decrease AUC --
-            #     xtree_dec_auc = compute_auec(
-            #         res_dec[["Overlap", "XTREE"]], y_max, y_min)
-            #     alves_dec_auc = compute_auec(
-            #         res_dec[["Overlap", "Alves"]], y_max, y_min)
-            #     shatw_dec_auc = compute_auec(
-            #         res_dec[["Overlap", "Shatnawi"]], y_max, y_min)
-            #     olive_dec_auc = compute_auec(
-            #         res_dec[["Overlap", "Oliveira"]], y_max, y_min)
-
-            #     if self.verbose:
-            #         print("{}-{}\t{}\t{}\t{}\t{}".format(
-            #             proj[:3], i, xtree_dec_auc, alves_dec_auc, shatw_dec_auc, olive_dec_auc))
-
-            # else:
-            #     # -- Increase AUC --
-            #     xtree_inc_auc = compute_auec(
-            #         res_inc[["Overlap", "XTREE"]], y_max, y_min)
-            #     alves_inc_auc = compute_auec(
-            #         res_inc[["Overlap", "Alves"]], y_max, y_min)
-            #     shatw_inc_auc = compute_auec(
-            #         res_inc[["Overlap", "Shatnawi"]], y_max, y_min)
-            #     olive_inc_auc = compute_auec(
-            #         res_inc[["Overlap", "Oliveira"]], y_max, y_min)
-
-            #     if self.verbose:
-            #         print("{}-{}\t{}\t{}\t{}\t{}".format(
-            #             proj[:3], i, xtree_inc_auc, alves_inc_auc, shatw_inc_auc, olive_inc_auc))
 
 
 if __name__ == "__main__":
