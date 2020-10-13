@@ -3,40 +3,50 @@
 
 ## Submission 
 
-Submitted to [IEEE Transactions on Software Engineering (TSE) 2018](https://www.computer.org/web/tse). 
+Published in Empirical Software Engineering Journal. Article: [https://link.springer.com/content/pdf/10.1007/s10664-020-09843-6.pdf](https://link.springer.com/content/pdf/10.1007/s10664-020-09843-6.pdf)
 
-ARXIV Link: https://arxiv.org/abs/1708.05442v2
+## Abstract
+The current generation of software analytics tools are mostly prediction algorithms (e.g.
+support vector machines, naive bayes, logistic regression, etc). While prediction is useful,
+after prediction comes planning about what actions to take in order to improve quality. This
+research seeks methods that generate demonstrably useful guidance on “what to do” within
+the context of a specific software project. Specifically, we propose XTREE (for withinproject planning) 
+and BELLTREE (for cross-project planning) to generating plans that can
+improve software quality. Each such plan has the property that, if followed, it reduces the
+expected number of future defect reports. To find this expected number, planning was first
+applied to data from release x. Next, we looked for change in release x + 1 that conformed
+to our plans. This procedure was applied using a range of planners from the literature, as
+well as XTREE. In 10 open-source JAVA systems, several hundreds of defects were reduced
+in sections of the code that conformed to XTREE’s plans. Further, when compared to other
+planners, XTREE’s plans were found to be easier to implement (since they were shorter)
+and more effective at reducing the expected number of defects.
+
 
 ## Cite As
 
 ```
-@misc{krishna18belltree,
-Author = {Krishna, Rahul and Menzies, Tim},
-Title = {From Prediction to Planning: Improving Software Quality with BELLTREE},
-Year = {2018},
-journal= {IEEE Transactions on Software Engineering, submitted.},
-Eprint = {arXiv:1708.05442v2},
+@article{krishna2020learning,
+  title={Learning actionable analytics from multiple software projects},
+  author={Krishna, Rahul and Menzies, Tim},
+  journal={Empirical Software Engineering},
+  pages={1--33},
+  year={2020},
+  publisher={Springer}
 }
 ```
 
 ## Authors
 
 + Rahul Krishna
-  + North Carolina State University, USA
-  + rkrish11@ncsu.edu  
+  + Columbia University, USA
   + i.m.ralk@gmail.com
 + Tim Menzies
   + North Carolina State University, USA
   + tim@ieee.org  
-  + tim.menzies@gmail.com
 
 ## Data
 
 + [Defect Data](/src/data)
-
-## Latex Source
-
-+ [TSE Submission](/docs/1708.05442/)
 
 ## Source Code
 
